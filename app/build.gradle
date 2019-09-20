@@ -8,11 +8,15 @@ android {
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
-        versionName "1.0.1"
+        versionName "1.0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk {
             // 设置支持的SO库架构
             abiFilters 'armeabi' //, 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+        }
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
         }
     }
     buildTypes {
@@ -40,9 +44,18 @@ dependencies {
 
     implementation 'com.jakewharton:butterknife:10.2.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
-
 
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.lzy.net:okgo:3.0.4'
+
+    //okhttp
+    implementation 'com.squareup.okhttp3:okhttp:3.8.1'
+
+    implementation('com.github.bumptech.glide:glide:4.8.0')
+
+    //图片选择框框
+    implementation 'com.winfo.photoselector:PhotoSelector:1.2.1'
+
+    //recyclerview
+    implementation 'com.zhouyou:easyrecyclerview:1.0.5'
 }

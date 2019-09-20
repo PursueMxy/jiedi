@@ -23,7 +23,6 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         CrashReport.initCrashReport(getApplicationContext(), "cc10e7a288", true);
-        CrashReport.initCrashReport(getApplicationContext());
         OkGo.getInstance().init(this);
         //配置网络请求OkGo
         SetOkGohttp();
