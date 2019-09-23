@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/FFF5F5F5"
+    tools:context=".view.activity.CancelOrderActivity">
+    <RelativeLayout
+        android:id="@+id/main_rl_top"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_height">
+
+        <ImageView
+            android:id="@+id/cancel_order_img_back"
+            android:layout_marginLeft="@dimen/left_size"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/icon_left_break"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:text="取消订单"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <TextView
+        android:padding="@dimen/dp_5"
+        android:background="@drawable/ffb2c7fb"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="您还有2次机会取消订单"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_14"
+        />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_360"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="@dimen/left_size"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginRight="@dimen/Right_size"
+        android:background="@drawable/bg_recycler">
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_171">
+
+            <RadioButton
+                style="@style/MyCheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_20"
+                android:paddingLeft="@dimen/dp_10"
+                android:text="平台派单太远"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_14" />
+
+            <RadioButton
+                style="@style/MyCheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_20"
+                android:paddingLeft="@dimen/dp_10"
+                android:text="行程有变，暂时不需要用车"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_14" />
+
+            <RadioButton
+                style="@style/MyCheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_20"
+                android:paddingLeft="@dimen/dp_10"
+                android:text="联系不上乘客"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_14" />
+
+            <RadioButton
+                style="@style/MyCheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_20"
+                android:paddingLeft="@dimen/dp_10"
+                android:text="已超出载客人数"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_14" />
+        </RadioGroup>
+        <EditText
+            android:gravity="top"
+            android:padding="@dimen/dp_10"
+            android:hint="请填写备注信息"
+            android:layout_marginRight="@dimen/dp_10"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:background="@drawable/edt_white"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_153" />
+    </LinearLayout>
+
+    <Button
+        android:layout_marginTop="@dimen/dp_100"
+        android:background="@color/ff5181fb"
+        android:text="确认"
+        android:layout_marginLeft="@dimen/dp_51"
+        android:layout_marginRight="@dimen/dp_51"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_45" />
+</LinearLayout>

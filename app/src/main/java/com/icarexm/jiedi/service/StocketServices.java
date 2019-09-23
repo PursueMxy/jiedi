@@ -66,7 +66,7 @@ public class StocketServices extends Service {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {//开启长连接成功的回调
                 super.onOpen(webSocket, response);
-//                Log.e("BackService","进来了");
+                Log.e("BackService","进来了");
                 mWebSocket = webSocket;
                 String s = new Gson().toJson(new LoginDemoBean(token, "1", user_id,"login"));
                 mWebSocket.send(s);

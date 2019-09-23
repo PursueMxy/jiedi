@@ -11,4 +11,5 @@
     <style name="MyCheckBox" parent="@android:style/Widget.CompoundButton.CheckBox">
         <item name="android:button">@drawable/checkbox_bg</item>
     </style>
+
 </resources>

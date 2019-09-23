@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#FF5B5651</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#FFCC00</color>
     <color name="white">#FFFFFFFF</color>
     <color name="ff707070">#ff707070</color>
     <color name="ff5181fb">#ff5181fb</color>
@@ -10,6 +10,10 @@
     <color name="e6f2f2f2">#e6f2f2f2</color>
     <color name="black">#ff000000</color>
     <color name="FFF5F5F5">#FFF5F5F5</color>
+    <drawable name="ffb2c7fb">#ffb2c7fb</drawable>
+    <drawable name="f5181fb">#FF5181fb</drawable>
+    <drawable name="ffefeff4">#ffefeff4</drawable>
+    <drawable name="fff2f2f2">#fff2f2f2</drawable>
 
     <dimen name="left_size">@dimen/dp_15</dimen>
     <dimen name="Right_size">@dimen/dp_15</dimen>

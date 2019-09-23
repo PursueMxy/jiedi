@@ -9,7 +9,10 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission
         android:name="android.permission.READ_LOGS"
-        tools:ignore="ProtectedPermissions" />
+        tools:ignore="ProtectedPermissions" /> <!-- 地图权限 -->
+    <!-- 允许程序设置内置sd卡的写权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 允许程序访问CellID或WiFi热点来获取粗略的位置 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:name=".MyApplication"
@@ -20,7 +23,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".view.activity.HomeActivity"></activity>
+        <activity android:name=".view.activity.PersonalActivity"></activity>
+        <activity android:name=".view.activity.CostDetailActivity" />
+        <activity android:name=".view.activity.CancelOrderActivity" />
+
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="4373020d9452a548fb2be61a1e13e3f9" />
+
+        <activity android:name=".view.activity.OrderPerDayActivity" />
+        <activity
+            android:name=".view.activity.HomeActivity"
+            android:launchMode="singleTask" />
         <activity android:name=".view.activity.LogonActivity" />
         <activity android:name=".view.activity.ForgetPasswordActivity" />
         <activity android:name=".view.activity.LoginActivity">
@@ -30,7 +44,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.activity.MainActivity" />
+        <activity
+            android:name=".view.activity.MainActivity"
+            android:launchMode="singleTask" />
 
         <service android:name=".service.StocketServices" />
 
