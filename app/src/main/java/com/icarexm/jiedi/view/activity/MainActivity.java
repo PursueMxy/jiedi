@@ -10,9 +10,12 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdate;
+import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.hjq.permissions.OnPermission;
@@ -39,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             spservice = ((StocketServices.LocalBinder) service).getService();
-
         }
 
         @Override
@@ -54,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initService();
         ButterKnife.bind(this);
         mContext = getApplicationContext();
         mMapView.onCreate(savedInstanceState);
@@ -63,7 +64,11 @@ public class MainActivity extends AppCompatActivity {
         }
         //显示当前位置
         myLocation();
+        Intent Services = new Intent(mContext,StocketServices.class);
+        startService(Services);
+        initService();
     }
+
 
     @OnClick({R.id.main_tv_cancel_order})
     public void onViewClicked(View view){
@@ -71,6 +76,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.main_tv_cancel_order:
                 Intent intent = new Intent(mContext, CancelOrderActivity.class);
                 startActivityForResult(intent,CANCELORDER_CODE);
+                break;
+            case R.id.main_img_back:
+                closeService();
+                finish();
                 break;
         }
         }
@@ -85,7 +94,14 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode==KeyEvent.KEYCODE_BACK){
+            closeService();
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
     private void myLocation() {
         myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类
         // myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
@@ -94,6 +110,10 @@ public class MainActivity extends AppCompatActivity {
          aMap.getUiSettings().setMyLocationButtonEnabled(false);//设置默认定位按钮是否显示，非必需设置。
         aMap.setMyLocationEnabled(true);//设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);
+        //设置希望展示的地图缩放级别
+        CameraUpdate mCameraUpdate = CameraUpdateFactory.zoomTo(16);
+        aMap.moveCamera(mCameraUpdate);
+
     }
 
     //开启服务
@@ -103,6 +123,12 @@ public class MainActivity extends AppCompatActivity {
             bluetoothIntent = new Intent(MainActivity.this, StocketServices.class);
             bindService(bluetoothIntent, serviceConnection, BIND_AUTO_CREATE);
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // 跳转首页或者其他操作
     }
 
     //关闭长连接
@@ -119,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        closeService();
         //在activity执行onDestroy时执行mMapView.onDestroy()，销毁地图
         mMapView.onDestroy();
     }

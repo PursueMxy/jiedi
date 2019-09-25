@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -107,6 +108,7 @@ public class LogonActivity extends AppCompatActivity implements LogonContract.Vi
                 PhotoSelector.builder()
                         .setShowCamera(true)//显示拍照
                         .setSingle(true)//单选，裁剪都是单选
+                        .setCrop(true)//是否裁剪
                         .setCropMode(PhotoSelector.CROP_RECTANG)//设置裁剪模式 矩形还是圆形
                         .setStatusBarColor(ContextCompat.getColor(this, R.color.colorAccent))
                         .setToolBarColor(ContextCompat.getColor(this, R.color.colorAccent))
@@ -119,6 +121,7 @@ public class LogonActivity extends AppCompatActivity implements LogonContract.Vi
                 PhotoSelector.builder()
                         .setShowCamera(true)//显示拍照
                         .setSingle(true)//单选，裁剪都是单选
+                        .setCrop(true)//是否裁剪
                         .setCropMode(PhotoSelector.CROP_RECTANG)//设置裁剪模式 矩形还是圆形
                         .setStatusBarColor(ContextCompat.getColor(this, R.color.colorAccent))
                         .setToolBarColor(ContextCompat.getColor(this, R.color.colorAccent))
@@ -205,5 +208,12 @@ public class LogonActivity extends AppCompatActivity implements LogonContract.Vi
                     break;
             }
         }
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode==KeyEvent.KEYCODE_BACK){
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

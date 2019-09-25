@@ -30,6 +30,7 @@
             android:layout_height="wrap_content" />
     </RelativeLayout>
     <TextView
+        android:id="@+id/cancel_order_tv_number"
         android:padding="@dimen/dp_5"
         android:background="@drawable/ffb2c7fb"
         android:gravity="center"
@@ -51,10 +52,12 @@
         android:background="@drawable/bg_recycler">
 
         <RadioGroup
+            android:id="@+id/cancel_order_radiogroup"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_171">
 
             <RadioButton
+                android:id="@+id/cancel_order_radiobtn_one"
                 style="@style/MyCheckBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -66,6 +69,7 @@
                 android:textSize="@dimen/sp_14" />
 
             <RadioButton
+                android:id="@+id/cancel_order_radiobtn_two"
                 style="@style/MyCheckBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -77,6 +81,7 @@
                 android:textSize="@dimen/sp_14" />
 
             <RadioButton
+                android:id="@+id/cancel_order_radiobtn_three"
                 style="@style/MyCheckBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -88,6 +93,7 @@
                 android:textSize="@dimen/sp_14" />
 
             <RadioButton
+                android:id="@+id/cancel_order_radiobtn_four"
                 style="@style/MyCheckBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -99,6 +105,7 @@
                 android:textSize="@dimen/sp_14" />
         </RadioGroup>
         <EditText
+            android:id="@+id/cancel_order_edt_remarks"
             android:gravity="top"
             android:padding="@dimen/dp_10"
             android:hint="请填写备注信息"

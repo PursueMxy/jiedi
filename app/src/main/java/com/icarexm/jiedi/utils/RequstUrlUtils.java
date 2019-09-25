@@ -13,5 +13,8 @@ public class RequstUrlUtils {
 
 //        获取验证码
         public static String MobileCode=Host+"/api/user/getMobileCode";
+
+        //获取订单详情
+        public static String order_price_info=Host+"/api/order/order_price_info";
     }
 }

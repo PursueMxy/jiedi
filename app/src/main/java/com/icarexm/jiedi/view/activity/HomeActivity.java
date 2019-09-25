@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -68,7 +69,10 @@ public class HomeActivity extends AppCompatActivity {
         countDownProgressBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ToastUtils.showToast(mContext,"完成了");
+                alertDialog.dismiss();
+                btn_gainorder.setText("接单");
+                btn_gainorder.setBackground(getResources().getDrawable(R.drawable.btn_login));
+                startActivity(new Intent(mContext,MainActivity.class));
             }
         });
         //倒计时监听
@@ -80,6 +84,7 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onEnd() {
+                alertDialog.dismiss();
                 Log.e("home","结束");
             }
         });
@@ -118,7 +123,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-    @OnClick({R.id.home_btn_gainorder,R.id.home_img_order_per_day})
+    @OnClick({R.id.home_btn_gainorder,R.id.home_img_personal})
     public void onViewClicked(View view){
         switch (view.getId()) {
             case R.id.home_btn_gainorder:
@@ -133,9 +138,8 @@ public class HomeActivity extends AppCompatActivity {
                     alertDialog.dismiss();
                 }
                 break;
-            case R.id.home_img_order_per_day:
-//                startActivity(new Intent(mContext,OrderPerDayActivity.class));
-                startActivity(new Intent(mContext,MainActivity.class));
+            case R.id.home_img_personal:
+                startActivity(new Intent(mContext,PersonalActivity.class));
                 break;
                 default:
                     break;
@@ -154,6 +158,12 @@ public class HomeActivity extends AppCompatActivity {
             countDownProgressBar.startCountDown();
         }
 
-
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode==KeyEvent.KEYCODE_BACK){
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
 }

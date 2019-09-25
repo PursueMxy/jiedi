@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.activity.PriceActivity">
+    <RelativeLayout
+        android:id="@+id/personal_rl_top"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_height">
+
+        <ImageView
+            android:id="@+id/price_img_back"
+            android:layout_marginLeft="@dimen/left_size"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/icon_left_break"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:text="钱包"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_marginTop="@dimen/dp_28"
+        android:background="@mipmap/prcie_balance"
+        android:layout_marginLeft="@dimen/dp_15"
+        android:layout_marginRight="@dimen/dp_15"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_110">
+        <TextView
+            android:layout_marginLeft="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="当前余额(元)"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_20"
+            />
+        <TextView
+            android:layout_marginLeft="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_48"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="21.50"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_30"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/price_rl_cashout"
+        android:layout_marginTop="@dimen/dp_30"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_marginLeft="@dimen/dp_15"
+            android:text="提现"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dp_15"
+            android:layout_alignParentRight="true"
+            android:src="@mipmap/icon_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <View
+        android:layout_marginTop="@dimen/dp_12"
+        android:background="@drawable/ffefeff4"
+        android:layout_marginLeft="@dimen/dp_15"
+        android:layout_marginRight="@dimen/dp_15"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        />
+
+    <TextView
+        android:id="@+id/price_tv_callphone"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/dp_319"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="联系客服"
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_15"
+        />
+</LinearLayout>
