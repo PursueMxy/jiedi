@@ -16,5 +16,14 @@ public class RequstUrlUtils {
 
         //获取订单详情
         public static String order_price_info=Host+"/api/order/order_price_info";
+
+        // 司机首页
+        public static String driver_index=Host+"/api/user/driver_index";
+
+       // 订单状态
+        public static String orderInfo=Host+"/api/order/orderInfo";
+
+        //  用户给司机星级评价
+        public static  String evaluate=Host+"/api/order/evaluate";
     }
 }

@@ -31,6 +31,7 @@
          android:layout_height="wrap_content" />
 
     <TextView
+        android:id="@+id/list_home_order_time"
         android:layout_marginRight="@dimen/dp_10"
         android:layout_alignParentRight="true"
         android:layout_marginTop="@dimen/dp_10"
@@ -54,6 +55,7 @@
         />
 
     <TextView
+        android:id="@+id/list_home_order_startingpoint"
         android:drawableLeft="@mipmap/icon_location_blue"
         android:drawablePadding="@dimen/dp_10"
         android:layout_marginLeft="@dimen/dp_10"
@@ -65,6 +67,7 @@
         android:textSize="@dimen/sp_11"
         />
     <TextView
+        android:id="@+id/list_home_order_destination"
         android:drawableLeft="@mipmap/icon_location_red"
         android:drawablePadding="@dimen/dp_10"
         android:layout_marginLeft="@dimen/dp_10"
@@ -77,6 +80,7 @@
         />
 
     <TextView
+        android:id="@+id/list_home_order_paymoney"
         android:textStyle="bold"
         android:layout_marginTop="@dimen/dp_67"
         android:layout_marginRight="@dimen/dp_10"

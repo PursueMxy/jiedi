@@ -8,35 +8,53 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
+import com.icarexm.jiedi.Bean.OrderListBean;
 import com.icarexm.jiedi.R;
 import com.icarexm.jiedi.adapter.HomeAdapter;
+import com.icarexm.jiedi.contract.HomeContract;
 import com.icarexm.jiedi.custView.KeepCountdownView;
+import com.icarexm.jiedi.presenter.HomePresenter;
 import com.icarexm.jiedi.utils.MxyUtils;
+import com.icarexm.jiedi.utils.RequstUrlUtils;
 import com.icarexm.jiedi.utils.ToastUtils;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.Response;
 import com.zhouyou.recyclerview.XRecyclerView;
+import com.zhouyou.recyclerview.adapter.BaseRecyclerViewAdapter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements HomeContract.View {
 
     @BindView(R.id.home_recyclerView)
     XRecyclerView mRecyclerView;
     @BindView(R.id.home_btn_gainorder)
     Button btn_gainorder;
-    private List<String> list=new ArrayList<>();
+
+
+    private List<OrderListBean.DataBean.OrderBean> list=new ArrayList<>();
     private LinearLayoutManager mLayoutManager;
     private Context mContext;
     private HomeAdapter homeAdapter;
@@ -44,25 +62,68 @@ public class HomeActivity extends AppCompatActivity {
     private View dialog_home;
     private KeepCountdownView countDownProgressBar;
     private AlertDialog.Builder builder;
+    private SharedPreferences sp;
+    private String token;
+    private String user_id;
+    //声明AMapLocationClient类对象
+    public AMapLocationClient mLocationClient = null;
+    private AMapLocationClientOption mLocationOption;
+    private String city="";
+    private double longitude=0;
+    private double latitude=0;
+    private HomePresenter homePresenter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        token = sp.getString("token", "");
+        user_id = sp.getString("user_id", "");
         ButterKnife.bind(this);
         mContext = getApplicationContext();
         InitUI();
+        homePresenter = new HomePresenter(this);
+        SetLocations();
+        orderHandler.postDelayed(orderRunnable,200);
+    }
+
+    private void SetLocations() {
+        //初始化定位
+        mLocationClient = new AMapLocationClient(getApplicationContext());
+        mLocationOption = new AMapLocationClientOption();
+        /**
+         * 设置定位场景，目前支持三种场景（签到、出行、运动，默认无场景）
+         */
+        mLocationOption.setLocationPurpose(AMapLocationClientOption.AMapLocationPurpose.Transport);
+        if(null != mLocationClient){
+            mLocationClient.setLocationOption(mLocationOption);
+            //设置场景模式后最好调用一次stop，再调用start以保证场景模式生效
+            mLocationClient.stopLocation();
+            mLocationClient.startLocation();
+        }
+        //设置定位回调监听
+        mLocationClient.setLocationListener(mLocationListener);
+        //设置定位模式为AMapLocationMode.Hight_Accuracy，高精度模式。
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        //获取最近3s内精度最高的一次定位结果：
+        mLocationOption.setOnceLocationLatest(true);
+        //设置定位间隔,单位毫秒
+        mLocationOption.setInterval(3000);
+        //设置是否返回地址信息（默认返回地址信息）
+        mLocationOption.setNeedAddress(true);
+        //单位是毫秒，默认30000毫秒，建议超时时间不要低于8000毫秒。
+        mLocationOption.setHttpTimeOut(20000);
+        //关闭缓存机制
+        mLocationOption.setLocationCacheEnable(false);
+        //给定位客户端对象设置定位参数
+        mLocationClient.setLocationOption(mLocationOption);
+        //启动定位
+        mLocationClient.startLocation();
     }
 
     private void InitUI() {
-        list.add("102");
-        list.add("112");
-        list.add("122");
-        list.add("132");
-        list.add("142");
-        list.add("152");
-        list.add("162");
-        list.add("172");
         dialog_home = getLayoutInflater().inflate(R.layout.dialog_home, null);
         countDownProgressBar = dialog_home.findViewById(R.id.dialog_home_countDownProgress);
         countDownProgressBar.plus(10);
@@ -72,7 +133,14 @@ public class HomeActivity extends AppCompatActivity {
                 alertDialog.dismiss();
                 btn_gainorder.setText("接单");
                 btn_gainorder.setBackground(getResources().getDrawable(R.drawable.btn_login));
-                startActivity(new Intent(mContext,MainActivity.class));
+                orderHandler.removeCallbacks(orderRunnable);
+                Intent intent = new Intent(mContext, MainActivity.class);
+                intent.putExtra("order_id","155");
+                intent.putExtra("positionE",longitude+"");
+                intent.putExtra("positionN",latitude+"");
+                intent.putExtra("position",city);
+                startActivity(intent);
+                mLocationClient.stopLocation();
             }
         });
         //倒计时监听
@@ -120,6 +188,19 @@ public class HomeActivity extends AppCompatActivity {
                         , MxyUtils.dpToPx(mContext, MxyUtils.getDimens(mContext, R.dimen.dp_24)));
             }
         });
+        homeAdapter.setOnItemClickListener(new BaseRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, Object item, int position) {
+                orderHandler.removeCallbacks(orderRunnable);
+                Intent intent = new Intent(mContext, MainActivity.class);
+                intent.putExtra("order_id",list.get(position).getId()+"");
+                intent.putExtra("positionE",longitude+"");
+                intent.putExtra("positionN",latitude+"");
+                intent.putExtra("position",city);
+                startActivity(intent);
+                mLocationClient.stopLocation();
+            }
+        });
     }
 
 
@@ -146,7 +227,19 @@ public class HomeActivity extends AppCompatActivity {
         }
         }
 
-        public void ShowDialog(){
+        //刷新订单列表页面
+    public void UpdateOrderList(OrderListBean.DataBean data){
+        if (data!=null) {
+            list.clear();
+            List<OrderListBean.DataBean.OrderBean> order = data.getOrder();
+            list.addAll(order);
+            homeAdapter.setListAll(list);
+            homeAdapter.notifyDataSetChanged();
+        }
+    }
+
+    //自动接单dialog
+    public void ShowDialog(){
             builder = new AlertDialog.Builder(HomeActivity.this);
             if (alertDialog==null) {
                 alertDialog = builder.setView(dialog_home)
@@ -158,6 +251,21 @@ public class HomeActivity extends AppCompatActivity {
             countDownProgressBar.startCountDown();
         }
 
+   //刷新订单列表handler
+    private Handler orderHandler=new Handler();
+    Runnable orderRunnable=new Runnable() {
+        @Override
+        public void run() {
+            if (longitude!=0&&latitude!=0&&!city.equals("")) {
+                homePresenter.GetOrder(token, city, longitude + "", latitude + "");
+                orderHandler.postDelayed(orderRunnable,10000);
+            }else {
+                orderHandler.postDelayed(orderRunnable,200);
+            }
+        }
+    };
+
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode==KeyEvent.KEYCODE_BACK){
@@ -165,5 +273,51 @@ public class HomeActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+    //声明定位回调监听器
+    public AMapLocationListener mLocationListener = new AMapLocationListener() {
+        @Override
+        public void onLocationChanged(AMapLocation aMapLocation) {
+            if (aMapLocation != null) {
+                if (aMapLocation.getErrorCode() == 0) {
+                    //可在其中解析amapLocation获取相应内容。
+                    aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
+                    //获取纬度
+                    latitude = aMapLocation.getLatitude();
+                    //获取经度
+                    longitude = aMapLocation.getLongitude();
+                    aMapLocation.getAccuracy();//获取精度信息
+                    aMapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
+                    aMapLocation.getCountry();//国家信息
+                    aMapLocation.getProvince();//省信息
+                    //城市信息
+                    city = aMapLocation.getCity();
+                    aMapLocation.getDistrict();//城区信息
+                    aMapLocation.getStreet();//街道信息
+                    aMapLocation.getStreetNum();//街道门牌号信息
+                    aMapLocation.getCityCode();//城市编码
+                    aMapLocation.getAdCode();//地区编码
+                    aMapLocation.getAoiName();//获取当前定位点的AOI信息
+                    aMapLocation.getBuildingId();//获取当前室内定位的建筑物Id
+                    aMapLocation.getFloor();//获取当前室内定位的楼层
+                    aMapLocation.getGpsAccuracyStatus();//获取GPS的当前状态
+                    //获取定位时间
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date date = new Date(aMapLocation.getTime());
+                    String format = df.format(date);
 
+                    Log.e("定位数据",format+aMapLocation.getStreetNum()+city+latitude);
+                }else {
+                    //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
+                    Log.e("AmapError","location Error, ErrCode:"
+                            + aMapLocation.getErrorCode() + ", errInfo:"
+                            + aMapLocation.getErrorInfo());
+                }
+            }
+        }
+    };
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
 }

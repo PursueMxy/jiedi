@@ -20,6 +20,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
+            android:id="@+id/main_tv_title"
             android:layout_centerInParent="true"
             android:text="接机"
             android:textColor="@color/black"
@@ -33,7 +34,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <!--到达上车点/乘客已上车/到达终点-->
     <ImageView
+        android:visibility="gone"
         android:id="@+id/main_img_safety"
         android:layout_below="@id/main_rl_top"
         android:layout_marginTop="@dimen/dp_365"
@@ -42,6 +45,8 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_54" />
     <RelativeLayout
+        android:id="@+id/main_rl_safety"
+        android:visibility="gone"
         android:background="@color/white"
         android:layout_marginLeft="@dimen/dp_10"
         android:layout_marginRight="@dimen/dp_10"
@@ -74,6 +79,7 @@
             />
 
         <TextView
+            android:id="@+id/main_tv_shape"
             android:layout_marginTop="@dimen/dp_8"
             android:layout_below="@+id/main_tv_name"
             android:layout_marginLeft="@dimen/dp_26"
@@ -121,6 +127,7 @@
                 android:layout_width="@dimen/dp_1"
                 android:layout_height="match_parent"/>
             <TextView
+                android:id="@+id/main_tv_order_type"
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:layout_weight="1"
@@ -131,6 +138,7 @@
                 android:textSize="@dimen/sp_15"/>
         </LinearLayout>
     </RelativeLayout>
+    <!--订单已取消-->
     <ImageView
         android:visibility="gone"
         android:id="@+id/main_img_safety1"
@@ -141,6 +149,7 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_54" />
     <LinearLayout
+        android:id="@+id/main_rl_safety1"
         android:visibility="gone"
         android:background="@color/white"
         android:layout_below="@id/main_rl_top"
@@ -217,6 +226,7 @@
             android:textSize="@dimen/sp_14"
             />
     </LinearLayout>
+    <!--订单评价-->
     <ImageView
         android:visibility="gone"
         android:id="@+id/main_img_safety2"
@@ -227,6 +237,7 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_54" />
     <RelativeLayout
+        android:id="@+id/main_rl_safety2"
         android:visibility="gone"
         android:layout_marginRight="@dimen/dp_10"
         android:layout_marginLeft="@dimen/dp_10"
@@ -283,6 +294,7 @@
               android:layout_height="wrap_content" />
 
         <TextView
+            android:id="@+id/main_define_tv_money"
             android:drawablePadding="@dimen/dp_10"
             android:drawableRight="@mipmap/icon_next_red"
             android:text="￥21.50"
@@ -316,6 +328,7 @@
             android:layout_marginTop="@dimen/dp_140" />
 
         <Button
+            android:id="@+id/main_define_btn_confirm"
             android:layout_marginLeft="@dimen/dp_5"
             android:layout_marginRight="@dimen/dp_5"
             android:layout_marginBottom="@dimen/dp_10"
@@ -326,6 +339,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_52" />
     </RelativeLayout>
+    <!--评价成功-->
     <ImageView
         android:visibility="gone"
         android:id="@+id/main_img_safety3"
@@ -336,6 +350,7 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_54" />
     <RelativeLayout
+        android:id="@+id/main_rl_safety3"
         android:visibility="gone"
         android:layout_marginRight="@dimen/dp_10"
         android:layout_marginLeft="@dimen/dp_10"
@@ -382,6 +397,7 @@
 
 
         <TextView
+            android:id="@+id/main_ratb_tv_money"
             android:drawablePadding="@dimen/dp_10"
             android:drawableRight="@mipmap/icon_next_red"
             android:text="￥21.50"
@@ -407,7 +423,7 @@
             android:textSize="@dimen/sp_14"
             />
         <RatingBar
-            android:id="@+id/ratb_ratingBar1"
+            android:id="@+id/main_ratb_ratingBar1"
             android:stepSize="1"
             android:rating="5"
             android:layout_width="wrap_content"

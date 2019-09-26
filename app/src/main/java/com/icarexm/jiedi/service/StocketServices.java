@@ -20,8 +20,12 @@ import com.icarexm.jiedi.Bean.DriverArriveBean;
 import com.icarexm.jiedi.Bean.LoginDemoBean;
 import com.icarexm.jiedi.Bean.ReceiptBean;
 import com.icarexm.jiedi.Bean.RefuseOrderBean;
+import com.icarexm.jiedi.Bean.ServicesMsgBean;
 import com.icarexm.jiedi.Bean.UserToDriverBean;
+import com.icarexm.jiedi.model.MainModel;
+import com.icarexm.jiedi.presenter.MainPresenter;
 import com.icarexm.jiedi.utils.RequstUrlUtils;
+import com.icarexm.jiedi.view.activity.MainActivity;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 
@@ -50,6 +54,9 @@ public class StocketServices extends Service {
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     private AMapLocationClientOption mLocationOption;
+    private double longitude;
+    private double latitude;
+    private String positionS;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -83,13 +90,15 @@ public class StocketServices extends Service {
                 if (aMapLocation.getErrorCode() == 0) {
                     //可在其中解析amapLocation获取相应内容。
                     aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
-                    aMapLocation.getLatitude();//获取纬度
-                    aMapLocation.getLongitude();//获取经度
+                    //获取纬度
+                    latitude = aMapLocation.getLatitude();
+                    //获取经度
+                    longitude = aMapLocation.getLongitude();
                     aMapLocation.getAccuracy();//获取精度信息
                     aMapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
                     aMapLocation.getCountry();//国家信息
                     aMapLocation.getProvince();//省信息
-                    aMapLocation.getCity();//城市信息
+                    aMapLocation.getProvince();//城市信息
                     aMapLocation.getDistrict();//城区信息
                     aMapLocation.getStreet();//街道信息
                     aMapLocation.getStreetNum();//街道门牌号信息
@@ -103,6 +112,7 @@ public class StocketServices extends Service {
                     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = new Date(aMapLocation.getTime());
                     String format = df.format(date);
+                    positionS = aMapLocation.getProvince()+aMapLocation.getProvince()+aMapLocation.getDistrict()+aMapLocation.getStreetNum();
                     Log.e("定位数据",format+aMapLocation.getStreetNum()+aMapLocation.getAoiName());
                 }else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
@@ -168,6 +178,28 @@ public class StocketServices extends Service {
                 super.onMessage(webSocket, text);
                 //收到服务器端传过来的消息text
                 Log.e("BackService1",text);
+                  try {
+                      Gson gson = new GsonBuilder().create();
+                      ServicesMsgBean servicesMsgBean = gson.fromJson(text, ServicesMsgBean.class);
+                      if (servicesMsgBean!=null){
+                          if (servicesMsgBean.getCode()==200){
+                              String event = servicesMsgBean.getEvent();
+                              if (event.equals("login")){
+                                  MainActivity.GetOrderStatus();
+                              }else if (event.equals("receipt")){
+                                 MainActivity.GetOrderStatus();
+                              }else if (event.equals("driver_arrive")){
+                                  MainActivity.GetOrderStatus();
+                              }else if (event.equals("passenger_boarding")){
+                                  MainActivity.GetOrderStatus();
+                              }else if (event.equals("arrive")){
+                                  MainActivity.GetOrderStatus();
+                              }
+                          }
+                      }
+                  }catch (Exception e){
+
+                  }
             }
 
             @Override
@@ -211,7 +243,7 @@ public class StocketServices extends Service {
     }
 
       //拒绝订单/取消订单
-        public void refuse_order(String orderId,String reason,String remark){
+    public void refuse_order(String orderId,String reason,String remark){
             String Receipts = new Gson().toJson(new RefuseOrderBean(token, "1", user_id,"refuse_order", new RefuseOrderBean.data(orderId, reason,remark)));
             boolean isSuccess = mWebSocket.send("");
             if (!isSuccess) {//长连接已断开
@@ -223,8 +255,8 @@ public class StocketServices extends Service {
         }
 
      // 司机到达
-      public void driver_arrive(String orderId,String positionE,String positionN){
-            String Receipts = new Gson().toJson(new DriverArriveBean(token, "1", user_id,"driver_arrive", new DriverArriveBean.data(orderId, positionE,positionN)));
+     public void driver_arrive(String orderId){
+            String Receipts = new Gson().toJson(new DriverArriveBean(token, "1", user_id,"driver_arrive", new DriverArriveBean.data(orderId, longitude+"",latitude+"")));
             boolean isSuccess = mWebSocket.send("");
             if (!isSuccess) {//长连接已断开
                 mWebSocket.cancel();//取消掉以前的长连接
@@ -234,9 +266,9 @@ public class StocketServices extends Service {
             }
         }
 
-    //乘客上车
-    public void  passenger_boarding(String orderId,String positionE,String positionN){
-        String Receipts = new Gson().toJson(new DriverArriveBean(token, "1", user_id,"passenger_boarding", new DriverArriveBean.data(orderId, positionE,positionN)));
+     //乘客上车
+     public void  passenger_boarding(String orderId){
+        String Receipts = new Gson().toJson(new DriverArriveBean(token, "1", user_id,"passenger_boarding", new DriverArriveBean.data(orderId, longitude+"",latitude+"")));
         boolean isSuccess = mWebSocket.send("");
         if (!isSuccess) {//长连接已断开
             mWebSocket.cancel();//取消掉以前的长连接
@@ -246,9 +278,9 @@ public class StocketServices extends Service {
         }
     }
 
-    // 到达目的地
-    public void arrive(String orderId,String positionE,String positionN,String position){
-        String Receipts = new Gson().toJson(new ReceiptBean(token, "1", user_id,"arrive", new ReceiptBean.data(orderId, positionE, positionN, position)));
+     // 到达目的地
+     public void arrive(String orderId){
+        String Receipts = new Gson().toJson(new ReceiptBean(token, "1", user_id,"arrive", new ReceiptBean.data(orderId, longitude+"",latitude+"", positionS)));
         boolean isSuccess = mWebSocket.send("");
         if (!isSuccess) {//长连接已断开
             mWebSocket.cancel();//取消掉以前的长连接
