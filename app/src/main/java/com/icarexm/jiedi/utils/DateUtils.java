@@ -379,4 +379,28 @@ public class DateUtils {
             return false;
     }
 
+
+    public static String Todays(){
+        String days="";
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month= calendar.get(Calendar.MONTH)+1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        if (month<10){
+            if (day<10){
+                days=year+"-0"+month+"-0"+day;
+            }else {
+                days=year+"-0"+month+"-"+day;
+            }
+        }else {
+            if (day<10){
+                days=year+"-"+month+"-0"+day;
+            }else {
+                days=year+"-"+month+"-"+day;
+            }
+
+        }
+        return days;
+    }
+
 }

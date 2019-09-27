@@ -30,6 +30,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/price_rl_cashOut"
         android:layout_marginTop="@dimen/dp_28"
         android:background="@mipmap/prcie_balance"
         android:layout_marginLeft="@dimen/dp_15"
@@ -57,7 +58,6 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/price_rl_cashout"
         android:layout_marginTop="@dimen/dp_30"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

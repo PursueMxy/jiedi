@@ -95,12 +95,12 @@
         android:layout_width="@dimen/dp_112"
         android:layout_height="@dimen/dp_30">
         <TextView
-            android:id="@+id/order_list_day_tv_time"
+            android:id="@+id/order_list_tv_time"
             android:layout_marginLeft="@dimen/dp_11"
             android:drawablePadding="@dimen/dp_10"
             android:drawableRight="@mipmap/icon_below"
             android:gravity="center"
-            android:text="2019-07-09"
+            android:text=""
             android:textColor="@color/ff5181fb"
             android:textSize="@dimen/dp_13"
             android:layout_width="wrap_content"

@@ -25,5 +25,11 @@ public class RequstUrlUtils {
 
         //  用户给司机星级评价
         public static  String evaluate=Host+"/api/order/evaluate";
+
+        //自动接单转态 /api/user/auto_order
+        public static String auto_order=Host+"/api/user/auto_order";
+
+        //订单列表 /api/order/index
+        public static String OrderIndex=Host+"/api/order/index";
     }
 }

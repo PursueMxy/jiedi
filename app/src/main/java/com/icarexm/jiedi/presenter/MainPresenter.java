@@ -2,6 +2,7 @@ package com.icarexm.jiedi.presenter;
 
 import android.util.Log;
 
+import com.icarexm.jiedi.Bean.OrderType1Bean;
 import com.icarexm.jiedi.Bean.OrderTypeBean;
 import com.icarexm.jiedi.contract.MainContract;
 import com.icarexm.jiedi.model.MainModel;
@@ -25,6 +26,11 @@ public class MainPresenter implements MainContract.Presenter {
     @Override
     public void SetOrderInfo( OrderTypeBean.DataBean data) {
         mView.UpdateUI(data);
+
+    }
+
+    public void SetOrderInfo1( OrderType1Bean.DataBean data) {
+        mView.UpdateUI1(data);
 
     }
 

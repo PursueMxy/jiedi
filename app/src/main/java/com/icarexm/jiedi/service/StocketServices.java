@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -18,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.icarexm.jiedi.Bean.DriverArriveBean;
 import com.icarexm.jiedi.Bean.LoginDemoBean;
+import com.icarexm.jiedi.Bean.PositionsBean;
 import com.icarexm.jiedi.Bean.ReceiptBean;
 import com.icarexm.jiedi.Bean.RefuseOrderBean;
 import com.icarexm.jiedi.Bean.ServicesMsgBean;
@@ -50,13 +52,15 @@ public class StocketServices extends Service {
     private String token="";
     private WebSocket mWebSocket;
     private String user_id;
-
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     private AMapLocationClientOption mLocationOption;
     private double longitude;
     private double latitude;
     private String positionS;
+    private float speed;
+    private String city;
+    private int HEART_BEAT_RATE=3000;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -108,6 +112,8 @@ public class StocketServices extends Service {
                     aMapLocation.getBuildingId();//获取当前室内定位的建筑物Id
                     aMapLocation.getFloor();//获取当前室内定位的楼层
                     aMapLocation.getGpsAccuracyStatus();//获取GPS的当前状态
+                    speed = aMapLocation.getSpeed();
+                    city = aMapLocation.getCity();
                     //获取定位时间
                     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = new Date(aMapLocation.getTime());
@@ -159,6 +165,7 @@ public class StocketServices extends Service {
         mLocationClient.startLocation();
     }
 
+    //开启长连接
     private void initSocket() {
         OkHttpClient client = new OkHttpClient.Builder().readTimeout(0, TimeUnit.MILLISECONDS).build();
         final Request request = new Request.Builder().url(RequstUrlUtils.URL.WEBSOCKET_HOST_AND_PORT).build();
@@ -170,7 +177,7 @@ public class StocketServices extends Service {
                 mWebSocket = webSocket;
                 String s = new Gson().toJson(new LoginDemoBean(token, "1", user_id,"login"));
                 mWebSocket.send(s);
-                Log.e("登录返回",s);
+                HeartBateHandler.postDelayed(HeartBateRundbler, HEART_BEAT_RATE);
             }
 
             @Override
@@ -185,7 +192,7 @@ public class StocketServices extends Service {
                           if (servicesMsgBean.getCode()==200){
                               String event = servicesMsgBean.getEvent();
                               if (event.equals("login")){
-                                  MainActivity.GetOrderStatus();
+//                                  MainActivity.GetOrderStatus();
                               }else if (event.equals("receipt")){
                                  MainActivity.GetOrderStatus();
                               }else if (event.equals("driver_arrive")){
@@ -193,6 +200,8 @@ public class StocketServices extends Service {
                               }else if (event.equals("passenger_boarding")){
                                   MainActivity.GetOrderStatus();
                               }else if (event.equals("arrive")){
+                                  MainActivity.GetOrderStatus();
+                              }else if (event.equals("refuse_order")){
                                   MainActivity.GetOrderStatus();
                               }
                           }
@@ -229,6 +238,15 @@ public class StocketServices extends Service {
         client.dispatcher().executorService().shutdown();
     }
 
+    //实时发送心跳包
+    Handler HeartBateHandler=new Handler();
+    Runnable HeartBateRundbler=new Runnable() {
+        @Override
+        public void run() {
+         position();
+         HeartBateHandler.postDelayed(this, HEART_BEAT_RATE);//每隔一定的时间，对长连接进行一次心跳检测
+        }
+    };
 
     //司机接单/抢单
     public void  Receipt(String orderId,String positionE,String positionN,String position) {
@@ -304,7 +322,7 @@ public class StocketServices extends Service {
 
     //更新自己位置 /api/socketobj/position
     public void position(){
-        String Receipts="";
+        String Receipts=new Gson().toJson(new PositionsBean(token, "1", user_id,"position",new PositionsBean.data(longitude+"",latitude+"",positionS,speed+"",city,"")));
         boolean isSuccess = mWebSocket.send("");
         if (!isSuccess) {//长连接已断开
             mWebSocket.cancel();//取消掉以前的长连接

@@ -1,5 +1,6 @@
 package com.icarexm.jiedi.contract;
 
+import com.icarexm.jiedi.Bean.OrderType1Bean;
 import com.icarexm.jiedi.Bean.OrderTypeBean;
 import com.icarexm.jiedi.presenter.MainPresenter;
 
@@ -11,6 +12,7 @@ public interface MainContract {
 
     interface View {
         void UpdateUI(OrderTypeBean.DataBean data);
+        void UpdateUI1(OrderType1Bean.DataBean data);
     }
 
     interface Presenter {

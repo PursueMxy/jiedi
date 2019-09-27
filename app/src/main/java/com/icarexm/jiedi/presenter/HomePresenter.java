@@ -22,4 +22,14 @@ public class HomePresenter implements HomeContract.Presenter {
     public  void SetOrder(OrderListBean.DataBean data){
         mView.UpdateOrderList(data);
     }
+
+    @Override
+    public void GetAutoOrder(String token, String status) {
+        HomeModel.PostAutoOrder(this,token,status);
+    }
+
+
+    public  void SetAutoOrder(String content){
+        mView.ShowToast(content);
+    }
 }

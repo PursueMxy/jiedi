@@ -72,4 +72,5 @@ dependencies {
 
     //recyclerview
     implementation 'com.zhouyou:easyrecyclerview:1.0.5'
+
 }

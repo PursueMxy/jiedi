@@ -12,6 +12,8 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 
+
+
 public class LoginModel implements LoginContract.Model {
 
     public void  PostLogin(LoginPresenter loginPresenter, String account, String password, String type){

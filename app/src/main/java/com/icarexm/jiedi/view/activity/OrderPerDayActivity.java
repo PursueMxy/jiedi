@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import com.icarexm.jiedi.Bean.OrderListOneBean;
 import com.icarexm.jiedi.R;
 import com.icarexm.jiedi.adapter.HomeAdapter;
 import com.icarexm.jiedi.adapter.OrderPerDayAdapter;
@@ -39,7 +40,7 @@ public class OrderPerDayActivity extends AppCompatActivity {
     XRecyclerView mRecyclerView;
     @BindView(R.id.order_per_day_tv_time)
     TextView tv_time;
-    private List<String> list=new ArrayList<>();
+    private List<OrderListOneBean.DataBean.OrderBean> list=new ArrayList<>();
     private Context mContext;
     private LinearLayoutManager mLayoutManager;
     private OrderPerDayAdapter orderPerDayAdapter;
@@ -59,14 +60,6 @@ public class OrderPerDayActivity extends AppCompatActivity {
     }
 
     private void InitUI() {
-        list.add("102");
-        list.add("112");
-        list.add("122");
-        list.add("132");
-        list.add("142");
-        list.add("152");
-        list.add("162");
-        list.add("172");
         mRecyclerView.setNestedScrollingEnabled(false);
         mLayoutManager = new LinearLayoutManager(mContext);
         orderPerDayAdapter = new OrderPerDayAdapter(this);

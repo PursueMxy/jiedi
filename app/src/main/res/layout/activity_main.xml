@@ -93,6 +93,7 @@
             />
 
         <ImageView
+            android:id="@+id/main_img_type"
             android:src="@mipmap/icon_plane1"
             android:layout_alignParentRight="true"
             android:layout_marginRight="@dimen/dp_16"
@@ -160,13 +161,14 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_216">
         <TextView
+            android:id="@+id/main_tv_statusName"
             android:drawableLeft="@mipmap/icon_alarm"
             android:drawablePadding="@dimen/dp_10"
             android:layout_marginLeft="@dimen/dp_15"
             android:layout_marginTop="@dimen/dp_10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="现在出发"
+            android:text=""
             android:textColor="@color/black"
             android:textSize="@dimen/sp_14"
             />
@@ -178,13 +180,14 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_2"/>
         <TextView
+            android:id="@+id/main_tv_startAddress"
             android:drawableLeft="@mipmap/icon_location_blue"
             android:drawablePadding="@dimen/dp_10"
             android:layout_marginLeft="@dimen/dp_15"
             android:layout_marginTop="@dimen/dp_10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="厦门国贸大厦西北侧"
+            android:text=""
             android:textColor="@color/black"
             android:textSize="@dimen/sp_14"
             />
@@ -196,13 +199,14 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_2"/>
         <TextView
+            android:id="@+id/main_tv_terminal"
             android:drawableLeft="@mipmap/icon_location_red"
             android:drawablePadding="@dimen/dp_10"
             android:layout_marginLeft="@dimen/dp_15"
             android:layout_marginTop="@dimen/dp_10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="厦门火车站"
+            android:text=""
             android:textColor="@color/black"
             android:textSize="@dimen/sp_14"
             />
@@ -297,7 +301,7 @@
             android:id="@+id/main_define_tv_money"
             android:drawablePadding="@dimen/dp_10"
             android:drawableRight="@mipmap/icon_next_red"
-            android:text="￥21.50"
+            android:text=""
             android:textSize="@dimen/sp_28"
             android:textColor="@color/ffff383f"
             android:layout_alignParentRight="true"

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.icarexm.jiedi.Bean.DriverArriveBean;
+import com.icarexm.jiedi.Bean.OrderType1Bean;
 import com.icarexm.jiedi.Bean.OrderTypeBean;
 import com.icarexm.jiedi.contract.MainContract;
 import com.icarexm.jiedi.presenter.MainPresenter;
@@ -24,10 +25,8 @@ public class MainModel implements MainContract.Model {
                     @Override
                     public void onSuccess(Response<String> response) {
                         String body = response.body();
-                        Log.e("订单信息吧",body);
                         Gson gson = new GsonBuilder().create();
-//                        try {
-
+                        try {
                             OrderTypeBean orderTypeBean = gson.fromJson(body, OrderTypeBean.class);
                             if (orderTypeBean != null) {
                                 if (orderTypeBean.getCode() == 200) {
@@ -37,7 +36,17 @@ public class MainModel implements MainContract.Model {
                                     }
                                 }
                             }
-//                        }catch (Exception e){}
+                        }catch (Exception e){
+                            OrderType1Bean orderType1Bean = gson.fromJson(body, OrderType1Bean.class);
+                            if (orderType1Bean!=null){
+                                if (orderType1Bean.getCode()==200){
+                                    if (orderType1Bean.getData()!=null){
+                                        OrderType1Bean.DataBean data = orderType1Bean.getData();
+                                        mainPresenter.SetOrderInfo1(data);
+                                    }
+                                }
+                            }
+                        }
                     }
                 });
     }
@@ -53,8 +62,10 @@ public class MainModel implements MainContract.Model {
                     @Override
                     public void onSuccess(Response<String> response) {
                    Log.e("评价结果",response.body());
+
                     }
                 });
 
     }
+
 }

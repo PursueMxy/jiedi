@@ -14,6 +14,7 @@
     <drawable name="f5181fb">#FF5181fb</drawable>
     <drawable name="ffefeff4">#ffefeff4</drawable>
     <drawable name="fff2f2f2">#fff2f2f2</drawable>
+    <color name="ff000000">#00ffffff</color>
 
     <dimen name="left_size">@dimen/dp_15</dimen>
     <dimen name="Right_size">@dimen/dp_15</dimen>

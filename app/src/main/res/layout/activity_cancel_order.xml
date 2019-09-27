@@ -117,6 +117,7 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/cancel_order_btn_confirm"
         android:layout_marginTop="@dimen/dp_100"
         android:background="@color/ff5181fb"
         android:text="确认"

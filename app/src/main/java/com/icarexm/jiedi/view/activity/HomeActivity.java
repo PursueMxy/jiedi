@@ -6,28 +6,34 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.autonavi.rtbt.IFrameForRTBT;
 import com.icarexm.jiedi.Bean.OrderListBean;
 import com.icarexm.jiedi.R;
 import com.icarexm.jiedi.adapter.HomeAdapter;
 import com.icarexm.jiedi.contract.HomeContract;
 import com.icarexm.jiedi.custView.KeepCountdownView;
 import com.icarexm.jiedi.presenter.HomePresenter;
+import com.icarexm.jiedi.service.StocketServices;
 import com.icarexm.jiedi.utils.MxyUtils;
 import com.icarexm.jiedi.utils.RequstUrlUtils;
 import com.icarexm.jiedi.utils.ToastUtils;
@@ -52,6 +58,12 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     XRecyclerView mRecyclerView;
     @BindView(R.id.home_btn_gainorder)
     Button btn_gainorder;
+    @BindView(R.id.home_tv_receipt_number)
+    TextView tv_receipt_number;
+    @BindView(R.id.home_tv_receipt_price)
+    TextView tv_receipt_price;
+    @BindView(R.id.home_tv_receipt_evaluate)
+    TextView tv_receipt_evaluate;
 
 
     private List<OrderListBean.DataBean.OrderBean> list=new ArrayList<>();
@@ -73,20 +85,43 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private double latitude=0;
     private HomePresenter homePresenter;
 
+    public static StocketServices stocketService;
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            stocketService = ((StocketServices.LocalBinder) service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        mContext = getApplicationContext();
         token = sp.getString("token", "");
         user_id = sp.getString("user_id", "");
         ButterKnife.bind(this);
-        mContext = getApplicationContext();
         InitUI();
         homePresenter = new HomePresenter(this);
         SetLocations();
         orderHandler.postDelayed(orderRunnable,200);
+        initService();
+    }
+
+    //开启服务
+    private void initService() {
+        Intent bluetoothIntent;
+        if (stocketService == null) {
+            bluetoothIntent = new Intent(HomeActivity.this, StocketServices.class);
+            bindService(bluetoothIntent, serviceConnection, BIND_AUTO_CREATE);
+        }
     }
 
     private void SetLocations() {
@@ -131,11 +166,12 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             @Override
             public void onClick(View view) {
                 alertDialog.dismiss();
+                homePresenter.GetAutoOrder(token,"0");
                 btn_gainorder.setText("接单");
                 btn_gainorder.setBackground(getResources().getDrawable(R.drawable.btn_login));
                 orderHandler.removeCallbacks(orderRunnable);
                 Intent intent = new Intent(mContext, MainActivity.class);
-                intent.putExtra("order_id","155");
+                intent.putExtra("order_id","162");
                 intent.putExtra("positionE",longitude+"");
                 intent.putExtra("positionN",latitude+"");
                 intent.putExtra("position",city);
@@ -173,7 +209,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 homeAdapter .notifyDataSetChanged();
                 //加载更多
                 mRecyclerView.loadMoreComplete();//加载动画完成
-               mRecyclerView.setNoMore(true);//数据加载完成
+                mRecyclerView.setNoMore(true);//数据加载完成
             }
         });
         mRecyclerView.setAdapter(homeAdapter );
@@ -203,33 +239,49 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         });
     }
 
+    //开启和关闭接单功能
+    public void ShowToast(String content){
+        if (content.equals("1")){
+            ToastUtils.showToast(mContext,"开启自动接收订单成功");
+            btn_gainorder.setText("停止接单");
+            btn_gainorder.setBackground(getResources().getDrawable(R.drawable.btn_back));
+        }else {
+            ToastUtils.showToast(mContext,"关闭自动接收订单成功");
+            btn_gainorder.setText("接单");
+            btn_gainorder.setBackground(getResources().getDrawable(R.drawable.btn_login));
+        }
+    }
 
-    @OnClick({R.id.home_btn_gainorder,R.id.home_img_personal})
+    @OnClick({R.id.home_btn_gainorder,R.id.home_img_personal,R.id.home_img_message})
     public void onViewClicked(View view){
         switch (view.getId()) {
             case R.id.home_btn_gainorder:
                 String btncontent = btn_gainorder.getText().toString();
                 if (btncontent.equals("接单")){
-                    btn_gainorder.setText("停止接单");
-                    btn_gainorder.setBackground(getResources().getDrawable(R.drawable.btn_back));
+                    homePresenter.GetAutoOrder(token,"1");
                     ShowDialog();
                 }else {
-                    btn_gainorder.setText("接单");
-                    btn_gainorder.setBackground(getResources().getDrawable(R.drawable.btn_login));
-                    alertDialog.dismiss();
+                    homePresenter.GetAutoOrder(token,"0");
+//                    alertDialog.dismiss();
                 }
                 break;
             case R.id.home_img_personal:
                 startActivity(new Intent(mContext,PersonalActivity.class));
+                break;
+            case R.id.home_img_message:
+                startActivity(new Intent(mContext,MessageCenterActivity.class));
                 break;
                 default:
                     break;
         }
         }
 
-        //刷新订单列表页面
+    //刷新订单列表页面
     public void UpdateOrderList(OrderListBean.DataBean data){
         if (data!=null) {
+            tv_receipt_number.setText(data.getOrder_count()+"");
+            tv_receipt_price.setText(data.getToday_money()+"元");
+            tv_receipt_evaluate.setText(data.getUser_evaluate()+"");
             list.clear();
             List<OrderListBean.DataBean.OrderBean> order = data.getOrder();
             list.addAll(order);
@@ -269,9 +321,21 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode==KeyEvent.KEYCODE_BACK){
+            closeService();
             finish();
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    //关闭长连接
+    private void closeService() {
+        if (stocketService != null) {
+            try {
+                unbindService(serviceConnection);
+                stocketService = null;
+            } catch (Exception e) {
+            }
+        }
     }
     //声明定位回调监听器
     public AMapLocationListener mLocationListener = new AMapLocationListener() {

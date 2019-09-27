@@ -1,13 +1,14 @@
 package com.icarexm.jiedi.Bean;
 
-public class OrderTypeBean {
+import java.util.List;
 
+public class OrderType1Bean {
 
     /**
      * code : 200
      * msg : OK
-     * time : 1569551208
-     * data : {"id":157,"type":"0","driver_id":1,"user_id":3,"startingpointE":"118.11879638672","startingpointN":"24.475664333767","startingpoint":"梧村街道厦门国贸大厦","destinationE":"118.164292","destinationN":"24.516554","destination":"五缘湾","status":"6","createtime":1569549921,"estimatedeparturetime":1569549840,"acceptance_time":1569550853,"driver_arrivaltime":1569551058,"departuretime":1569551062,"arrivaltime":1569551064,"endtime":null,"updatetime":1569551077,"meal_id":null,"money":"9.00","start_money":"9.00","mileage_money":"0.00","timecost":"0.00","longdistanceexpenses":"0.00","wait_money":"0.00","free_kilometre":3,"free_time":6,"travel_time":0,"travel_interval_time":"10:22-10:24","wait_time":0,"mileage":"0","city":"厦门市","estimated_mileage":8.484,"coupon_id":null,"paymoney":"9.00","mobile":"13045914551","order_trip_id":1084,"budget":"28.128","service_type":"0","createddatetime":"10:05:21","pay_type":"","commission_platform":"0.27","reason":"","estimated_time":1380,"refuse_user":null,"arrive_position":"福建省福建省思明区390","arrive_positionN":"24.475661","arrive_positionE":"118.119219","price_info_json":"[{\"title\":\"\\u8d77\\u6b65\\u4ef7\",\"money\":\"9\\u5143\"},{\"title\":\"\\u91cc\\u7a0b\\u8d39(0\\u516c\\u91cc)\",\"money\":\"9\\u5143\",\"info\":[{\"title\":\"\\u8d77\\u6b65\\u91cc\\u7a0b(3\\u516c\\u91cc)\",\"money\":\"\"},{\"title\":\"\\u666e\\u901a\\u65f6\\u6bb5(-3\\u516c\\u91cc)\",\"money\":\"9\\u5143\"}]}]","out_trade_no":null,"flightno":"","refuse_drver_id":null,"odometerperiod":"普通时段","trafficViolation":null,"coupon_money":"0.00","driver_money":"8.0946","driverInfo":{"nickname":"asd","drivingage":1,"mobile":"18756070310","avatar":"http://jdcx.icarefz.cn/uploads/20190820/6e0994dc64a12baf44bbfbbaaba02aad.jpg","id":1,"licenseplate":"asd","order_count":49},"time_of_appointment":"2019-09-27 10:04:00am","driver_evaluate":"4.8","driver_score_order":"0","userInfo":{"nickname":"13045914551","mobile":"13045914551","avatar":"http://jdcx.icarefz.cn/uploads/20190826/5bf582a4efdbc63c778017f6a64badc6.jpg","id":3},"user_evaluate":"4.3","user_score_order":"0","info_submited":0,"score":"5"}
+     * time : 1569550093
+     * data : {"id":157,"type":"0","driver_id":null,"user_id":3,"startingpointE":"118.11879638672","startingpointN":"24.475664333767","startingpoint":"梧村街道厦门国贸大厦","destinationE":"118.164292","destinationN":"24.516554","destination":"五缘湾","status":"0","createtime":1569549921,"estimatedeparturetime":1569549840,"acceptance_time":null,"driver_arrivaltime":null,"departuretime":null,"arrivaltime":null,"endtime":null,"updatetime":1569549921,"meal_id":null,"money":null,"start_money":null,"mileage_money":null,"timecost":null,"longdistanceexpenses":null,"wait_money":null,"free_kilometre":null,"free_time":null,"travel_time":0,"travel_interval_time":null,"wait_time":0,"mileage":null,"city":"厦门市","estimated_mileage":8.484,"coupon_id":null,"paymoney":null,"mobile":"13045914551","order_trip_id":1084,"budget":"28.128","service_type":"0","createddatetime":"10:05:21","pay_type":"","commission_platform":"0.00","reason":"","estimated_time":1380,"refuse_user":null,"arrive_position":null,"arrive_positionN":null,"arrive_positionE":null,"price_info_json":null,"out_trade_no":null,"flightno":"","refuse_drver_id":null,"odometerperiod":null,"trafficViolation":null,"coupon_money":"0.00","driver_money":null,"driverInfo":[],"time_of_appointment":"2019-09-27 10:04:00am","userInfo":{"nickname":"13045914551","mobile":"13045914551","avatar":"http://jdcx.icarefz.cn/uploads/20190826/5bf582a4efdbc63c778017f6a64badc6.jpg","id":3},"user_evaluate":"4.3","user_score_order":"0","info_submited":0,"score":""}
      */
 
     private int code;
@@ -51,7 +52,7 @@ public class OrderTypeBean {
         /**
          * id : 157
          * type : 0
-         * driver_id : 1
+         * driver_id : null
          * user_id : 3
          * startingpointE : 118.11879638672
          * startingpointN : 24.475664333767
@@ -59,67 +60,65 @@ public class OrderTypeBean {
          * destinationE : 118.164292
          * destinationN : 24.516554
          * destination : 五缘湾
-         * status : 6
+         * status : 0
          * createtime : 1569549921
          * estimatedeparturetime : 1569549840
-         * acceptance_time : 1569550853
-         * driver_arrivaltime : 1569551058
-         * departuretime : 1569551062
-         * arrivaltime : 1569551064
+         * acceptance_time : null
+         * driver_arrivaltime : null
+         * departuretime : null
+         * arrivaltime : null
          * endtime : null
-         * updatetime : 1569551077
+         * updatetime : 1569549921
          * meal_id : null
-         * money : 9.00
-         * start_money : 9.00
-         * mileage_money : 0.00
-         * timecost : 0.00
-         * longdistanceexpenses : 0.00
-         * wait_money : 0.00
-         * free_kilometre : 3
-         * free_time : 6
+         * money : null
+         * start_money : null
+         * mileage_money : null
+         * timecost : null
+         * longdistanceexpenses : null
+         * wait_money : null
+         * free_kilometre : null
+         * free_time : null
          * travel_time : 0
-         * travel_interval_time : 10:22-10:24
+         * travel_interval_time : null
          * wait_time : 0
-         * mileage : 0
+         * mileage : null
          * city : 厦门市
          * estimated_mileage : 8.484
          * coupon_id : null
-         * paymoney : 9.00
+         * paymoney : null
          * mobile : 13045914551
          * order_trip_id : 1084
          * budget : 28.128
          * service_type : 0
          * createddatetime : 10:05:21
          * pay_type :
-         * commission_platform : 0.27
+         * commission_platform : 0.00
          * reason :
          * estimated_time : 1380
          * refuse_user : null
-         * arrive_position : 福建省福建省思明区390
-         * arrive_positionN : 24.475661
-         * arrive_positionE : 118.119219
-         * price_info_json : [{"title":"\u8d77\u6b65\u4ef7","money":"9\u5143"},{"title":"\u91cc\u7a0b\u8d39(0\u516c\u91cc)","money":"9\u5143","info":[{"title":"\u8d77\u6b65\u91cc\u7a0b(3\u516c\u91cc)","money":""},{"title":"\u666e\u901a\u65f6\u6bb5(-3\u516c\u91cc)","money":"9\u5143"}]}]
+         * arrive_position : null
+         * arrive_positionN : null
+         * arrive_positionE : null
+         * price_info_json : null
          * out_trade_no : null
          * flightno :
          * refuse_drver_id : null
-         * odometerperiod : 普通时段
+         * odometerperiod : null
          * trafficViolation : null
          * coupon_money : 0.00
-         * driver_money : 8.0946
-         * driverInfo : {"nickname":"asd","drivingage":1,"mobile":"18756070310","avatar":"http://jdcx.icarefz.cn/uploads/20190820/6e0994dc64a12baf44bbfbbaaba02aad.jpg","id":1,"licenseplate":"asd","order_count":49}
+         * driver_money : null
+         * driverInfo : []
          * time_of_appointment : 2019-09-27 10:04:00am
-         * driver_evaluate : 4.8
-         * driver_score_order : 0
          * userInfo : {"nickname":"13045914551","mobile":"13045914551","avatar":"http://jdcx.icarefz.cn/uploads/20190826/5bf582a4efdbc63c778017f6a64badc6.jpg","id":3}
          * user_evaluate : 4.3
          * user_score_order : 0
          * info_submited : 0
-         * score : 5
+         * score :
          */
 
         private int id;
         private String type;
-        private int driver_id;
+        private Object driver_id;
         private int user_id;
         private String startingpointE;
         private String startingpointN;
@@ -130,29 +129,29 @@ public class OrderTypeBean {
         private String status;
         private int createtime;
         private int estimatedeparturetime;
-        private int acceptance_time;
-        private int driver_arrivaltime;
-        private int departuretime;
-        private int arrivaltime;
+        private Object acceptance_time;
+        private Object driver_arrivaltime;
+        private Object departuretime;
+        private Object arrivaltime;
         private Object endtime;
         private int updatetime;
         private Object meal_id;
-        private String money;
-        private String start_money;
-        private String mileage_money;
-        private String timecost;
-        private String longdistanceexpenses;
-        private String wait_money;
+        private Object money;
+        private Object start_money;
+        private Object mileage_money;
+        private Object timecost;
+        private Object longdistanceexpenses;
+        private Object wait_money;
         private int free_kilometre;
-        private int free_time;
+        private Object free_time;
         private int travel_time;
-        private String travel_interval_time;
+        private Object travel_interval_time;
         private int wait_time;
-        private String mileage;
+        private Object mileage;
         private String city;
         private double estimated_mileage;
         private Object coupon_id;
-        private String paymoney;
+        private Object paymoney;
         private String mobile;
         private int order_trip_id;
         private String budget;
@@ -163,26 +162,24 @@ public class OrderTypeBean {
         private String reason;
         private int estimated_time;
         private Object refuse_user;
-        private String arrive_position;
-        private String arrive_positionN;
-        private String arrive_positionE;
-        private String price_info_json;
+        private Object arrive_position;
+        private Object arrive_positionN;
+        private Object arrive_positionE;
+        private Object price_info_json;
         private Object out_trade_no;
         private String flightno;
         private Object refuse_drver_id;
-        private String odometerperiod;
+        private Object odometerperiod;
         private Object trafficViolation;
         private String coupon_money;
-        private String driver_money;
-        private DriverInfoBean driverInfo;
+        private Object driver_money;
         private String time_of_appointment;
-        private String driver_evaluate;
-        private String driver_score_order;
         private UserInfoBean userInfo;
         private String user_evaluate;
         private String user_score_order;
         private int info_submited;
         private String score;
+        private List<?> driverInfo;
 
         public int getId() {
             return id;
@@ -200,11 +197,11 @@ public class OrderTypeBean {
             this.type = type;
         }
 
-        public int getDriver_id() {
+        public Object getDriver_id() {
             return driver_id;
         }
 
-        public void setDriver_id(int driver_id) {
+        public void setDriver_id(Object driver_id) {
             this.driver_id = driver_id;
         }
 
@@ -288,35 +285,35 @@ public class OrderTypeBean {
             this.estimatedeparturetime = estimatedeparturetime;
         }
 
-        public int getAcceptance_time() {
+        public Object getAcceptance_time() {
             return acceptance_time;
         }
 
-        public void setAcceptance_time(int acceptance_time) {
+        public void setAcceptance_time(Object acceptance_time) {
             this.acceptance_time = acceptance_time;
         }
 
-        public int getDriver_arrivaltime() {
+        public Object getDriver_arrivaltime() {
             return driver_arrivaltime;
         }
 
-        public void setDriver_arrivaltime(int driver_arrivaltime) {
+        public void setDriver_arrivaltime(Object driver_arrivaltime) {
             this.driver_arrivaltime = driver_arrivaltime;
         }
 
-        public int getDeparturetime() {
+        public Object getDeparturetime() {
             return departuretime;
         }
 
-        public void setDeparturetime(int departuretime) {
+        public void setDeparturetime(Object departuretime) {
             this.departuretime = departuretime;
         }
 
-        public int getArrivaltime() {
+        public Object getArrivaltime() {
             return arrivaltime;
         }
 
-        public void setArrivaltime(int arrivaltime) {
+        public void setArrivaltime(Object arrivaltime) {
             this.arrivaltime = arrivaltime;
         }
 
@@ -344,51 +341,51 @@ public class OrderTypeBean {
             this.meal_id = meal_id;
         }
 
-        public String getMoney() {
+        public Object getMoney() {
             return money;
         }
 
-        public void setMoney(String money) {
+        public void setMoney(Object money) {
             this.money = money;
         }
 
-        public String getStart_money() {
+        public Object getStart_money() {
             return start_money;
         }
 
-        public void setStart_money(String start_money) {
+        public void setStart_money(Object start_money) {
             this.start_money = start_money;
         }
 
-        public String getMileage_money() {
+        public Object getMileage_money() {
             return mileage_money;
         }
 
-        public void setMileage_money(String mileage_money) {
+        public void setMileage_money(Object mileage_money) {
             this.mileage_money = mileage_money;
         }
 
-        public String getTimecost() {
+        public Object getTimecost() {
             return timecost;
         }
 
-        public void setTimecost(String timecost) {
+        public void setTimecost(Object timecost) {
             this.timecost = timecost;
         }
 
-        public String getLongdistanceexpenses() {
+        public Object getLongdistanceexpenses() {
             return longdistanceexpenses;
         }
 
-        public void setLongdistanceexpenses(String longdistanceexpenses) {
+        public void setLongdistanceexpenses(Object longdistanceexpenses) {
             this.longdistanceexpenses = longdistanceexpenses;
         }
 
-        public String getWait_money() {
+        public Object getWait_money() {
             return wait_money;
         }
 
-        public void setWait_money(String wait_money) {
+        public void setWait_money(Object wait_money) {
             this.wait_money = wait_money;
         }
 
@@ -400,11 +397,11 @@ public class OrderTypeBean {
             this.free_kilometre = free_kilometre;
         }
 
-        public int getFree_time() {
+        public Object getFree_time() {
             return free_time;
         }
 
-        public void setFree_time(int free_time) {
+        public void setFree_time(Object free_time) {
             this.free_time = free_time;
         }
 
@@ -416,11 +413,11 @@ public class OrderTypeBean {
             this.travel_time = travel_time;
         }
 
-        public String getTravel_interval_time() {
+        public Object getTravel_interval_time() {
             return travel_interval_time;
         }
 
-        public void setTravel_interval_time(String travel_interval_time) {
+        public void setTravel_interval_time(Object travel_interval_time) {
             this.travel_interval_time = travel_interval_time;
         }
 
@@ -432,11 +429,11 @@ public class OrderTypeBean {
             this.wait_time = wait_time;
         }
 
-        public String getMileage() {
+        public Object getMileage() {
             return mileage;
         }
 
-        public void setMileage(String mileage) {
+        public void setMileage(Object mileage) {
             this.mileage = mileage;
         }
 
@@ -464,11 +461,11 @@ public class OrderTypeBean {
             this.coupon_id = coupon_id;
         }
 
-        public String getPaymoney() {
+        public Object getPaymoney() {
             return paymoney;
         }
 
-        public void setPaymoney(String paymoney) {
+        public void setPaymoney(Object paymoney) {
             this.paymoney = paymoney;
         }
 
@@ -552,35 +549,35 @@ public class OrderTypeBean {
             this.refuse_user = refuse_user;
         }
 
-        public String getArrive_position() {
+        public Object getArrive_position() {
             return arrive_position;
         }
 
-        public void setArrive_position(String arrive_position) {
+        public void setArrive_position(Object arrive_position) {
             this.arrive_position = arrive_position;
         }
 
-        public String getArrive_positionN() {
+        public Object getArrive_positionN() {
             return arrive_positionN;
         }
 
-        public void setArrive_positionN(String arrive_positionN) {
+        public void setArrive_positionN(Object arrive_positionN) {
             this.arrive_positionN = arrive_positionN;
         }
 
-        public String getArrive_positionE() {
+        public Object getArrive_positionE() {
             return arrive_positionE;
         }
 
-        public void setArrive_positionE(String arrive_positionE) {
+        public void setArrive_positionE(Object arrive_positionE) {
             this.arrive_positionE = arrive_positionE;
         }
 
-        public String getPrice_info_json() {
+        public Object getPrice_info_json() {
             return price_info_json;
         }
 
-        public void setPrice_info_json(String price_info_json) {
+        public void setPrice_info_json(Object price_info_json) {
             this.price_info_json = price_info_json;
         }
 
@@ -608,11 +605,11 @@ public class OrderTypeBean {
             this.refuse_drver_id = refuse_drver_id;
         }
 
-        public String getOdometerperiod() {
+        public Object getOdometerperiod() {
             return odometerperiod;
         }
 
-        public void setOdometerperiod(String odometerperiod) {
+        public void setOdometerperiod(Object odometerperiod) {
             this.odometerperiod = odometerperiod;
         }
 
@@ -632,20 +629,12 @@ public class OrderTypeBean {
             this.coupon_money = coupon_money;
         }
 
-        public String getDriver_money() {
+        public Object getDriver_money() {
             return driver_money;
         }
 
-        public void setDriver_money(String driver_money) {
+        public void setDriver_money(Object driver_money) {
             this.driver_money = driver_money;
-        }
-
-        public DriverInfoBean getDriverInfo() {
-            return driverInfo;
-        }
-
-        public void setDriverInfo(DriverInfoBean driverInfo) {
-            this.driverInfo = driverInfo;
         }
 
         public String getTime_of_appointment() {
@@ -654,22 +643,6 @@ public class OrderTypeBean {
 
         public void setTime_of_appointment(String time_of_appointment) {
             this.time_of_appointment = time_of_appointment;
-        }
-
-        public String getDriver_evaluate() {
-            return driver_evaluate;
-        }
-
-        public void setDriver_evaluate(String driver_evaluate) {
-            this.driver_evaluate = driver_evaluate;
-        }
-
-        public String getDriver_score_order() {
-            return driver_score_order;
-        }
-
-        public void setDriver_score_order(String driver_score_order) {
-            this.driver_score_order = driver_score_order;
         }
 
         public UserInfoBean getUserInfo() {
@@ -712,80 +685,12 @@ public class OrderTypeBean {
             this.score = score;
         }
 
-        public static class DriverInfoBean {
-            /**
-             * nickname : asd
-             * drivingage : 1
-             * mobile : 18756070310
-             * avatar : http://jdcx.icarefz.cn/uploads/20190820/6e0994dc64a12baf44bbfbbaaba02aad.jpg
-             * id : 1
-             * licenseplate : asd
-             * order_count : 49
-             */
+        public List<?> getDriverInfo() {
+            return driverInfo;
+        }
 
-            private String nickname;
-            private int drivingage;
-            private String mobile;
-            private String avatar;
-            private int id;
-            private String licenseplate;
-            private int order_count;
-
-            public String getNickname() {
-                return nickname;
-            }
-
-            public void setNickname(String nickname) {
-                this.nickname = nickname;
-            }
-
-            public int getDrivingage() {
-                return drivingage;
-            }
-
-            public void setDrivingage(int drivingage) {
-                this.drivingage = drivingage;
-            }
-
-            public String getMobile() {
-                return mobile;
-            }
-
-            public void setMobile(String mobile) {
-                this.mobile = mobile;
-            }
-
-            public String getAvatar() {
-                return avatar;
-            }
-
-            public void setAvatar(String avatar) {
-                this.avatar = avatar;
-            }
-
-            public int getId() {
-                return id;
-            }
-
-            public void setId(int id) {
-                this.id = id;
-            }
-
-            public String getLicenseplate() {
-                return licenseplate;
-            }
-
-            public void setLicenseplate(String licenseplate) {
-                this.licenseplate = licenseplate;
-            }
-
-            public int getOrder_count() {
-                return order_count;
-            }
-
-            public void setOrder_count(int order_count) {
-                this.order_count = order_count;
-            }
+        public void setDriverInfo(List<?> driverInfo) {
+            this.driverInfo = driverInfo;
         }
 
         public static class UserInfoBean {

@@ -48,7 +48,7 @@ public class PriceActivity extends AppCompatActivity {
         });
     }
 
-    @OnClick({R.id.price_tv_callphone,R.id.price_rl_cashout})
+    @OnClick({R.id.price_tv_callphone,R.id.price_rl_cashOut})
     public void onViewClicked(View view){
         switch (view.getId()) {
             case R.id.price_tv_callphone:
@@ -57,7 +57,7 @@ public class PriceActivity extends AppCompatActivity {
                         .create();
                 alertDialog.show();
                 break;
-            case R.id.price_rl_cashout:
+            case R.id.price_rl_cashOut:
                 startActivity(new Intent(mContext,CashOutActivity.class));
                 break;
         }
