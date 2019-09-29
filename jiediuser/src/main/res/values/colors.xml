@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="white">#FFFFFFFF</color>
+    <color name="ff707070">#ff707070</color>
+    <color name="ff5181fb">#ff5181fb</color>
+    <color name="ffff383f">#ffff383f</color>
+    <color name="e6f2f2f2">#e6f2f2f2</color>
+    <color name="black">#ff000000</color>
+    <color name="layout_bg">#FFF5F5F5</color>
+    <color name="ff000000">#00ffffff</color>
+    <color name="b3b3b3">#b3b3b3</color>
+    <drawable name="ffb2c7fb">#ffb2c7fb</drawable>
+    <drawable name="f5181fb">#FF5181fb</drawable>
+    <drawable name="ffefeff4">#ffefeff4</drawable>
+    <drawable name="fff2f2f2">#fff2f2f2</drawable>
+    <drawable name="TopBg">#FFFFFF</drawable>
+    <drawable name="ffced6e2">#ffced6e2</drawable>
+    <color name="gray">#ddd</color>
+    <color name="V333333">#333333</color>
+    <color name="ff5000">#ff5000</color>
+    <color name="v666666">#666666</color>
+    <color name="veeeeee">#eeeeee</color>
+    <dimen name="left_size">@dimen/dp_24</dimen>
+    <dimen name="right_size">@dimen/dp_24</dimen>
+    <dimen name="top_height">@dimen/dp_45</dimen>
+</resources>

@@ -18,6 +18,7 @@ import com.hjq.permissions.XXPermissions;
 import com.icarexm.jiedi.Bean.LoginBean;
 import com.icarexm.jiedi.R;
 import com.icarexm.jiedi.contract.LoginContract;
+import com.icarexm.jiedi.custView.CircleImageView;
 import com.icarexm.jiedi.presenter.LoginPresenter;
 import com.icarexm.jiedi.utils.ToastUtils;
 
@@ -53,7 +54,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     @BindView(R.id.login_edt_password)
     EditText edt_password;
     @BindView(R.id.login_img_head_portrait)
-    ImageView img_head_portrait;
+    CircleImageView img_head_portrait;
     private LoginPresenter loginPresenter;
     private LoginActivity activity;
     private String mobile="";
@@ -147,6 +148,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         int user_id = userinfo.getUser_id();
         String nickname = userinfo.getNickname();
         String avatar = userinfo.getAvatar();
+        String licenseplate = userinfo.getLicenseplate();
         SharedPreferences.Editor editor = share.edit();
         editor.putString("mobile", mobile);
         editor.putString("password", password);
@@ -154,6 +156,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         editor.putString("user_id",user_id+"");
         editor.putString("nickname",nickname);
         editor.putString("avatar",avatar);
+        editor.putString("licenseplate",licenseplate);
         editor.commit();//提交
         startActivity(new Intent(this,HomeActivity.class));
     }

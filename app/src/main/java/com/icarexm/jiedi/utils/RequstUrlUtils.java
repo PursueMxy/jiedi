@@ -5,6 +5,7 @@ public class RequstUrlUtils {
 
         //长连接 测试
         public static final String WEBSOCKET_HOST_AND_PORT = "ws://39.98.177.238:8284";
+//        public static final String WEBSOCKET_HOST_AND_PORT = "wss://iclock.zkteco.com:7272/wss";
 
         public static  String Host="http://jdcx.icarefz.cn";
 

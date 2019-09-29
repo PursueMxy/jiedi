@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.icarexm.jiedi.R;
@@ -21,7 +22,7 @@ public class AboutActivity extends AppCompatActivity {
    @BindView(R.id.about_tv_version)
    TextView tv_version;
    @BindView(R.id.about_img_logo)
-   TextView img_logo;
+   ImageView img_logo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

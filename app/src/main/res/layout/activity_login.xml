@@ -8,7 +8,7 @@
     android:orientation="vertical"
     tools:context=".view.activity.LoginActivity">
 
-     <ImageView
+     <com.icarexm.jiedi.custView.CircleImageView
          android:id="@+id/login_img_head_portrait"
          android:layout_gravity="center"
          android:layout_marginTop="@dimen/dp_61"

@@ -48,7 +48,7 @@ public class PriceActivity extends AppCompatActivity {
         });
     }
 
-    @OnClick({R.id.price_tv_callphone,R.id.price_rl_cashOut})
+    @OnClick({R.id.price_tv_callphone,R.id.price_rl_cashOut,R.id.price_rl_withdrawType})
     public void onViewClicked(View view){
         switch (view.getId()) {
             case R.id.price_tv_callphone:
@@ -59,6 +59,9 @@ public class PriceActivity extends AppCompatActivity {
                 break;
             case R.id.price_rl_cashOut:
                 startActivity(new Intent(mContext,CashOutActivity.class));
+                break;
+            case R.id.price_rl_withdrawType:
+                startActivity(new Intent(mContext,WithDrawActivity.class));
                 break;
         }
     }
