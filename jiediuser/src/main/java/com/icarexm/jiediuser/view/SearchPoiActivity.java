@@ -47,15 +47,17 @@ public class SearchPoiActivity extends AppCompatActivity implements TextWatcher,
     AutoCompleteTextView mKeywordText;
   @BindView(R.id.resultList)
     ListView resultList;
+  @BindView(R.id.tv_msg)
+  TextView tvMsg;
+  @BindView(R.id.search_loading)
+  ProgressBar loadingBar;
 
     private int INOUT_TIPS_CODE=6699;
     private List<Tip> mCurrentTipList;
     private SearchResultAdapter resultAdapter;
-    private ProgressBar loadingBar;
-    private TextView tvMsg;
     private Poi selectedPoi;
     private String city = "厦门市";
-    private int pointType;
+    private int pointType=-1;
     private String type;
     private int mType;
     //省
@@ -70,6 +72,16 @@ public class SearchPoiActivity extends AppCompatActivity implements TextWatcher,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_poi);
         ButterKnife.bind(this);
+        Intent intent = getIntent();
+        city = intent.getStringExtra("city");
+        type = intent.getStringExtra("type");
+        resultList.setOnItemClickListener(this);
+        resultList.setOnTouchListener(this);
+        tvMsg.setVisibility(View.GONE);
+        mKeywordText.addTextChangedListener(this);
+        mKeywordText.requestFocus();
+        Bundle bundle = getIntent().getExtras();
+        pointType = bundle.getInt("pointType", -1);
     }
     @OnClick({R.id.input_tips_tv_cityName})
     public void onViewClick(View view){
@@ -154,6 +166,7 @@ public class SearchPoiActivity extends AppCompatActivity implements TextWatcher,
         setLoadingVisible(false);
         try {
             if (rCode == 1000) {
+                Log.e("数据长度",tipList.size()+"条");
                 mCurrentTipList = new ArrayList<Tip>();
                 for (Tip tip : tipList) {
                     if (null == tip.getPoint()) {

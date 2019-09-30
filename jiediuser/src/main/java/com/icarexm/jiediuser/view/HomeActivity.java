@@ -1,5 +1,6 @@
 package com.icarexm.jiediuser.view;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ComponentName;
@@ -45,6 +46,7 @@ public class HomeActivity extends AppCompatActivity {
     @BindView(R.id.home_tv_destination)
     TextView tv_destination;
 
+    private int INOUT_TIPS_CODE=6699;
     public static StocketServices stocketService;
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -60,6 +62,7 @@ public class HomeActivity extends AppCompatActivity {
     private AMapLocationClient mLocationClient;
     private AMapLocationClientOption mLocationOption;
     private Context mContext;
+    private String cityName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,9 +83,22 @@ public class HomeActivity extends AppCompatActivity {
     public void  onViewClick(View view){
         switch (view.getId()){
             case R.id.home_tv_destination:
-                startActivity(new Intent(mContext,SearchPoiActivity.class));
+                Intent intent = new Intent(mContext, SearchPoiActivity.class);
+                intent.putExtra("city", cityName);
+                intent.putExtra("type", "1");
+                startActivityForResult(intent, INOUT_TIPS_CODE);
                 break;
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode==INOUT_TIPS_CODE){
+            String tip = data.getStringExtra("tip");
+            data.getStringExtra("");
+            tv_destination.setText(tip);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void SetLocations() {
@@ -138,7 +154,8 @@ public class HomeActivity extends AppCompatActivity {
                     aMapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
                     aMapLocation.getCountry();//国家信息
                     aMapLocation.getProvince();//省信息
-                    aMapLocation.getCity(); //城市信息
+                    //城市信息
+                    cityName = aMapLocation.getCity();
                     aMapLocation.getDistrict();//城区信息
                     aMapLocation.getStreet();//街道信息
                     aMapLocation.getStreetNum();//街道门牌号信息
@@ -203,7 +220,6 @@ public class HomeActivity extends AppCompatActivity {
         //在activity执行onDestroy时执行mMapView.onDestroy()，销毁地图
         mMapView.onDestroy();
     }
-
 
 
     @Override

@@ -20,10 +20,13 @@ import com.google.gson.GsonBuilder;
 import com.icarexm.jiediuser.bean.LoginDemoBean;
 import com.icarexm.jiediuser.bean.PositionsBean;
 import com.icarexm.jiediuser.bean.ServicesMsgBean;
+import com.icarexm.jiediuser.bean.pointsBean;
 import com.icarexm.jiediuser.utils.RequstUrlUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -48,6 +51,7 @@ public class StocketServices extends Service {
     private float speed;
     private String city;
     private int HEART_BEAT_RATE=3000;
+    private List<pointsBean> pointsList=new ArrayList<>();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -107,6 +111,9 @@ public class StocketServices extends Service {
                     String format = df.format(date);
                     positionS = aMapLocation.getProvince()+aMapLocation.getProvince()+aMapLocation.getDistrict()+aMapLocation.getStreetNum();
                     Log.e("定位数据",format+aMapLocation.getStreetNum()+aMapLocation.getAoiName());
+                    String locations = longitude + "," + latitude ;
+                    pointsBean pointsBean = new pointsBean(locations, format, aMapLocation.getSpeed() + "", aMapLocation.getDistrict() + "", aMapLocation.getAltitude() + "", aMapLocation.getAccuracy() + "");
+                    pointsList.add(pointsBean);
                 }else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                     Log.e("AmapError","location Error, ErrCode:"
@@ -221,20 +228,32 @@ public class StocketServices extends Service {
         @Override
         public void run() {
          position();
-         HeartBateHandler.postDelayed(this, HEART_BEAT_RATE);//每隔一定的时间，对长连接进行一次心跳检测
+         HeartBateHandler.postDelayed(this, 10000);//每隔一定的时间，对长连接进行一次心跳检测
         }
     };
 
 
     //更新自己位置 /api/socketobj/position
     public void position(){
-        String Receipts=new Gson().toJson(new PositionsBean(token, "0", user_id,"position",new PositionsBean.data(longitude+"",latitude+"",positionS,speed+"",city,"")));
+        String Receipts=new Gson().toJson(new PositionsBean(token, "0", user_id,"position",new PositionsBean.data(longitude+"",latitude+"",positionS,speed+"",city,new Gson().toJson(pointsList))));
+        pointsList.clear();
         boolean isSuccess = mWebSocket.send("");
         if (!isSuccess) {//长连接已断开
             mWebSocket.cancel();//取消掉以前的长连接
             mWebSocket.send(Receipts);
         } else {//长连接处于连接状态
             mWebSocket.send(Receipts);
+        }
+    }
+
+    //用户下单
+    public void place_order(){
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send("");
+        } else {//长连接处于连接状态
+            mWebSocket.send("");
         }
     }
 
