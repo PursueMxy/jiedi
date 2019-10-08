@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/layout_bg"
+    tools:context=".view.EdtMaterialsActivity">
+    <RelativeLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_height">
+        <ImageView
+            android:id="@+id/edt_materials_back"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/icon_home_left"
+            android:layout_marginLeft="@dimen/left_size"
+            android:layout_width="@dimen/dp_17"
+            android:layout_height="@dimen/dp_21" />
+        <TextView
+            android:text="编辑账号"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_18"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+     <RelativeLayout
+         android:background="@color/white"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content">
+    <com.icarexm.jiediuser.custview.CircleImageView
+        android:src="@mipmap/icon_head_portrait"
+        android:layout_marginLeft="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_10"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+     </RelativeLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:background="@color/white"
+        android:layout_marginTop="@dimen/dp_5"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_154">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_47">
+            <TextView
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginBottom="@dimen/dp_11"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="昵称"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_15"
+                />
+
+            <EditText
+                android:textSize="@dimen/sp_15"
+                android:background="@null"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginBottom="@dimen/dp_11"
+                android:layout_marginLeft="@dimen/dp_97"
+                android:hint="请输入昵称"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+        <View
+            android:layout_marginLeft="@dimen/dp_25"
+            android:layout_marginRight="@dimen/dp_25"
+            android:background="@color/layout_bg"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_3"/>
+
+        <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_51">
+        <TextView
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginBottom="@dimen/dp_11"
+            android:layout_marginLeft="@dimen/dp_20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="性别"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_15"
+            />
+
+        <TextView
+            android:textSize="@dimen/sp_15"
+            android:background="@null"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginBottom="@dimen/dp_11"
+            android:layout_marginLeft="@dimen/dp_97"
+            android:hint="请选择性别"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+        <View
+            android:layout_marginLeft="@dimen/dp_25"
+            android:layout_marginRight="@dimen/dp_25"
+            android:background="@color/layout_bg"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_3"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_51">
+            <TextView
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginBottom="@dimen/dp_11"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="年龄"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_15"
+                />
+
+            <TextView
+                android:textSize="@dimen/sp_15"
+                android:background="@null"
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginBottom="@dimen/dp_11"
+                android:layout_marginLeft="@dimen/dp_97"
+                android:hint="请选择年龄"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:background="@color/white"
+        android:layout_marginTop="@dimen/dp_8"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_207">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_47">
+            <TextView
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginBottom="@dimen/dp_11"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="公司"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_15"
+                />
+
+            <EditText
+                android:textSize="@dimen/sp_15"
+                android:background="@null"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginBottom="@dimen/dp_11"
+                android:layout_marginLeft="@dimen/dp_97"
+                android:hint="添加所在公司"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+        <View
+            android:layout_marginLeft="@dimen/dp_25"
+            android:layout_marginRight="@dimen/dp_25"
+            android:background="@color/layout_bg"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_3"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_51">
+            <TextView
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginBottom="@dimen/dp_11"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="职业"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_15"
+                />
+
+            <TextView
+                android:textSize="@dimen/sp_15"
+                android:background="@null"
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginBottom="@dimen/dp_11"
+                android:layout_marginLeft="@dimen/dp_97"
+                android:hint="添加你的职业"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+        <View
+            android:layout_marginLeft="@dimen/dp_25"
+            android:layout_marginRight="@dimen/dp_25"
+            android:background="@color/layout_bg"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_3"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_51">
+            <TextView
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginBottom="@dimen/dp_11"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="个性签名"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_15"
+                />
+
+            <TextView
+                android:textSize="@dimen/sp_15"
+                android:background="@null"
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginBottom="@dimen/dp_11"
+                android:layout_marginLeft="@dimen/dp_97"
+                android:hint="请简单的介绍下您自己"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_marginLeft="@dimen/dp_25"
+            android:layout_marginRight="@dimen/dp_25"
+            android:background="@color/layout_bg"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_3"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_51">
+            <TextView
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginBottom="@dimen/dp_11"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="实名认证"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_15"
+                />
+
+            <TextView
+                android:id="@+id/edt_materials_tv_certification"
+                android:textSize="@dimen/sp_15"
+                android:background="@null"
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_marginBottom="@dimen/dp_11"
+                android:layout_marginLeft="@dimen/dp_97"
+                android:hint="请实名认证"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+            <ImageView
+                android:layout_marginTop="@dimen/dp_20"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/dp_20"
+                android:src="@mipmap/icon_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <Button
+        android:text="保存"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_16"
+        android:background="@drawable/f5181fb"
+        android:layout_marginTop="@dimen/dp_45"
+        android:layout_marginLeft="@dimen/dp_45"
+        android:layout_marginRight="@dimen/dp_45"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_45" />
+</LinearLayout>

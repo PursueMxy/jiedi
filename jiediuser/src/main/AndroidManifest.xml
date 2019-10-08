@@ -30,7 +30,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".view.SearchPoiActivity"></activity>
+        <activity android:name=".view.PriceActivity"></activity>
+        <activity android:name=".view.MyOrderActivity" />
+        <activity android:name=".view.CertificationActivity" />
+        <activity android:name=".view.EdtMaterialsActivity" />
+        <activity android:name=".view.SearchPoiActivity" />
 
         <meta-data
             android:name="com.amap.api.v2.apikey"

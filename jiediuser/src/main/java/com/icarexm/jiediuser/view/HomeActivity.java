@@ -2,6 +2,7 @@ package com.icarexm.jiediuser.view;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,7 +12,13 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
@@ -38,13 +45,25 @@ import butterknife.OnClick;
 
 public class HomeActivity extends AppCompatActivity {
 
-     @BindView(R.id.home_map)
+    @BindView(R.id.home_map)
     MapView mMapView;
     private AMap aMap;
     @BindView(R.id.home_tv_startingpoint)
     TextView tv_startingpoint;
     @BindView(R.id.home_tv_destination)
     TextView tv_destination;
+    @BindView(R.id.home_radiobutton_inside_city)
+    RadioButton radioButton_inside_city;
+    @BindView(R.id.home_radiobutton_intercity)
+    RadioButton radioButton_interciry;
+    @BindView(R.id.home_radiobutton_transfer)
+    RadioButton radioButton_transfer;
+    @BindView(R.id.home_radioGroup)
+    RadioGroup radioGroup;
+    @BindView(R.id.drawerlayout)
+    DrawerLayout drawerLayout;
+
+
 
     private int INOUT_TIPS_CODE=6699;
     public static StocketServices stocketService;
@@ -63,6 +82,7 @@ public class HomeActivity extends AppCompatActivity {
     private AMapLocationClientOption mLocationOption;
     private Context mContext;
     private String cityName;
+    private int ORDER_TYPE=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,12 +94,53 @@ public class HomeActivity extends AppCompatActivity {
         if (aMap == null) {
             aMap =mMapView.getMap();
         }
+        InitUI();
         initService();
         SetLocations();
     }
 
+    private void InitUI() {
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i){
+                    case R.id.home_radiobutton_inside_city:
+                        ORDER_TYPE=1;
+                        radioButton_inside_city.setBackgroundResource(R.drawable.myorder_choosed_color);
+                        radioButton_inside_city.setTextColor(getResources().getColor(R.color.ff5181fb));
+                        radioButton_interciry.setBackgroundResource(R.drawable.myorder_nochoosed_color);
+                        radioButton_interciry.setTextColor(getResources().getColor(R.color.black));
+                        radioButton_transfer.setBackgroundResource(R.drawable.myorder_nochoosed_color);
+                        radioButton_transfer.setTextColor(getResources().getColor(R.color.black));
+                        break;
+                    case R.id.home_radiobutton_intercity:
+                        ORDER_TYPE=2;
+                        radioButton_inside_city.setBackgroundResource(R.drawable.myorder_nochoosed_color);
+                        radioButton_inside_city.setTextColor(getResources().getColor(R.color.black));
+                        radioButton_interciry.setBackgroundResource(R.drawable.myorder_choosed_color);
+                        radioButton_interciry.setTextColor(getResources().getColor(R.color.ff5181fb));
+                        radioButton_transfer.setBackgroundResource(R.drawable.myorder_nochoosed_color);
+                        radioButton_transfer.setTextColor(getResources().getColor(R.color.black));
+                        break;
+                    case R.id.home_radiobutton_transfer:
+                        ORDER_TYPE=3;
+                        radioButton_inside_city.setBackgroundResource(R.drawable.myorder_nochoosed_color);
+                        radioButton_inside_city.setTextColor(getResources().getColor(R.color.black));
+                        radioButton_interciry.setBackgroundResource(R.drawable.myorder_nochoosed_color);
+                        radioButton_interciry.setTextColor(getResources().getColor(R.color.black));
+                        radioButton_transfer.setBackgroundResource(R.drawable.myorder_choosed_color);
+                        radioButton_transfer.setTextColor(getResources().getColor(R.color.ff5181fb));
+                        break;
+                        default:
+                            break;
+                }
+            }
+        });
 
-    @OnClick({R.id.home_tv_destination})
+    }
+
+
+    @OnClick({R.id.home_tv_destination,R.id.home_top_img_left,R.id.home_tv_edt_materials})
     public void  onViewClick(View view){
         switch (view.getId()){
             case R.id.home_tv_destination:
@@ -87,6 +148,12 @@ public class HomeActivity extends AppCompatActivity {
                 intent.putExtra("city", cityName);
                 intent.putExtra("type", "1");
                 startActivityForResult(intent, INOUT_TIPS_CODE);
+                break;
+            case R.id.home_top_img_left:
+                drawerLayout.openDrawer(Gravity.LEFT);
+                break;
+            case R.id.home_tv_edt_materials:
+                startActivity(new Intent(mContext,EdtMaterialsActivity.class));
                 break;
         }
     }
@@ -242,4 +309,5 @@ public class HomeActivity extends AppCompatActivity {
         //在activity执行onSaveInstanceState时执行mMapView.onSaveInstanceState (outState)，保存地图当前的状态
         mMapView.onSaveInstanceState(outState);
     }
+
 }

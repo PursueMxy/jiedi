@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.CertificationActivity">
+    <RelativeLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_height">
+        <ImageView
+            android:id="@+id/edt_materials_back"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/icon_home_left"
+            android:layout_marginLeft="@dimen/left_size"
+            android:layout_width="@dimen/dp_17"
+            android:layout_height="@dimen/dp_21" />
+        <TextView
+            android:text="实名认证"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_18"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_marginBottom="@dimen/dp_13"
+        android:layout_marginLeft="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="请认真填写您的实名信息"
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_15"
+        />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_101">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_45">
+            <TextView
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="姓名"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_15"
+                />
+
+            <EditText
+                android:background="@null"
+                android:layout_marginLeft="@dimen/dp_97"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="请输入真实姓名"
+                android:textColor="@color/ff707070"
+                android:textSize="@dimen/sp_15"
+                />
+        </RelativeLayout>
+        <View
+            android:layout_marginLeft="@dimen/dp_25"
+            android:layout_marginRight="@dimen/dp_25"
+            android:background="@color/layout_bg"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_3"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_56">
+            <TextView
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="身份证号"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_15"
+                />
+
+            <EditText
+                android:background="@null"
+                android:layout_marginLeft="@dimen/dp_97"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="请输入身份证号"
+                android:textColor="@color/ff707070"
+                android:textSize="@dimen/sp_15"
+                />
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>
