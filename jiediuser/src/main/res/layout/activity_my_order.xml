@@ -99,7 +99,7 @@
                 android:drawablePadding="@dimen/dp_10"
                 android:drawableRight="@mipmap/icon_below"
                 android:gravity="center"
-                android:text=""
+                android:text="2019-10-01"
                 android:textColor="@color/ff5181fb"
                 android:textSize="@dimen/dp_13"
                 android:layout_width="wrap_content"

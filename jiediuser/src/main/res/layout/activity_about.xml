@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.AboutActivity">
+    <RelativeLayout
+        android:id="@+id/personal_rl_top"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_height">
+
+        <ImageView
+            android:id="@+id/about_img_back"
+            android:layout_marginLeft="@dimen/left_size"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/icon_left_black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:text="关于我们"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:background="@drawable/ffefeff4"/>
+
+    <ImageView
+        android:id="@+id/about_img_logo"
+        android:layout_marginTop="@dimen/dp_43"
+        android:layout_gravity="center"
+        android:src="@drawable/f5181fb"
+        android:layout_width="@dimen/dp_190"
+        android:layout_height="@dimen/dp_107" />
+
+    <TextView
+        android:id="@+id/about_tv_version"
+        android:layout_marginTop="@dimen/dp_6"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="当前版本：V5.2.54"
+        android:textColor="@color/ff707070"
+        android:textSize="@dimen/sp_14"
+        />
+
+    <TextView
+        android:id="@+id/about_tv_phoneNumber"
+        android:layout_marginTop="@dimen/dp_88"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="客服电话：18888326589"
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_14"
+        />
+
+    <TextView
+        android:id="@+id/about_tv_address"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/dp_12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="联系地址：福州市仓山区学生街"
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_14"
+        />
+</LinearLayout>

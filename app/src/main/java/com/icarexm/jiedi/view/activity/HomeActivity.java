@@ -103,8 +103,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         mContext = getApplicationContext();
+        sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         token = sp.getString("token", "");
         user_id = sp.getString("user_id", "");
         ButterKnife.bind(this);

@@ -31,4 +31,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     public void  SetLogin(LoginBean.DataBean.UserinfoBean userinfo){
        mView.UpdateLogin(userinfo);
     }
+    public void GetInit(){
+        loginModel.PostInit();
+    }
 }

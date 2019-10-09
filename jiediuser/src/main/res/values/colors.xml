@@ -13,6 +13,7 @@
     <color name="layout_bg">#FFF5F5F5</color>
     <color name="ff000000">#00ffffff</color>
     <color name="b3b3b3">#b3b3b3</color>
+    <color name="ced6e2">#ffced6e2</color>
     <drawable name="ffb2c7fb">#ffb2c7fb</drawable>
     <drawable name="f5181fb">#FF5181fb</drawable>
     <drawable name="ffefeff4">#ffefeff4</drawable>

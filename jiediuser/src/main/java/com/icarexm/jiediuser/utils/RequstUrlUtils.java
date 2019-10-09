@@ -8,10 +8,16 @@ public class RequstUrlUtils {
 
         public static  String Host="http://jdcx.icarefz.cn";
 
+        //加载初始化
+
+        public static String init=Host+"/api/common/init";
+
 //        账号密码登录
         public static String Login=Host+"/api/user/login";
+
 //        手机验证码登陆
-                public static String mobileLogin=Host+"/api/user/mobilelogin";
+         public static final String mobileLogin=Host+"/api/user/mobilelogin";
+
 //        获取验证码
         public static String MobileCode=Host+"/api/user/getMobileCode";
 

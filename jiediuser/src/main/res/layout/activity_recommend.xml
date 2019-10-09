@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.RecommendActivity">
+    <RelativeLayout
+        android:id="@+id/personal_rl_top"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_height">
+
+        <ImageView
+            android:id="@+id/message_center_img_back"
+            android:layout_marginLeft="@dimen/left_size"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/icon_left_black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:text="推荐有奖"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/recommend_tv_invite"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dp_15"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="邀请记录"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_14"
+            />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+         <ImageView
+             android:layout_centerHorizontal="true"
+             android:src="@mipmap/icon_recommend"
+             android:layout_marginTop="@dimen/dp_62"
+             android:layout_width="@dimen/dp_297"
+             android:layout_height="@dimen/dp_270" />
+
+        <Button
+            android:id="@+id/delete_contact_btn_dlt"
+            android:background="@drawable/bg_blue"
+            android:layout_marginBottom="@dimen/dp_21"
+            android:layout_alignParentBottom="true"
+            android:textSize="@dimen/sp_16"
+            android:text="立即邀请好友"
+            android:textColor="@color/white"
+            android:layout_marginRight="@dimen/dp_45"
+            android:layout_marginLeft="@dimen/dp_45"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_45" />
+    </RelativeLayout>
+</LinearLayout>

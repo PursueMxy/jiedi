@@ -22,4 +22,8 @@ public class LoginPresenter implements LoginContract.Presenter {
         mView.LoginBack(userinfo);
     }
 
+    public void GetInit(){
+        loginModel.PostInit();
+    }
+
 }

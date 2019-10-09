@@ -91,6 +91,12 @@
         </RadioGroup>
     </RelativeLayout>
 
+     <RelativeLayout
+         android:layout_marginBottom="@dimen/dp_20"
+         android:layout_alignParentBottom="true"
+         android:id="@+id/home_rl_setorder"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content">
     <ImageView
         android:layout_above="@+id/home_ll_city_type"
         android:id="@+id/home_img_safety"
@@ -128,7 +134,6 @@
     </LinearLayout>
     <LinearLayout
         android:id="@+id/home_ll_lnside_city"
-        android:layout_marginBottom="@dimen/dp_20"
         android:layout_alignParentBottom="true"
         android:orientation="vertical"
         android:background="@color/white"
@@ -150,7 +155,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <!--接送机时候显示-->
         <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/home_rl_flight_two"
             android:background="@color/white"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -232,7 +240,11 @@
             android:textSize="@dimen/sp_14"/>
 
     </LinearLayout>
+     </RelativeLayout>
+
     </RelativeLayout>
+
+    <!--侧滑菜单-->
     <RelativeLayout
         android:id="@+id/left"
         android:layout_width="@dimen/dp_285"
@@ -290,6 +302,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <TextView
+                android:id="@+id/home_tv_myorder"
                 android:layout_marginLeft="@dimen/dp_24"
                 android:drawableLeft="@mipmap/icon_home_order"
                 android:drawablePadding="@dimen/dp_10"
@@ -301,6 +314,7 @@
                 android:textSize="@dimen/sp_15"
                 />
             <TextView
+                android:id="@+id/home_tv_price"
                 android:layout_marginLeft="@dimen/dp_24"
                 android:layout_marginTop="@dimen/dp_24"
                 android:drawablePadding="@dimen/dp_10"
@@ -313,6 +327,7 @@
                 />
 
             <TextView
+                android:id="@+id/home_tv_message_center"
                 android:layout_marginLeft="@dimen/dp_24"
                 android:layout_marginTop="@dimen/dp_24"
                 android:drawablePadding="@dimen/dp_10"
@@ -325,6 +340,7 @@
                 />
 
             <TextView
+                android:id="@+id/home_tv_recommend"
                 android:layout_marginLeft="@dimen/dp_24"
                 android:layout_marginTop="@dimen/dp_24"
                 android:drawablePadding="@dimen/dp_10"
@@ -337,6 +353,7 @@
                 />
 
             <TextView
+                android:id="@+id/home_tv_set"
                 android:layout_marginLeft="@dimen/dp_24"
                 android:layout_marginTop="@dimen/dp_24"
                 android:drawablePadding="@dimen/dp_10"

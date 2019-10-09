@@ -9,6 +9,10 @@ public class RequstUrlUtils {
 
         public static  String Host="http://jdcx.icarefz.cn";
 
+        //加载初始化
+        public static String init=Host+"/api/common/init";
+
+
 //        账号密码登录
         public static String Login=Host+"/api/user/login";
 

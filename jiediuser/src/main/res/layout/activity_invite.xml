@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.InviteActivity">
+    <RelativeLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_height">
+
+        <ImageView
+            android:id="@+id/invite_img_back"
+            android:layout_marginLeft="@dimen/left_size"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/icon_left_black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:text="邀请记录"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <LinearLayout
+        android:background="@color/white"
+        android:layout_marginLeft="@dimen/dp_15"
+        android:layout_marginRight="@dimen/dp_15"
+        android:layout_marginTop="@dimen/dp_20"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+      <RelativeLayout
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/dp_68"
+          android:background="@drawable/bg_blue_top">
+          <ImageView
+              android:id="@+id/invite_img_portrait"
+              android:layout_marginLeft="@dimen/dp_10"
+              android:src="@mipmap/icon_head_portrait"
+              android:layout_centerVertical="true"
+              android:layout_width="@dimen/dp_44"
+              android:layout_height="@dimen/dp_44" />
+
+          <TextView
+              android:id="@+id/invite_tv_name"
+              android:layout_marginTop="@dimen/dp_14"
+              android:layout_marginLeft="@dimen/dp_10"
+              android:layout_toRightOf="@+id/invite_img_portrait"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="陈达大"
+              android:textColor="@color/white"
+              android:textSize="@dimen/sp_14"
+              />
+
+          <TextView
+              android:id="@+id/invite_tv_recommendName"
+              android:layout_toRightOf="@+id/invite_img_portrait"
+              android:layout_marginTop="@dimen/dp_5"
+              android:layout_marginLeft="@dimen/dp_10"
+              android:layout_below="@+id/invite_tv_name"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="推荐人：王小二"
+              android:textColor="@color/white"
+              android:textSize="@dimen/sp_12"
+              />
+
+          <TextView
+              android:layout_marginRight="@dimen/dp_10"
+              android:layout_alignParentRight="true"
+              android:layout_marginTop="@dimen/dp_16"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="总收益"
+              android:textColor="@color/white"
+              android:textSize="@dimen/sp_12"
+              />
+
+          <TextView
+              android:layout_marginTop="@dimen/dp_35"
+              android:layout_marginRight="@dimen/dp_10"
+              android:layout_alignParentRight="true"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="￥21.50"
+              android:textColor="@color/ffff383f"
+              android:textSize="@dimen/sp_14"
+              />
+      </RelativeLayout>
+        <RadioGroup
+            android:background="@color/white"
+            android:id="@+id/invite_radioGroup"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_50">
+            <RadioButton
+                android:textColor="@color/ff5181fb"
+                android:textSize="@dimen/sp_15"
+                android:id="@+id/invite_radiobutton_one"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dp_50"
+                android:layout_weight="1"
+                android:background="@drawable/myorder_choosed_color"
+                android:button="@null"
+                android:gravity="center"
+                android:text="一级团队"/>
+
+            <RadioButton
+                android:id="@+id/invite_radiobutton_two"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_15"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dp_50"
+                android:layout_weight="1"
+                android:background="@drawable/myorder_nochoosed_color"
+                android:button="@null"
+                android:gravity="center"
+                android:text="二级团队"/>
+            <RadioButton
+                android:id="@+id/invite_radiobutton_three"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_15"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dp_50"
+                android:layout_weight="1"
+                android:background="@drawable/myorder_nochoosed_color"
+                android:button="@null"
+                android:gravity="center"
+                android:text="三级团队"/>
+        </RadioGroup>
+        <com.zhouyou.recyclerview.XRecyclerView
+            android:id="@+id/invite_listview"
+            android:divider="@drawable/ffefeff4"
+            android:dividerHeight="@dimen/dp_2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </com.zhouyou.recyclerview.XRecyclerView>
+    </LinearLayout>
+</LinearLayout>

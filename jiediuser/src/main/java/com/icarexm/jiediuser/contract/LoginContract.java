@@ -7,6 +7,7 @@ public interface LoginContract {
     interface Model {
         void PostMobileCode(LoginPresenter loginPresenter, String mobile,String event,String type);
         void  PostLogin(LoginPresenter loginPresenter, String mobile, String captcha, String event);
+        void PostInit();
     }
 
     interface View {
@@ -19,5 +20,6 @@ public interface LoginContract {
         void SetMobuleCode(String content);
         void GetLogin(String mobile, String captcha, String event);
         void  SetLogin(LoginBean.DataBean.UserinfoBean userinfo);
+        void GetInit();
     }
 }

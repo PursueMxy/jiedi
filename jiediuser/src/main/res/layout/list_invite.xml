@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/invite_list_img_portrait"
+        android:layout_marginLeft="@dimen/dp_12"
+        android:src="@mipmap/icon_head_portrait"
+        android:layout_marginTop="@dimen/dp_21"
+        android:layout_width="@dimen/dp_44"
+        android:layout_height="@dimen/dp_44"
+        android:layout_marginBottom="@dimen/dp_8"/>
+
+    <TextView
+        android:id="@+id/invite_list_tv_name"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_toRightOf="@+id/invite_list_img_portrait"
+        android:layout_marginTop="@dimen/dp_23"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="陈晓"
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_14"
+        />
+
+    <TextView
+        android:id="@+id/invite_list_tv_mobile"
+        android:layout_marginTop="@dimen/dp_5"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_toRightOf="@+id/invite_list_img_portrait"
+        android:layout_below="@+id/invite_list_tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="12365498789"
+        android:textColor="@color/ff707070"
+        android:textSize="@dimen/sp_12"
+        />
+
+    <TextView
+        android:id="@+id/invite_list_tv_time"
+        android:layout_marginRight="@dimen/dp_8"
+        android:layout_marginTop="@dimen/dp_23"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2019.6.20"
+        android:textColor="#ff707070"
+        android:textSize="12sp"
+        />
+
+    <TextView
+        android:layout_toLeftOf="@+id/invite_list_tv_price"
+        android:layout_below="@id/invite_list_tv_time"
+        android:layout_marginTop="@dimen/dp_8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="收益："
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_12"
+        />
+    <TextView
+        android:id="@+id/invite_list_tv_price"
+        android:layout_marginRight="@dimen/dp_8"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/invite_list_tv_time"
+        android:layout_marginTop="@dimen/dp_8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="￥21.50"
+        android:textColor="@color/ffff383f"
+        android:textSize="@dimen/sp_12"
+        />
+    <View
+        android:layout_marginLeft="@dimen/dp_13"
+        android:layout_marginRight="@dimen/dp_13"
+        android:layout_below="@+id/invite_list_img_portrait"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:background="@drawable/ffefeff4"
+        />
+</RelativeLayout>

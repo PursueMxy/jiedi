@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     public void onViewChick(View view){
         switch (view.getId()){
             case R.id.login_tv_verification_code:
-                loginPresenter.GetMobileCode("15306987579","user_mobilelogin/driver_mobilelogin","0");
+                loginPresenter.GetMobileCode("15306987579","user_mobilelogin","0");
                 break;
             case R.id.login_btn_start:
                 boolean checked = login_checkbox.isChecked();
@@ -109,6 +109,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         editor.putString("nickname",nickname);
         editor.putString("avatar",avatar);
         editor.commit();//提交
+        loginPresenter.GetInit();
         startActivity(new Intent(this,HomeActivity.class));
     }
 

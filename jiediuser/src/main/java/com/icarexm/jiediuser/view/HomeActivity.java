@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -16,9 +17,11 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
@@ -33,17 +36,25 @@ import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.route.DistanceItem;
+import com.amap.api.services.route.DistanceResult;
+import com.amap.api.services.route.DistanceSearch;
 import com.icarexm.jiediuser.R;
+import com.icarexm.jiediuser.contract.HomeContract;
+import com.icarexm.jiediuser.presenter.HomePresenter;
 import com.icarexm.jiediuser.services.StocketServices;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements HomeContract.View, DistanceSearch.OnDistanceSearchListener {
 
     @BindView(R.id.home_map)
     MapView mMapView;
@@ -62,6 +73,9 @@ public class HomeActivity extends AppCompatActivity {
     RadioGroup radioGroup;
     @BindView(R.id.drawerlayout)
     DrawerLayout drawerLayout;
+    @BindView(R.id.home_rl_setorder)
+    RelativeLayout rl_setorder;
+
 
 
 
@@ -83,6 +97,13 @@ public class HomeActivity extends AppCompatActivity {
     private Context mContext;
     private String cityName;
     private int ORDER_TYPE=1;
+    private HomePresenter homePresenter;
+    private SharedPreferences sp;
+    private String token;
+    private DistanceSearch distanceSearch;
+    private double start_longitude;
+    private double start_latitude;
+    private DistanceSearch.DistanceQuery distanceQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +111,8 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
         mContext = getApplicationContext();
+        sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        token = sp.getString("token", "");
         mMapView.onCreate(savedInstanceState);
         if (aMap == null) {
             aMap =mMapView.getMap();
@@ -97,9 +120,14 @@ public class HomeActivity extends AppCompatActivity {
         InitUI();
         initService();
         SetLocations();
+        homePresenter = new HomePresenter(this);
     }
 
     private void InitUI() {
+        //路线参数初始化
+        distanceSearch = new DistanceSearch(this);
+        distanceQuery = new DistanceSearch.DistanceQuery();
+        distanceSearch.setDistanceSearchListener(this);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
@@ -140,7 +168,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-    @OnClick({R.id.home_tv_destination,R.id.home_top_img_left,R.id.home_tv_edt_materials})
+    @OnClick({R.id.home_tv_destination,R.id.home_top_img_left,R.id.home_tv_edt_materials,R.id.home_tv_myorder,R.id.home_tv_price
+    ,R.id.home_tv_set,R.id.home_tv_message_center,R.id.home_tv_recommend})
     public void  onViewClick(View view){
         switch (view.getId()){
             case R.id.home_tv_destination:
@@ -155,6 +184,21 @@ public class HomeActivity extends AppCompatActivity {
             case R.id.home_tv_edt_materials:
                 startActivity(new Intent(mContext,EdtMaterialsActivity.class));
                 break;
+            case R.id.home_tv_myorder:
+                startActivity(new Intent(mContext,MyOrderActivity.class));
+                break;
+            case R.id.home_tv_price:
+                startActivity(new Intent(mContext,PriceActivity.class));
+                break;
+            case R.id.home_tv_set:
+                startActivity(new Intent(mContext,SetActivity.class));
+                break;
+            case R.id.home_tv_message_center:
+                startActivity(new Intent(mContext,MessageCenterActivity.class));
+                break;
+            case R.id.home_tv_recommend:
+                startActivity(new Intent(mContext,RecommendActivity.class));
+                break;
         }
     }
 
@@ -162,8 +206,20 @@ public class HomeActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode==INOUT_TIPS_CODE){
             String tip = data.getStringExtra("tip");
-            data.getStringExtra("");
+            String latitude = data.getStringExtra("latitude");
+            String longitude = data.getStringExtra("longitude");
+            String type = data.getStringExtra("type");
+            String poiID = data.getStringExtra("poiID");
             tv_destination.setText(tip);
+            LatLonPoint start = new LatLonPoint(start_latitude, start_longitude);
+            List<LatLonPoint> latLonPoints = new ArrayList<LatLonPoint>();
+            latLonPoints.add(start);
+            LatLonPoint dest = new LatLonPoint(Double.valueOf(latitude),Double.valueOf( longitude));
+            distanceQuery.setOrigins(latLonPoints);
+            distanceQuery.setDestination(dest);
+               //设置测量方式，支持直线和驾车
+            distanceQuery.setType(DistanceSearch.TYPE_DRIVING_DISTANCE);
+            distanceSearch.calculateRouteDistanceAsyn(distanceQuery);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -214,9 +270,9 @@ public class HomeActivity extends AppCompatActivity {
                     //可在其中解析amapLocation获取相应内容。
                     aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
                     //获取纬度
-                    aMapLocation.getLatitude();
+                    start_latitude = aMapLocation.getLatitude();
                     //获取经度
-                    aMapLocation.getLongitude();
+                    start_longitude = aMapLocation.getLongitude();
                     aMapLocation.getAccuracy();//获取精度信息
                     aMapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
                     aMapLocation.getCountry();//国家信息
@@ -252,6 +308,7 @@ public class HomeActivity extends AppCompatActivity {
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude()));
                     aMap.moveCamera(cameraUpdate);
                     tv_startingpoint.setText(aMapLocation.getCity()+aMapLocation.getDistrict()+aMapLocation.getStreet()+aMapLocation.getAoiName()+aMapLocation.getStreetNum());
+                    homePresenter.GetDriverIndex(token,cityName, aMapLocation.getLongitude()+"", aMapLocation.getLatitude()+"");
                 }else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                     Log.e("AmapError", aMapLocation.getErrorCode()+"");
@@ -310,4 +367,18 @@ public class HomeActivity extends AppCompatActivity {
         mMapView.onSaveInstanceState(outState);
     }
 
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+    //路程计算返回参数
+    @Override
+    public void onDistanceSearched(DistanceResult distanceResult, int i) {
+        if (i==1000){
+            List<DistanceItem> distanceResults = distanceResult.getDistanceResults();
+            float duration = distanceResults.get(0).getDuration();//大约时间
+            float distance = distanceResults.get(0).getDistance()/1000;//长度(公里）
+            rl_setorder.setVisibility(View.GONE);
+        }
+    }
 }

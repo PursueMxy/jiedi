@@ -31,10 +31,10 @@ public class LoginModel implements LoginContract.Model {
                     public void onSuccess(Response<String> response) {
                         String body = response.body();
                         Gson gson = new GsonBuilder().create();
-                        MobileCodeBean mobileCodeBean = gson.fromJson(response.body(), MobileCodeBean.class);
-                        if (mobileCodeBean!=null){
-                            loginPresenter.SetMobuleCode(mobileCodeBean.getMsg());
-                        }
+//                        MobileCodeBean mobileCodeBean = gson.fromJson(response.body(), MobileCodeBean.class);
+//                        if (mobileCodeBean!=null){
+//                            loginPresenter.SetMobuleCode(mobileCodeBean.getMsg());
+//                        }
                     }
                 });
 
@@ -75,5 +75,18 @@ public class LoginModel implements LoginContract.Model {
                     }
                 });
 
+    }
+
+/*
+*  数据初始化
+*/
+    public void PostInit(){
+        OkGo.<String>post(RequstUrlUtils.URL.init)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("初始化",response.body());
+                    }
+                });
     }
 }

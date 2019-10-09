@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.RechargeActivity">
+    <RelativeLayout
+        android:id="@+id/recharge_rl_top"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_height">
+
+        <ImageView
+            android:id="@+id/recharge_img_back"
+            android:layout_marginLeft="@dimen/left_size"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/icon_home_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:text="我的钱包"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_marginTop="@dimen/dp_16"
+            android:layout_marginLeft="@dimen/dp_20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="充值金额"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_15"
+            />
+
+        <TextView
+            android:paddingLeft="@dimen/dp_8"
+            android:paddingRight="@dimen/dp_8"
+            android:paddingTop="@dimen/dp_3"
+            android:paddingBottom="@dimen/dp_3"
+            android:layout_marginRight="@dimen/dp_24"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/tv_blue_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="充值说明"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_10"
+            />
+    </RelativeLayout>
+
+    <GridView
+        android:layout_marginTop="@dimen/dp_22"
+        android:verticalSpacing="@dimen/dp_28"
+        android:scrollbars="none"
+        android:layout_marginLeft="@dimen/dp_30"
+        android:layout_marginRight="@dimen/dp_20"
+        android:columnWidth="@dimen/dp_50"
+        android:id="@+id/recharge_gridview"
+        android:numColumns="4"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_300"></GridView>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_marginLeft="@dimen/dp_30"
+            android:layout_marginRight="@dimen/dp_30"
+            android:layout_marginBottom="@dimen/dp_21"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_45">
+            <Button
+                android:background="@drawable/bg_blue_stroke"
+                android:textSize="@dimen/sp_16"
+                android:textColor="@color/ff5181fb"
+                android:layout_weight="1"
+                android:text="微信支付"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <View
+                android:layout_width="@dimen/dp_14"
+                android:layout_height="match_parent"
+                />
+
+            <Button
+                android:textSize="@dimen/sp_16"
+                android:textColor="@color/white"
+                android:background="@drawable/bg_blue"
+                android:layout_weight="1"
+                android:text="支付宝支付"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>
