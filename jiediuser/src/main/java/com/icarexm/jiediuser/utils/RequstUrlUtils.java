@@ -9,7 +9,6 @@ public class RequstUrlUtils {
         public static  String Host="http://jdcx.icarefz.cn";
 
         //加载初始化
-
         public static String init=Host+"/api/common/init";
 
 //        账号密码登录
@@ -38,5 +37,8 @@ public class RequstUrlUtils {
 
         //订单列表 /api/order/index
         public static String OrderIndex=Host+"/api/order/index";
+
+        //计价【选填订单号】
+        public static String price=Host+"/api/order/price";
     }
 }

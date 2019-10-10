@@ -259,7 +259,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 String btncontent = btn_gainorder.getText().toString();
                 if (btncontent.equals("接单")){
                     homePresenter.GetAutoOrder(token,"1");
-                    ShowDialog();
+//                    ShowDialog();
                 }else {
                     homePresenter.GetAutoOrder(token,"0");
 //                    alertDialog.dismiss();
@@ -368,8 +368,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = new Date(aMapLocation.getTime());
                     String format = df.format(date);
-
-                    Log.e("定位数据",format+aMapLocation.getStreetNum()+city+latitude);
                 }else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                     Log.e("AmapError","location Error, ErrCode:"

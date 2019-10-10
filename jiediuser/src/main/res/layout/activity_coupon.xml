@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.CouponActivity">
+    <RelativeLayout
+        android:id="@+id/price_rl_top"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_height">
+
+        <ImageView
+            android:id="@+id/order_pay_img_back"
+            android:layout_marginLeft="@dimen/left_size"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/icon_home_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:text="优惠券"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <com.zhouyou.recyclerview.XRecyclerView
+        android:layout_above="@+id/coupon_btn_no_use"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></com.zhouyou.recyclerview.XRecyclerView>
+        <Button
+            android:layout_marginBottom="@dimen/dp_20"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/coupon_btn_no_use"
+            android:layout_marginTop="@dimen/dp_64"
+            android:layout_marginLeft="@dimen/dp_45"
+            android:layout_marginRight="@dimen/dp_45"
+            android:text="不适用优惠券"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_16"
+            android:background="@drawable/bg_blue"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_45" />
+    </RelativeLayout>
+</LinearLayout>

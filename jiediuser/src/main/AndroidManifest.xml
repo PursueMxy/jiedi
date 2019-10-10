@@ -30,7 +30,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".view.InviteActivity"></activity>
+        <activity android:name=".view.CouponActivity"></activity>
+        <activity android:name=".view.OrderPayActivity" />
+        <activity android:name=".view.InviteActivity" />
         <activity android:name=".view.RecommendActivity" />
         <activity android:name=".view.MessageCenterActivity" />
         <activity android:name=".view.AboutActivity" />

@@ -18,10 +18,13 @@ import com.amap.api.location.AMapLocationListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.icarexm.jiediuser.bean.LoginDemoBean;
+import com.icarexm.jiediuser.bean.PlaceOrderBean;
 import com.icarexm.jiediuser.bean.PositionsBean;
+import com.icarexm.jiediuser.bean.RefuseOrderBean;
 import com.icarexm.jiediuser.bean.ServicesMsgBean;
 import com.icarexm.jiediuser.bean.pointsBean;
 import com.icarexm.jiediuser.utils.RequstUrlUtils;
+import com.icarexm.jiediuser.utils.ToastUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,6 +55,7 @@ public class StocketServices extends Service {
     private String city;
     private int HEART_BEAT_RATE=3000;
     private List<pointsBean> pointsList=new ArrayList<>();
+    private String mobile;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -73,6 +77,7 @@ public class StocketServices extends Service {
         sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         token = sp.getString("token", "");
         user_id = sp.getString("user_id", "");
+        mobile = sp.getString("mobile", "");
         SetLocations();
         initSocket();
     }
@@ -110,7 +115,6 @@ public class StocketServices extends Service {
                     Date date = new Date(aMapLocation.getTime());
                     String format = df.format(date);
                     positionS = aMapLocation.getProvince()+aMapLocation.getProvince()+aMapLocation.getDistrict()+aMapLocation.getStreetNum();
-                    Log.e("定位数据",format+aMapLocation.getStreetNum()+aMapLocation.getAoiName());
                     String locations = longitude + "," + latitude ;
                     pointsBean pointsBean = new pointsBean(locations, format, aMapLocation.getSpeed() + "", aMapLocation.getDistrict() + "", aMapLocation.getAltitude() + "", aMapLocation.getAccuracy() + "");
                     pointsList.add(pointsBean);
@@ -191,8 +195,8 @@ public class StocketServices extends Service {
                           }
                       }
                   }catch (Exception e){
-
                   }
+
             }
 
             @Override
@@ -247,16 +251,35 @@ public class StocketServices extends Service {
     }
 
     //用户下单
-    public void place_order(){
+    public void place_order(String startingpointE,String startingpointN,String startingpoint,String destinationE,String destinationN,
+                            String destination,String estimated_mileage,String estimated_time,String budget,String service_type,
+                            String city,String flightnom,String estimatedeparturetime){
+        String place_order = new Gson().toJson(new PlaceOrderBean(token, "0", mobile, user_id, "place_order", new PlaceOrderBean.data(startingpointE, startingpointN, startingpoint, destinationE, destinationN, destination, estimated_mileage
+                , estimated_time, budget, service_type, city, flightnom, estimatedeparturetime)));
         boolean isSuccess = mWebSocket.send("");
+        ToastUtils.showToast(getApplicationContext(),"开始下单");
         if (!isSuccess) {//长连接已断开
             mWebSocket.cancel();//取消掉以前的长连接
-            mWebSocket.send("");
+            mWebSocket.send(place_order);
         } else {//长连接处于连接状态
-            mWebSocket.send("");
+            mWebSocket.send(place_order);
+            Log.e("place_order",place_order);
         }
     }
 
+
+
+    //拒绝订单/取消订单
+    public void refuse_order(String orderId,String reason,String remark){
+        String Receipts = new Gson().toJson(new RefuseOrderBean(token, "0", user_id,"refuse_order", new RefuseOrderBean.data(orderId, reason,remark)));
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();

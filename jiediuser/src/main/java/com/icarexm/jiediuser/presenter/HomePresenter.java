@@ -12,7 +12,18 @@ public class HomePresenter implements HomeContract.Presenter {
         homeModel =new HomeModel();
     }
 
-    public void GetDriverIndex(String token,String city,String positionE, String positionN){
-        homeModel.PostDriverIndex(this,token,city,positionE,positionN);
+
+    @Override
+    public void GetIndex(String token) {
+        homeModel.PostIndex(this,token);
+    }
+
+    @Override
+    public void GetPrice(String kilometre, String order_id, String run_time) {
+        homeModel.PostPrice(this,kilometre,order_id,run_time);
+    }
+
+    public void SetPrice(String money){
+        mView.UpdateEstimatedPrice(money);
     }
 }

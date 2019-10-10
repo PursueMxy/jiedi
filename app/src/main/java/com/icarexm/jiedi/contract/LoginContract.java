@@ -6,7 +6,6 @@ import com.icarexm.jiedi.presenter.LoginPresenter;
 public interface LoginContract {
     interface Model {
         void PostLogin(LoginPresenter loginPresenter, String account, String password, String type);
-        void PostInit();
     }
 
     interface View {

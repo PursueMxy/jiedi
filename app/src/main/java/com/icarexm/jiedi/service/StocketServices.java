@@ -123,9 +123,6 @@ public class StocketServices extends Service {
                     Date date = new Date(aMapLocation.getTime());
                     String format = df.format(date);
                     positionS = aMapLocation.getProvince()+aMapLocation.getProvince()+aMapLocation.getDistrict()+aMapLocation.getStreetNum();
-                    Log.e("定位数据",format+aMapLocation.getStreetNum()+aMapLocation.getAoiName());
-
-
                     String locations = longitude + "," + latitude ;
                     pointsBean pointsBean = new pointsBean(locations, format, aMapLocation.getSpeed() + "", aMapLocation.getDistrict() + "", aMapLocation.getAltitude() + "", aMapLocation.getAccuracy() + "");
                     pointsList.add(pointsBean);
@@ -223,25 +220,25 @@ public class StocketServices extends Service {
             @Override
             public void onMessage(WebSocket webSocket, ByteString bytes) {
                 super.onMessage(webSocket, bytes);
-//                Log.e("BackService2",bytes.toString());
+                Log.e("BackService2",bytes.toString());
             }
 
             @Override
             public void onClosing(WebSocket webSocket, int code, String reason) {
                 super.onClosing(webSocket, code, reason);
-//                Log.e("BackService3",reason);
+                Log.e("BackService3",reason);
             }
 
             @Override
             public void onClosed(WebSocket webSocket, int code, String reason) {
                 super.onClosed(webSocket, code, reason);
-//                Log.e("BackService4",reason);
+                Log.e("BackService4",reason);
             }
 
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, @Nullable Response response) {//长连接连接失败的回调
                 super.onFailure(webSocket, t, response);
-//                Log.e("BackService5","发发发");
+                Log.e("BackService5","发发发");
             }
         });
         client.dispatcher().executorService().shutdown();
@@ -253,7 +250,7 @@ public class StocketServices extends Service {
         @Override
         public void run() {
          position();
-         HeartBateHandler.postDelayed(this,1000);//每隔一定的时间，对长连接进行一次心跳检测
+         HeartBateHandler.postDelayed(this,10000);//每隔一定的时间，对长连接进行一次心跳检测
         }
     };
 

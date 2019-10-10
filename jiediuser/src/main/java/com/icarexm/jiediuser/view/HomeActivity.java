@@ -10,10 +10,12 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -42,11 +44,15 @@ import com.amap.api.services.route.DistanceResult;
 import com.amap.api.services.route.DistanceSearch;
 import com.icarexm.jiediuser.R;
 import com.icarexm.jiediuser.contract.HomeContract;
+import com.icarexm.jiediuser.custview.BottomDialog;
+import com.icarexm.jiediuser.custview.mywheel.MyWheelView;
 import com.icarexm.jiediuser.presenter.HomePresenter;
 import com.icarexm.jiediuser.services.StocketServices;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -75,8 +81,22 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     DrawerLayout drawerLayout;
     @BindView(R.id.home_rl_setorder)
     RelativeLayout rl_setorder;
-
-
+    @BindView(R.id.home_tv_original_price)
+    TextView tv_original_price;
+    @BindView(R.id.home_tv_estimated_price)
+    TextView tv_estimated_price;
+    @BindView(R.id.home_rl_estimated_price)
+    RelativeLayout rl_estimated_price;
+    @BindView(R.id.home_tv_estimated_time)
+    TextView tv_estimated_time;
+     @BindView(R.id.home_ll_lnside_city)
+     LinearLayout ll_lnside_city;
+     @BindView(R.id.home_ll_city_type)
+     LinearLayout ll_city_type;
+     @BindView(R.id.home_tv_TypeNow)
+     TextView tv_typeNow;
+     @BindView(R.id.home_tv_TypeMake)
+     TextView tv_typeMake;
 
 
     private int INOUT_TIPS_CODE=6699;
@@ -96,7 +116,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private AMapLocationClientOption mLocationOption;
     private Context mContext;
     private String cityName;
-    private int ORDER_TYPE=1;
+    private int ORDER_TYPE=0;
     private HomePresenter homePresenter;
     private SharedPreferences sp;
     private String token;
@@ -104,6 +124,36 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private double start_longitude;
     private double start_latitude;
     private DistanceSearch.DistanceQuery distanceQuery;
+
+    //起始经度 纬度 位置
+    private String startingpointE;
+    private String startingpointN;
+    private String startingpoint;
+    //目的地经度纬度 位置
+    private String destinationE;
+    private String destinationN;
+    private String destination;
+
+    //预计里程 时间 价格
+    private  String estimated_mileage;
+    private String estimated_time;
+    private String budget;
+
+    //服务类型  城市 	航班号 预约出发时间,预约时填写
+    private  String service_type;
+     private   String city;
+    private  String flightno;
+    private  String estimatedeparturetime;
+    private String startingpoints;
+    private static final String[] PLANETS = new String[]{"今天", "明天","后天"};
+    private static final String[] HOURS_TYPE = new String[]{"00","01", "02","03","04","05","06","07","08","09","10","11","12"
+    ,"13","14","15","16","17","18","19","20","21","22","23"};
+    private static final String[] min = new String[]{"00", "10","20","30","40","50","60"};
+
+    private String DayString="今天";
+    private String HoursString="00";
+    private String MinString="00";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +163,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         mContext = getApplicationContext();
         sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         token = sp.getString("token", "");
+        homePresenter = new HomePresenter(this);
         mMapView.onCreate(savedInstanceState);
         if (aMap == null) {
             aMap =mMapView.getMap();
@@ -120,10 +171,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         InitUI();
         initService();
         SetLocations();
-        homePresenter = new HomePresenter(this);
+        homePresenter.GetIndex(token);
     }
 
     private void InitUI() {
+        tv_original_price.getPaint().setFlags(Paint. STRIKE_THRU_TEXT_FLAG);
         //路线参数初始化
         distanceSearch = new DistanceSearch(this);
         distanceQuery = new DistanceSearch.DistanceQuery();
@@ -133,7 +185,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i){
                     case R.id.home_radiobutton_inside_city:
-                        ORDER_TYPE=1;
+                        ORDER_TYPE=0;
                         radioButton_inside_city.setBackgroundResource(R.drawable.myorder_choosed_color);
                         radioButton_inside_city.setTextColor(getResources().getColor(R.color.ff5181fb));
                         radioButton_interciry.setBackgroundResource(R.drawable.myorder_nochoosed_color);
@@ -142,7 +194,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                         radioButton_transfer.setTextColor(getResources().getColor(R.color.black));
                         break;
                     case R.id.home_radiobutton_intercity:
-                        ORDER_TYPE=2;
+                        ORDER_TYPE=1;
                         radioButton_inside_city.setBackgroundResource(R.drawable.myorder_nochoosed_color);
                         radioButton_inside_city.setTextColor(getResources().getColor(R.color.black));
                         radioButton_interciry.setBackgroundResource(R.drawable.myorder_choosed_color);
@@ -151,7 +203,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                         radioButton_transfer.setTextColor(getResources().getColor(R.color.black));
                         break;
                     case R.id.home_radiobutton_transfer:
-                        ORDER_TYPE=3;
+                        ORDER_TYPE=2;
                         radioButton_inside_city.setBackgroundResource(R.drawable.myorder_nochoosed_color);
                         radioButton_inside_city.setTextColor(getResources().getColor(R.color.black));
                         radioButton_interciry.setBackgroundResource(R.drawable.myorder_nochoosed_color);
@@ -169,7 +221,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
 
     @OnClick({R.id.home_tv_destination,R.id.home_top_img_left,R.id.home_tv_edt_materials,R.id.home_tv_myorder,R.id.home_tv_price
-    ,R.id.home_tv_set,R.id.home_tv_message_center,R.id.home_tv_recommend})
+    ,R.id.home_tv_set,R.id.home_tv_message_center,R.id.home_tv_recommend,R.id.home_btn_confirm_order,R.id.home_tv_TypeNow,
+            R.id.home_tv_TypeMake,R.id.home_tv_estimated_time})
     public void  onViewClick(View view){
         switch (view.getId()){
             case R.id.home_tv_destination:
@@ -199,27 +252,54 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             case R.id.home_tv_recommend:
                 startActivity(new Intent(mContext,RecommendActivity.class));
                 break;
+            case R.id.home_btn_confirm_order:
+                stocketService.place_order(startingpointE,startingpointN,startingpoint,destinationE,destinationN,destination,
+                        estimated_mileage,estimated_time,budget,ORDER_TYPE+"",cityName,flightno,estimatedeparturetime);
+                break;
+            case R.id.home_tv_TypeNow:
+                tv_estimated_time.setVisibility(View.GONE);
+                ll_city_type.setBackgroundResource(R.mipmap.icon_bluewhite);
+                tv_typeNow.setTextColor(getResources().getColor(R.color.white));
+                tv_typeMake.setTextColor(getResources().getColor(R.color.black));
+                break;
+            case R.id.home_tv_TypeMake:
+                tv_estimated_time.setVisibility(View.VISIBLE);
+                ll_city_type.setBackgroundResource(R.mipmap.icon_whiteblue);
+                tv_typeNow.setTextColor(getResources().getColor(R.color.black));
+                tv_typeMake.setTextColor(getResources().getColor(R.color.white));
+                break;
+            case R.id.home_tv_estimated_time:
+                AppointmentDialog();
+                break;
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode==INOUT_TIPS_CODE){
-            String tip = data.getStringExtra("tip");
-            String latitude = data.getStringExtra("latitude");
-            String longitude = data.getStringExtra("longitude");
-            String type = data.getStringExtra("type");
-            String poiID = data.getStringExtra("poiID");
-            tv_destination.setText(tip);
-            LatLonPoint start = new LatLonPoint(start_latitude, start_longitude);
-            List<LatLonPoint> latLonPoints = new ArrayList<LatLonPoint>();
-            latLonPoints.add(start);
-            LatLonPoint dest = new LatLonPoint(Double.valueOf(latitude),Double.valueOf( longitude));
-            distanceQuery.setOrigins(latLonPoints);
-            distanceQuery.setDestination(dest);
-               //设置测量方式，支持直线和驾车
-            distanceQuery.setType(DistanceSearch.TYPE_DRIVING_DISTANCE);
-            distanceSearch.calculateRouteDistanceAsyn(distanceQuery);
+            try {
+                String type = data.getStringExtra("type");
+                String tip = data.getStringExtra("tip");
+                String latitude = data.getStringExtra("latitude");
+                String longitude = data.getStringExtra("longitude");
+                String poiID = data.getStringExtra("poiID");
+                tv_destination.setText(tip);
+                LatLonPoint start = new LatLonPoint(start_latitude, start_longitude);
+                List<LatLonPoint> latLonPoints = new ArrayList<LatLonPoint>();
+                latLonPoints.add(start);
+                LatLonPoint dest = new LatLonPoint(Double.valueOf(latitude), Double.valueOf(longitude));
+                distanceQuery.setOrigins(latLonPoints);
+                distanceQuery.setDestination(dest);
+                //设置测量方式，支持直线和驾车
+                distanceQuery.setType(DistanceSearch.TYPE_DRIVING_DISTANCE);
+                distanceSearch.calculateRouteDistanceAsyn(distanceQuery);
+                startingpointN = start_latitude + "";
+                startingpointE = start_longitude + "";
+                startingpoint = startingpoints;
+                destinationN = latitude;
+                destinationE = longitude;
+                destination = tip;
+            }catch (Exception e){}
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -307,8 +387,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     markers = aMap.addMarker(markerOption);
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude()));
                     aMap.moveCamera(cameraUpdate);
+                    startingpoints = aMapLocation.getCity()+aMapLocation.getDistrict()+aMapLocation.getStreet()+aMapLocation.getAoiName()+aMapLocation.getStreetNum();
                     tv_startingpoint.setText(aMapLocation.getCity()+aMapLocation.getDistrict()+aMapLocation.getStreet()+aMapLocation.getAoiName()+aMapLocation.getStreetNum());
-                    homePresenter.GetDriverIndex(token,cityName, aMapLocation.getLongitude()+"", aMapLocation.getLatitude()+"");
                 }else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                     Log.e("AmapError", aMapLocation.getErrorCode()+"");
@@ -345,7 +425,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         mMapView.onDestroy();
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -371,14 +450,92 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
+
     //路程计算返回参数
     @Override
     public void onDistanceSearched(DistanceResult distanceResult, int i) {
         if (i==1000){
             List<DistanceItem> distanceResults = distanceResult.getDistanceResults();
-            float duration = distanceResults.get(0).getDuration();//大约时间
+            float duration = distanceResults.get(0).getDuration()/60;//大约时间
             float distance = distanceResults.get(0).getDistance()/1000;//长度(公里）
-            rl_setorder.setVisibility(View.GONE);
+            estimated_mileage=distance+"";
+            estimated_time=duration+"";
+            homePresenter.GetPrice(estimated_mileage,"0",estimated_time);
         }
+    }
+
+    //显示路程预计价格
+    public void UpdateEstimatedPrice(String money){
+        rl_setorder.setVisibility(View.GONE);
+        rl_estimated_price.setVisibility(View.VISIBLE);
+        tv_estimated_price.setText(money);
+        tv_original_price.setText(money);
+        budget=money;
+    }
+
+    //选择时间dialog
+    public void  AppointmentDialog(){
+        final BottomDialog bottomDialog = new BottomDialog(this, R.style.ActionSheetDialogStyle);
+        View inflate = LayoutInflater.from(mContext).inflate(R.layout.dialog_reserce_time, null);
+        MyWheelView wva = inflate.findViewById(R.id.dialog_reserce_time_wheel_one);
+        wva.setItems(Arrays.asList(PLANETS),0);//init selected position is 1 初始选中位置为1
+        MyWheelView wva_two = inflate.findViewById(R.id.dialog_reserce_time_wheel_two);
+        wva_two.setItems(Arrays.asList(HOURS_TYPE),0);//init selected position is 1 初始选中位置为1
+        MyWheelView wva_three = inflate.findViewById(R.id.dialog_reserce_time_wheel_three);
+        wva_three.setItems(Arrays.asList(min),0);
+        wva.setOnItemSelectedListener(new MyWheelView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(int selectedIndex, String item) {
+                DayString=item;
+            }
+        });
+        wva_two.setOnItemSelectedListener(new MyWheelView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(int selectedIndex, String item) {
+                HoursString=item;
+            }
+        });
+        wva_three.setOnItemSelectedListener(new MyWheelView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(int selectedIndex, String item) {
+                MinString=item;
+            }
+        });
+        inflate.findViewById(R.id.dialog_reserce_time_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bottomDialog.dismiss();
+            }
+        });
+        inflate.findViewById(R.id.dialog_reserce_time_confirm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                String getDay=""+day;
+                if (DayString.equals("00")){
+                    DayString="今天";
+                    getDay=""+day;
+                }else if (DayString.equals("今天")){
+                    getDay=""+day;
+                }else if (DayString.equals("明天")){
+                    getDay=""+(day+1);
+                }else if (DayString.equals("后天")){
+                    getDay=""+(day+2);
+                }
+                estimatedeparturetime=year+"-"+month+"-"+getDay+"  "+HoursString+":"+MinString;
+                tv_estimated_time.setText(DayString+" "+HoursString+":"+MinString);
+                bottomDialog.dismiss();
+            }
+        });
+        //防止弹出两个窗口
+        if (bottomDialog !=null && bottomDialog.isShowing()) {
+            return;
+        }
+
+        bottomDialog.setContentView(inflate);
+        bottomDialog.show();
     }
 }
