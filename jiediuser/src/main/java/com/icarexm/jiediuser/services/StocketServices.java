@@ -192,6 +192,8 @@ public class StocketServices extends Service {
                               if (event.equals("login")){
 //                                  MainActivity.GetOrderStatus();
                               }
+                          }else {
+                              ToastUtils.showToast(getApplicationContext(),servicesMsgBean.getMsg());
                           }
                       }
                   }catch (Exception e){
@@ -257,7 +259,6 @@ public class StocketServices extends Service {
         String place_order = new Gson().toJson(new PlaceOrderBean(token, "0", mobile, user_id, "place_order", new PlaceOrderBean.data(startingpointE, startingpointN, startingpoint, destinationE, destinationN, destination, estimated_mileage
                 , estimated_time, budget, service_type, city, flightnom, estimatedeparturetime)));
         boolean isSuccess = mWebSocket.send("");
-        ToastUtils.showToast(getApplicationContext(),"开始下单");
         if (!isSuccess) {//长连接已断开
             mWebSocket.cancel();//取消掉以前的长连接
             mWebSocket.send(place_order);

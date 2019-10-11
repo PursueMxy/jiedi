@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -43,9 +44,11 @@ import com.amap.api.services.route.DistanceItem;
 import com.amap.api.services.route.DistanceResult;
 import com.amap.api.services.route.DistanceSearch;
 import com.icarexm.jiediuser.R;
+import com.icarexm.jiediuser.bean.OrderDetailBean;
 import com.icarexm.jiediuser.contract.HomeContract;
 import com.icarexm.jiediuser.custview.BottomDialog;
 import com.icarexm.jiediuser.custview.mywheel.MyWheelView;
+import com.icarexm.jiediuser.model.AccountingRulesModel;
 import com.icarexm.jiediuser.presenter.HomePresenter;
 import com.icarexm.jiediuser.services.StocketServices;
 
@@ -79,14 +82,10 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     RadioGroup radioGroup;
     @BindView(R.id.drawerlayout)
     DrawerLayout drawerLayout;
-    @BindView(R.id.home_rl_setorder)
-    RelativeLayout rl_setorder;
     @BindView(R.id.home_tv_original_price)
     TextView tv_original_price;
     @BindView(R.id.home_tv_estimated_price)
     TextView tv_estimated_price;
-    @BindView(R.id.home_rl_estimated_price)
-    RelativeLayout rl_estimated_price;
     @BindView(R.id.home_tv_estimated_time)
     TextView tv_estimated_time;
      @BindView(R.id.home_ll_lnside_city)
@@ -97,6 +96,35 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
      TextView tv_typeNow;
      @BindView(R.id.home_tv_TypeMake)
      TextView tv_typeMake;
+    //下单页面
+    @BindView(R.id.home_rl_setorder)
+    RelativeLayout rl_order_setorder;
+    //预计价格页面
+    @BindView(R.id.home_rl_estimated_price)
+    RelativeLayout rl_order_estimated_price;
+    //取消订单页面
+    @BindView(R.id.home_rl_cancel_order)
+    RelativeLayout rl_order_cancel;
+    //订单评价页面
+    @BindView(R.id.home_rl_order_evaluate)
+    RelativeLayout rl_order_evaluate;
+    @BindView(R.id.home_define_tv_car_code)
+    TextView define_tv_car_code;
+    @BindView(R.id.home_define_tv_carName)
+    TextView define_tv_carName;
+    @BindView(R.id.home_define_tv_driver_evaluate)
+    TextView define_tv_driver_evaluate;
+    @BindView(R.id.home_define_ratingBar)
+    RatingBar define_ratingBar;
+    @BindView(R.id.home_define_tv_moneys)
+    TextView define_tv_money;
+    //订单已评价页面
+    @BindView(R.id.home_rl_order_stop_evaluate)
+    RelativeLayout rl_order_stop_evaluate;
+    //订单已取消
+    @BindView(R.id.home_rl_order_cancelled)
+    RelativeLayout rl_order_cancelled;
+
 
 
     private int INOUT_TIPS_CODE=6699;
@@ -172,6 +200,24 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         initService();
         SetLocations();
         homePresenter.GetIndex(token);
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        String order_id = intent.getStringExtra("order_id");
+        String status = intent.getStringExtra("status");
+        if (status.equals("6")){
+            rl_order_cancel.setVisibility(View.GONE);
+            rl_order_cancelled.setVisibility(View.GONE);
+            rl_order_estimated_price.setVisibility(View.GONE);
+            rl_order_stop_evaluate.setVisibility(View.GONE);
+            rl_order_setorder.setVisibility(View.GONE);
+            rl_order_evaluate.setVisibility(View.VISIBLE);
+            homePresenter.GetOrderPrice(token,order_id,status);
+        }
+        super.onNewIntent(intent);
+        // 跳转首页或者其他操作
     }
 
     private void InitUI() {
@@ -222,7 +268,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     @OnClick({R.id.home_tv_destination,R.id.home_top_img_left,R.id.home_tv_edt_materials,R.id.home_tv_myorder,R.id.home_tv_price
     ,R.id.home_tv_set,R.id.home_tv_message_center,R.id.home_tv_recommend,R.id.home_btn_confirm_order,R.id.home_tv_TypeNow,
-            R.id.home_tv_TypeMake,R.id.home_tv_estimated_time})
+            R.id.home_tv_TypeMake,R.id.home_tv_estimated_time,R.id.home_tv_accounting_rules,R.id.home_define_btn_confirm})
     public void  onViewClick(View view){
         switch (view.getId()){
             case R.id.home_tv_destination:
@@ -236,21 +282,27 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 break;
             case R.id.home_tv_edt_materials:
                 startActivity(new Intent(mContext,EdtMaterialsActivity.class));
+                drawerLayout.closeDrawers();
                 break;
             case R.id.home_tv_myorder:
                 startActivity(new Intent(mContext,MyOrderActivity.class));
+                drawerLayout.closeDrawers();
                 break;
             case R.id.home_tv_price:
                 startActivity(new Intent(mContext,PriceActivity.class));
+                drawerLayout.closeDrawers();
                 break;
             case R.id.home_tv_set:
                 startActivity(new Intent(mContext,SetActivity.class));
+                drawerLayout.closeDrawers();
                 break;
             case R.id.home_tv_message_center:
                 startActivity(new Intent(mContext,MessageCenterActivity.class));
+                drawerLayout.closeDrawers();
                 break;
             case R.id.home_tv_recommend:
                 startActivity(new Intent(mContext,RecommendActivity.class));
+                drawerLayout.closeDrawers();
                 break;
             case R.id.home_btn_confirm_order:
                 stocketService.place_order(startingpointE,startingpointN,startingpoint,destinationE,destinationN,destination,
@@ -270,6 +322,14 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 break;
             case R.id.home_tv_estimated_time:
                 AppointmentDialog();
+                break;
+            case R.id.home_tv_accounting_rules:
+                startActivity(new Intent(mContext, AccountingRulesActivity.class));
+                drawerLayout.closeDrawers();
+                break;
+            case R.id.home_define_btn_confirm:
+                float rating = define_ratingBar.getRating();
+
                 break;
         }
     }
@@ -466,8 +526,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     //显示路程预计价格
     public void UpdateEstimatedPrice(String money){
-        rl_setorder.setVisibility(View.GONE);
-        rl_estimated_price.setVisibility(View.VISIBLE);
+        rl_order_setorder.setVisibility(View.GONE);
+        rl_order_estimated_price.setVisibility(View.VISIBLE);
         tv_estimated_price.setText(money);
         tv_original_price.setText(money);
         budget=money;
@@ -537,5 +597,13 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
         bottomDialog.setContentView(inflate);
         bottomDialog.show();
+    }
+
+    //获取订单详情
+    public void UpdateOrderDtl(OrderDetailBean.DataBean data){
+        define_tv_car_code.setText(data.getDriverInfo().getLicenseplate());
+        define_tv_carName.setText(data.getDriverInfo().getNickname()+"  "+data.getDriverInfo().getOrder_count());
+        define_tv_driver_evaluate.setText(data.getDriver_evaluate());
+        define_tv_money.setText(data.getMoney());
     }
 }

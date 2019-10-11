@@ -1,5 +1,6 @@
 package com.icarexm.jiediuser.presenter;
 
+import com.icarexm.jiediuser.bean.OrderDetailBean;
 import com.icarexm.jiediuser.contract.HomeContract;
 import com.icarexm.jiediuser.model.HomeModel;
 
@@ -23,7 +24,16 @@ public class HomePresenter implements HomeContract.Presenter {
         homeModel.PostPrice(this,kilometre,order_id,run_time);
     }
 
+    @Override
+    public void GetOrderPrice(String token, String order_id, String orderStatus) {
+        homeModel.PostOrderPrice(this,token,order_id,orderStatus);
+    }
+
     public void SetPrice(String money){
         mView.UpdateEstimatedPrice(money);
+    }
+
+    public void SetOrderDetail(OrderDetailBean.DataBean data){
+        mView.UpdateOrderDtl(data);
     }
 }

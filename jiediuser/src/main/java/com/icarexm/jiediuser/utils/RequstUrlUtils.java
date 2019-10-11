@@ -40,5 +40,17 @@ public class RequstUrlUtils {
 
         //计价【选填订单号】
         public static String price=Host+"/api/order/price";
+
+        //优惠券
+        public static  String couponindex=Host+"/api/coupon/index";
+
+//        余额明细 /api/member/money_log
+        public static String money_log=Host+"/api/member/money_log";
+
+//        结算支付 /api/order/settlement
+        public static String Settlement=Host+"/api/order/settlement";
+
+
+
     }
 }

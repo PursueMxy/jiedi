@@ -65,6 +65,7 @@
             android:layout_height="@dimen/dp_3"/>
 
         <RelativeLayout
+            android:id="@+id/set_rl_agreement_explain"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_46">
             <TextView
@@ -93,6 +94,7 @@
             android:layout_height="@dimen/dp_3"/>
 
         <RelativeLayout
+            android:id="@+id/set_rl_about"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_46">
             <TextView

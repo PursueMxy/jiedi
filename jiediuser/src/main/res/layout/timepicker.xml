@@ -8,31 +8,31 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    <com.icarexm.jiedi.custView.wheel.WheelView
+    <com.icarexm.jiediuser.custview.wheel.WheelView
         android:id="@+id/year"
         android:layout_width="wrap_content"
         android:layout_weight="1"
         android:layout_height="wrap_content" />
 
-    <com.icarexm.jiedi.custView.wheel.WheelView
+    <com.icarexm.jiediuser.custview.wheel.WheelView
         android:id="@+id/month"
         android:layout_width="wrap_content"
         android:layout_weight="1"
         android:layout_height="wrap_content" />
 
-    <com.icarexm.jiedi.custView.wheel.WheelView
+    <com.icarexm.jiediuser.custview.wheel.WheelView
         android:id="@+id/day"
         android:layout_width="wrap_content"
         android:layout_weight="1"
         android:layout_height="wrap_content" />
 
-    <com.icarexm.jiedi.custView.wheel.WheelView
+    <com.icarexm.jiediuser.custview.wheel.WheelView
         android:id="@+id/hour"
         android:layout_width="wrap_content"
         android:layout_weight="1"
         android:layout_height="wrap_content" />
 
-    <com.icarexm.jiedi.custView.wheel.WheelView
+    <com.icarexm.jiediuser.custview.wheel.WheelView
         android:id="@+id/min"
         android:layout_width="wrap_content"
         android:layout_weight="1"

@@ -37,6 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_94">
         <TextView
+            android:id="@+id/order_pay_tv_licenseplate"
             android:layout_marginTop="@dimen/dp_18"
             android:layout_marginLeft="@dimen/dp_10"
             android:layout_width="wrap_content"
@@ -51,7 +52,7 @@
             android:id="@+id/order_pay_tv_car_brand"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="蓝色本田"
+            android:text=""
             android:textColor="@color/black"
             android:textSize="@dimen/sp_14"
             />
@@ -68,6 +69,7 @@
             />
 
         <TextView
+            android:id="@+id/order_pay_tv_order_count"
             android:layout_toRightOf="@+id/order_pay_tv_carname"
             android:layout_marginTop="@dimen/dp_56"
             android:layout_marginLeft="@dimen/dp_10"
@@ -79,6 +81,7 @@
             />
 
         <ImageView
+            android:id="@+id/order_pay_img_head"
             android:layout_marginRight="@dimen/dp_10"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
@@ -109,6 +112,7 @@
                 />
 
             <TextView
+                android:id="@+id/order_pay_tv_money"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="@dimen/dp_10"
                 android:layout_alignParentRight="true"
@@ -139,6 +143,7 @@
                 />
 
             <TextView
+                android:id="@+id/order_pay_tv_coupon"
                 android:drawablePadding="@dimen/dp_10"
                 android:drawableRight="@mipmap/icon_right"
                 android:layout_centerVertical="true"
@@ -158,6 +163,7 @@
             android:background="@drawable/ffefeff4"/>
 
         <TextView
+            android:id="@+id/order_pay_tv_account_money"
             android:layout_marginTop="@dimen/dp_9"
             android:layout_gravity="center"
             android:layout_width="wrap_content"
@@ -188,6 +194,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_136">
         <RelativeLayout
+            android:id="@+id/order_pay_rl_balancepay"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -203,6 +210,7 @@
                 android:textSize="@dimen/sp_15"
                 />
             <ImageView
+                android:id="@+id/order_pay_img_balance"
                 android:layout_centerVertical="true"
                 android:src="@mipmap/icon_cb_select"
                 android:layout_marginRight="@dimen/dp_10"
@@ -215,6 +223,7 @@
             android:layout_height="@dimen/dp_1"
             android:background="@drawable/ffefeff4"/>
         <RelativeLayout
+            android:id="@+id/order_pay_rl_alipay"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -230,6 +239,7 @@
                 android:textSize="@dimen/sp_15"
                 />
             <ImageView
+                android:id="@+id/order_pay_img_ali"
                 android:layout_centerVertical="true"
                 android:src="@mipmap/icon_cb_no"
                 android:layout_marginRight="@dimen/dp_10"
@@ -242,6 +252,7 @@
             android:layout_height="@dimen/dp_1"
             android:background="@drawable/ffefeff4"/>
         <RelativeLayout
+            android:id="@+id/order_pay_rl_wechatpay"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -257,6 +268,7 @@
                 android:textSize="@dimen/sp_15"
                 />
             <ImageView
+                android:id="@+id/order_pay_img_wechat"
                 android:layout_centerVertical="true"
                 android:src="@mipmap/icon_cb_no"
                 android:layout_marginRight="@dimen/dp_10"
@@ -267,6 +279,7 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/order_pay_btn_confirm"
         android:layout_marginTop="@dimen/dp_64"
         android:layout_marginLeft="@dimen/dp_45"
         android:layout_marginRight="@dimen/dp_45"

@@ -104,6 +104,7 @@
             android:layout_height="@dimen/dp_2"/>
 
         <RelativeLayout
+            android:id="@+id/price_rl_coupon"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_44">
             <TextView

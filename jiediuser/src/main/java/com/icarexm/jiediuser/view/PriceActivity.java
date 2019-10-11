@@ -24,7 +24,7 @@ public class PriceActivity extends AppCompatActivity {
         mContext = getApplicationContext();
         ButterKnife.bind(this);
     }
-    @OnClick({R.id.price_btn_recharge,R.id.price_img_back,R.id.price_rl_balance_dtl})
+    @OnClick({R.id.price_btn_recharge,R.id.price_img_back,R.id.price_rl_balance_dtl,R.id.price_rl_coupon})
     public void onViewClick(View view){
         switch (view.getId()){
             case R.id.price_btn_recharge:
@@ -35,6 +35,9 @@ public class PriceActivity extends AppCompatActivity {
                 break;
             case R.id.price_rl_balance_dtl:
                 startActivity(new Intent(mContext,BalanceDetailActivity.class));
+                break;
+            case R.id.price_rl_coupon:
+                startActivity(new Intent(mContext,MyCouponActivity.class));
                 break;
 
         }

@@ -1,6 +1,7 @@
 package com.icarexm.jiediuser.adapter;
 
 import android.content.Context;
+import android.view.View;
 import android.widget.TextView;
 
 import com.icarexm.jiediuser.R;
@@ -22,6 +23,8 @@ public class MyOrderAdapter extends HelperRecyclerViewAdapter<OrderListOneBean.D
         OrderListOneBean.DataBean.OrderBean data = getData(position);
         TextView order_status = viewHolder.getView(R.id.list_home_order_status);
         TextView tv_order_statusName = viewHolder.getView(R.id.list_home_order_statusName);
+        TextView tv_time = viewHolder.getView(R.id.list_home_order_time);
+        tv_time.setText(data.getTime());
         if (data.getService_type().equals("0")||data.getService_type().equals("1")) {
             if (!data.getTime_of_appointment().equals("")) {
                 tv_order_statusName.setText(data.getTime_of_appointment());
@@ -60,5 +63,6 @@ public class MyOrderAdapter extends HelperRecyclerViewAdapter<OrderListOneBean.D
         }else if (data.getStatus().equals("10")){
             tv_status.setText("半途取消");
         }
+
     }
 }

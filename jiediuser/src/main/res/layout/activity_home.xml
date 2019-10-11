@@ -93,7 +93,6 @@
 
         <!--下单页面-->
      <RelativeLayout
-         android:visibility="gone"
          android:layout_marginBottom="@dimen/dp_20"
          android:layout_alignParentBottom="true"
          android:id="@+id/home_rl_setorder"
@@ -400,6 +399,7 @@
 
     <!--订单评价页面-->
     <RelativeLayout
+        android:id="@+id/home_rl_order_evaluate"
             android:visibility="gone"
             android:layout_marginRight="@dimen/dp_10"
             android:layout_marginLeft="@dimen/dp_10"
@@ -443,6 +443,7 @@
                 />
 
             <TextView
+                android:id="@+id/home_define_tv_driver_evaluate"
                 android:drawablePadding="@dimen/dp_5"
                 android:drawableLeft="@mipmap/icon_five_pointed"
                 android:layout_marginLeft="@dimen/dp_10"
@@ -456,6 +457,7 @@
                 />
 
             <TextView
+                android:id="@+id/home_define_tv_moneys"
                 android:drawablePadding="@dimen/dp_10"
                 android:drawableRight="@mipmap/icon_right_red"
                 android:layout_alignParentRight="true"
@@ -483,7 +485,7 @@
                 android:textSize="@dimen/sp_14"
                 />
             <RatingBar
-                android:id="@+id/main_define_ratingBar1"
+                android:id="@+id/home_define_ratingBar"
                 android:stepSize="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -491,11 +493,11 @@
                 android:layout_marginTop="@dimen/dp_130" />
 
             <Button
-                android:id="@+id/main_define_btn_confirm"
+                android:id="@+id/home_define_btn_confirm"
                 android:layout_marginLeft="@dimen/dp_33"
                 android:layout_marginRight="@dimen/dp_33"
                 android:layout_marginBottom="@dimen/dp_10"
-                android:layout_below="@+id/main_define_ratingBar1"
+                android:layout_below="@+id/home_define_ratingBar"
                 android:textColor="@color/white"
                 android:text="提交"
                 android:background="@drawable/bg_blue"
@@ -507,6 +509,7 @@
 
     <!--订单已评价页面-->
      <RelativeLayout
+         android:id="@+id/home_rl_order_stop_evaluate"
             android:visibility="gone"
             android:layout_marginRight="@dimen/dp_10"
             android:layout_marginLeft="@dimen/dp_10"
@@ -603,6 +606,7 @@
         </RelativeLayout>
      <!--订单已取消-->
     <RelativeLayout
+        android:id="@+id/home_rl_order_cancelled"
         android:visibility="gone"
         android:layout_marginRight="@dimen/dp_10"
         android:layout_marginLeft="@dimen/dp_10"
@@ -696,6 +700,7 @@
                 />
         </LinearLayout>
     </RelativeLayout>
+
      </RelativeLayout>
 
 
@@ -763,7 +768,7 @@
                 android:drawableLeft="@mipmap/icon_home_order"
                 android:drawablePadding="@dimen/dp_10"
                 android:layout_marginTop="@dimen/dp_27"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="我的订单"
                 android:textColor="@color/black"
@@ -775,7 +780,7 @@
                 android:layout_marginTop="@dimen/dp_24"
                 android:drawablePadding="@dimen/dp_10"
                 android:drawableLeft="@mipmap/icon_home_price"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="我的钱包"
                 android:textColor="@color/black"
@@ -788,7 +793,7 @@
                 android:layout_marginTop="@dimen/dp_24"
                 android:drawablePadding="@dimen/dp_10"
                 android:drawableLeft="@mipmap/icon_home_message"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="消息中心"
                 android:textColor="@color/black"
@@ -801,7 +806,7 @@
                 android:layout_marginTop="@dimen/dp_24"
                 android:drawablePadding="@dimen/dp_10"
                 android:drawableLeft="@mipmap/icon_home_recommend"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="推荐有奖"
                 android:textColor="@color/black"
@@ -814,18 +819,19 @@
                 android:layout_marginTop="@dimen/dp_24"
                 android:drawablePadding="@dimen/dp_10"
                 android:drawableLeft="@mipmap/icon_home_set"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="设置"
                 android:textColor="@color/black"
                 android:textSize="@dimen/sp_15"
                 />
             <TextView
+                android:id="@+id/home_tv_accounting_rules"
                 android:drawablePadding="@dimen/dp_13"
                 android:drawableLeft="@mipmap/icon_home_left"
                 android:layout_marginLeft="@dimen/dp_24"
                 android:layout_marginTop="@dimen/dp_119"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="计费规则说明"
                 android:textColor="@color/black"

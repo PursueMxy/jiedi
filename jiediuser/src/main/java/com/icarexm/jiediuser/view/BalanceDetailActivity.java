@@ -5,26 +5,37 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
 import com.icarexm.jiediuser.R;
 import com.icarexm.jiediuser.adapter.BalanceDtlAdapter;
 import com.icarexm.jiediuser.bean.OrderListOneBean;
+import com.icarexm.jiediuser.contract.BalanceDetailContract;
+import com.icarexm.jiediuser.custview.wheel.ScreenInfo;
+import com.icarexm.jiediuser.custview.wheel.WheelMain;
+import com.icarexm.jiediuser.presenter.BalanceDetailPresenter;
+import com.icarexm.jiediuser.utils.DateUtils;
 import com.icarexm.jiediuser.utils.MxyUtils;
 import com.zhouyou.recyclerview.XRecyclerView;
 import com.zhouyou.recyclerview.adapter.BaseRecyclerViewAdapter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class BalanceDetailActivity extends AppCompatActivity {
+public class BalanceDetailActivity extends AppCompatActivity implements BalanceDetailContract.View {
 
     @BindView(R.id.balance_dtl_tv_time)
     TextView tv_time;
@@ -34,6 +45,11 @@ public class BalanceDetailActivity extends AppCompatActivity {
     private LinearLayoutManager mLayoutManager;
     private BalanceDtlAdapter balanceDtlAdapter;
     private List<OrderListOneBean.DataBean.OrderBean> list=new ArrayList<>();
+    private BalanceDetailPresenter balanceDetailPresenter;
+    private String token;
+    private String OrderTime;
+    private String limit="10";
+    private int page=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +57,13 @@ public class BalanceDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_balance_detail);
         mContext = getApplicationContext();
         ButterKnife.bind(this);
+        SharedPreferences sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        token = sp.getString("token", "");
+        balanceDetailPresenter = new BalanceDetailPresenter(this);
+        OrderTime = DateUtils.Todays();
+        tv_time.setText(OrderTime);
         InitUI();
+        balanceDetailPresenter.GetBalanceDtl(token,OrderTime,limit,page+"");
     }
 
     private void InitUI() {
@@ -83,5 +105,50 @@ public class BalanceDetailActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @OnClick({R.id.balance_dtl_img_back,R.id.balance_dtl_tv_time})
+    public void onViewClick(View view){
+        switch (view.getId()){
+            case R.id.balance_dtl_img_back:
+                finish();
+                break;
+            case R.id.balance_dtl_tv_time:
+                View timepickerview = LayoutInflater.from(mContext).inflate(R.layout.timepicker, null);
+                final WheelMain wheelMain = new WheelMain(timepickerview,false);
+                ScreenInfo screenInfo = new ScreenInfo(BalanceDetailActivity.this);
+                wheelMain.screenheight = screenInfo.getHeight();
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month= calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                wheelMain.initDateTimePicker(year, month, day,0,0);
+                AlertDialog.Builder dialog = new AlertDialog.Builder(BalanceDetailActivity.this)
+                        .setTitle("请选择日期")
+                        .setView(timepickerview)
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                String time = wheelMain.getDate();
+                                tv_time.setText(time);
+                                OrderTime=time;
+                                page=1;
+                                balanceDetailPresenter.GetBalanceDtl(token,OrderTime,limit,page+"");
+                            }
+                        });
+                dialog.show();
+                break;
+        }
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
     }
 }

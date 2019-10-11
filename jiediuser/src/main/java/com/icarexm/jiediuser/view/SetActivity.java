@@ -31,7 +31,7 @@ public class SetActivity extends AppCompatActivity {
         ButterKnife.bind(this);
     }
 
-    @OnClick({R.id.set_rl_clean_cache,R.id.set_img_back,R.id.set_rl_emergency_contact})
+    @OnClick({R.id.set_rl_clean_cache,R.id.set_img_back,R.id.set_rl_emergency_contact,R.id.set_rl_about,R.id.set_rl_agreement_explain})
     public void onViewClick(View view){
         switch (view.getId()){
             case R.id.set_rl_clean_cache:
@@ -43,6 +43,12 @@ public class SetActivity extends AppCompatActivity {
                 break;
             case R.id.set_rl_emergency_contact:
                 startActivity(new Intent(mContext,EmergencyContactActivity.class));
+                break;
+            case R.id.set_rl_about:
+                startActivity(new Intent(mContext,AboutActivity.class));
+                break;
+            case R.id.set_rl_agreement_explain:
+                startActivity(new Intent(mContext,AgreementExplainActivity.class));
                 break;
         }
     }

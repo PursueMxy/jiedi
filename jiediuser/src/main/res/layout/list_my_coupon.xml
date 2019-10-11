@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+<RelativeLayout
+    android:background="@mipmap/icon_coupon_gray"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_145">
+
+    <TextView
+        android:layout_marginTop="@dimen/dp_41"
+        android:layout_marginLeft="@dimen/dp_23"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="￥"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_24"
+        />
+    <TextView
+        android:id="@+id/my_coupon_tv_price"
+        android:layout_marginLeft="@dimen/dp_47"
+        android:layout_marginTop="@dimen/dp_30"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_36"
+        />
+    <View
+        android:id="@+id/my_coupon_view_divider"
+        android:layout_toRightOf="@+id/my_coupon_tv_price"
+        android:layout_marginLeft="@dimen/dp_17"
+        android:layout_marginTop="@dimen/dp_14"
+        android:layout_width="@dimen/dp_2"
+        android:layout_height="@dimen/dp_81"
+        android:background="@drawable/divider"/>
+
+    <TextView
+    android:id="@+id/my_coupon_tv_price_name"
+    android:layout_toRightOf="@+id/my_coupon_view_divider"
+    android:layout_marginTop="@dimen/dp_23"
+    android:layout_marginLeft="@dimen/dp_23"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/dp_19"
+    android:text="5元优惠券"
+    android:textColor="#ffffffff"
+    android:textSize="14sp"
+    />
+    <TextView
+        android:layout_marginTop="@dimen/dp_5"
+        android:layout_alignLeft="@+id/my_coupon_tv_price_name"
+        android:layout_below="@+id/my_coupon_tv_price_name"
+        android:id="@+id/my_coupon_tv_price_limit"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_16"
+        android:text="满30使用"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_12"
+        />
+
+    <TextView
+        android:layout_marginTop="@dimen/dp_5"
+        android:layout_alignLeft="@+id/my_coupon_tv_price_name"
+        android:id="@+id/my_coupon_tv_city_limit"
+        android:layout_below="@+id/my_coupon_tv_price_limit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="仅限城内出行可用"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_12"
+        />
+
+    <TextView
+        android:layout_marginLeft="@dimen/dp_26"
+        android:layout_marginTop="@dimen/dp_109"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="使用期限：2019.07.02.-2019.09.02"
+        android:textColor="@color/ff707070"
+        android:textSize="@dimen/sp_12"
+        />
+</RelativeLayout>
+</RelativeLayout>
