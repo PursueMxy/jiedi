@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.EvaluateActivity">
+    <RelativeLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_height">
+
+        <ImageView
+            android:id="@+id/evaluate_img_back"
+            android:layout_marginLeft="@dimen/left_size"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/icon_left_black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:text="订单评价"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.amap.api.maps.MapView
+            android:id="@+id/evaluate_map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    <!--订单评价页面-->
+    <RelativeLayout
+        android:id="@+id/evaluate_rl_order_evaluate"
+        android:visibility="gone"
+        android:layout_marginRight="@dimen/dp_10"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_above="@+id/evaluate_rl_define"
+            android:id="@+id/evaluate_img_define_safety"
+            android:src="@mipmap/icon_safe"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_54" />
+
+        <RelativeLayout
+            android:layout_alignParentBottom="true"
+            android:id="@+id/evaluate_rl_define"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/evaluate_define_tv_car_code"
+                android:layout_marginTop="@dimen/dp_11"
+                android:layout_marginLeft="@dimen/dp_9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="闽A3NS45"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_20"
+                android:drawablePadding="@dimen/dp_15"
+                android:drawableRight="@mipmap/icon_call"
+                />
+            <TextView
+                android:id="@+id/evaluate_define_tv_carName"
+                android:layout_marginLeft="@dimen/dp_9"
+                android:layout_marginTop="@dimen/dp_46"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="张师傅  465单"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_14"
+                />
+
+            <TextView
+                android:id="@+id/evaluate_define_tv_driver_evaluate"
+                android:drawablePadding="@dimen/dp_5"
+                android:drawableLeft="@mipmap/icon_five_pointed"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:layout_toRightOf="@+id/evaluate_define_tv_carName"
+                android:layout_marginTop="@dimen/dp_48"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5.0"
+                android:textColor="@color/ff707070"
+                android:textSize="@dimen/sp_12"
+                />
+
+            <TextView
+                android:id="@+id/evaluate_define_tv_moneys"
+                android:drawablePadding="@dimen/dp_10"
+                android:drawableRight="@mipmap/icon_right_red"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="￥21.50"
+                android:textColor="@color/ffff383f"
+                android:textSize="@dimen/sp_20"
+                />
+
+            <View
+                android:layout_marginTop="@dimen/dp_78"
+                android:background="@drawable/ffefeff4"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_2"/>
+            <TextView
+                android:gravity="center"
+                android:layout_marginTop="@dimen/dp_95"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="请您对本次的司机服务做出评价"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_14"
+                />
+            <RatingBar
+                android:progressTint="@color/colorPrimary"
+                android:id="@+id/evaluate_define_ratingBar"
+                android:stepSize="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dp_130" />
+
+            <Button
+                android:id="@+id/evaluate_define_btn_confirm"
+                android:layout_marginLeft="@dimen/dp_33"
+                android:layout_marginRight="@dimen/dp_33"
+                android:layout_marginBottom="@dimen/dp_10"
+                android:layout_below="@+id/evaluate_define_ratingBar"
+                android:textColor="@color/white"
+                android:text="提交"
+                android:background="@drawable/bg_blue"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_45" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <!--订单已评价页面-->
+    <RelativeLayout
+        android:id="@+id/evaluate_rl_order_stop_evaluate"
+        android:visibility="gone"
+        android:layout_marginRight="@dimen/dp_10"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_above="@+id/evaluate_rl_todefine"
+            android:id="@+id/evaluate_img_todefine_safety"
+            android:src="@mipmap/icon_safe"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_54" />
+
+        <RelativeLayout
+            android:layout_alignParentBottom="true"
+            android:id="@+id/evaluate_rl_todefine"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/evaluate_todefine_tv_car_code"
+                android:layout_marginTop="@dimen/dp_11"
+                android:layout_marginLeft="@dimen/dp_9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="闽A3NS45"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_20"
+                android:drawablePadding="@dimen/dp_15"
+                android:drawableRight="@mipmap/icon_call"
+                />
+            <TextView
+                android:id="@+id/evaluate_todefine_tv_carName"
+                android:layout_marginLeft="@dimen/dp_9"
+                android:layout_marginTop="@dimen/dp_46"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="张师傅  465单"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_14"
+                />
+
+            <TextView
+                android:id="@+id/evaluate_todefine_tv_ordercould"
+                android:drawablePadding="@dimen/dp_5"
+                android:drawableLeft="@mipmap/icon_five_pointed"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:layout_toRightOf="@+id/evaluate_todefine_tv_carName"
+                android:layout_marginTop="@dimen/dp_48"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5.0"
+                android:textColor="@color/ff707070"
+                android:textSize="@dimen/sp_12"
+                />
+
+            <TextView
+                android:id="@+id/evaluate_todefine_tv_orderprice"
+                android:drawablePadding="@dimen/dp_10"
+                android:drawableRight="@mipmap/icon_right_red"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="￥"
+                android:textColor="@color/ffff383f"
+                android:textSize="@dimen/sp_20"
+                />
+
+            <View
+                android:layout_marginTop="@dimen/dp_78"
+                android:background="@drawable/ffefeff4"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_2"/>
+            <TextView
+                android:gravity="center"
+                android:layout_marginTop="@dimen/dp_95"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="请您对本次的司机服务做出评价"
+                android:textColor="@color/black"
+                android:textSize="@dimen/sp_14"
+                />
+            <RatingBar
+                android:id="@+id/evaluate_todefine_ratingBar"
+                android:stepSize="1"
+                android:rating="5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dp_130" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

@@ -17,6 +17,7 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.icarexm.jiedi.Bean.DeliverBean;
 import com.icarexm.jiedi.Bean.DriverArriveBean;
 import com.icarexm.jiedi.Bean.LoginDemoBean;
 import com.icarexm.jiedi.Bean.PositionsBean;
@@ -28,6 +29,7 @@ import com.icarexm.jiedi.Bean.pointsBean;
 import com.icarexm.jiedi.model.MainModel;
 import com.icarexm.jiedi.presenter.MainPresenter;
 import com.icarexm.jiedi.utils.RequstUrlUtils;
+import com.icarexm.jiedi.view.activity.HomeActivity;
 import com.icarexm.jiedi.view.activity.MainActivity;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
@@ -65,6 +67,7 @@ public class StocketServices extends Service {
     private String city;
     private int HEART_BEAT_RATE=3000;
     private List<pointsBean> pointsList=new ArrayList<>();
+    private boolean IsCity=true;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -87,7 +90,6 @@ public class StocketServices extends Service {
         token = sp.getString("token", "");
         user_id = sp.getString("user_id", "");
         SetLocations();
-        initSocket();
     }
 
     //声明定位回调监听器
@@ -121,6 +123,10 @@ public class StocketServices extends Service {
                     //获取定位时间
                     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = new Date(aMapLocation.getTime());
+                    if (IsCity){
+                        initSocket();
+                        IsCity=false;
+                    }
                     String format = df.format(date);
                     positionS = aMapLocation.getProvince()+aMapLocation.getProvince()+aMapLocation.getDistrict()+aMapLocation.getStreetNum();
                     String locations = longitude + "," + latitude ;
@@ -181,7 +187,7 @@ public class StocketServices extends Service {
                 super.onOpen(webSocket, response);
                 Log.e("BackService","进来了");
                 mWebSocket = webSocket;
-                String s = new Gson().toJson(new LoginDemoBean(token, "1", user_id,"login"));
+                String s = new Gson().toJson(new LoginDemoBean(token, "1", user_id,"login",new LoginDemoBean.data(city)));
                 mWebSocket.send(s);
                 HeartBateHandler.postDelayed(HeartBateRundbler, HEART_BEAT_RATE);
             }
@@ -209,6 +215,8 @@ public class StocketServices extends Service {
                                   MainActivity.GetOrderStatus();
                               }else if (event.equals("refuse_order")){
                                   MainActivity.GetOrderStatus();
+                              }else if (event.equals("deliver")){
+                                  HomeActivity.ShowDialog(text);
                               }
                           }
                       }
@@ -256,6 +264,7 @@ public class StocketServices extends Service {
 
     //司机接单/抢单
     public void  Receipt(String orderId,String positionE,String positionN,String position) {
+        Log.e("positionE",positionE+"和"+positionN);
         String Receipts = new Gson().toJson(new ReceiptBean(token, "1", user_id,"receipt", new ReceiptBean.data(orderId, positionE, positionN, position)));
         boolean isSuccess = mWebSocket.send("");
         if (!isSuccess) {//长连接已断开

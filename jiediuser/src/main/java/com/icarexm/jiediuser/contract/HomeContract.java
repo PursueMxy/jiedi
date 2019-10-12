@@ -1,6 +1,7 @@
 package com.icarexm.jiediuser.contract;
 
 import com.icarexm.jiediuser.bean.OrderDetailBean;
+import com.icarexm.jiediuser.bean.OrderDetailOneBean;
 import com.icarexm.jiediuser.presenter.HomePresenter;
 
 public interface HomeContract {
@@ -13,6 +14,7 @@ public interface HomeContract {
     interface View {
         void UpdateEstimatedPrice(String money);
         void UpdateOrderDtl(OrderDetailBean.DataBean data);
+        void UpdateOrderDtlOne(OrderDetailOneBean.DataBean data);
     }
 
     interface Presenter {

@@ -4,9 +4,12 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.icarexm.jiediuser.bean.EvaluateBean;
 import com.icarexm.jiediuser.bean.LoginBean;
 import com.icarexm.jiediuser.bean.OrderDetailBean;
+import com.icarexm.jiediuser.bean.OrderDetailOneBean;
 import com.icarexm.jiediuser.bean.OrderEstimatedPriceBean;
+import com.icarexm.jiediuser.bean.OrderListOneBean;
 import com.icarexm.jiediuser.contract.HomeContract;
 import com.icarexm.jiediuser.presenter.HomePresenter;
 import com.icarexm.jiediuser.presenter.LoginPresenter;
@@ -15,12 +18,18 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 
+import java.security.PublicKey;
+import java.util.List;
+
 public class HomeModel implements HomeContract.Model {
+
+    private int status;
+
     /*
      * 获取订单
      *
      * */
-    public void  PostIndex(HomePresenter HomePresenter,String token){
+    public void  PostIndex(HomePresenter homePresenter,String token){
         OkGo.<String>post(RequstUrlUtils.URL.OrderIndex)
                 .params("token",token)
                 .params("type","0")
@@ -31,7 +40,24 @@ public class HomeModel implements HomeContract.Model {
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(Response<String> response) {
-                        Log.e("获取订单列表",response.body());
+                        Gson gson = new GsonBuilder().create();
+                        OrderListOneBean orderListOneBean = gson.fromJson(response.body(), OrderListOneBean.class);
+                        int code = orderListOneBean.getCode();
+                        if (code==200){
+                            OrderListOneBean.DataBean data = orderListOneBean.getData();
+                            if (data!=null){
+                                List<OrderListOneBean.DataBean.OrderBean> order = data.getOrder();
+                                if (order!=null){
+                                    String status = order.get(0).getStatus();
+                                    int i = Integer.parseInt(status);
+                                    if (i<6) {
+                                        int id = order.get(0).getId();
+                                        PostOrderPrice(homePresenter, token, id + "", status);
+                                    }
+                                }
+                            }
+
+                        }
                     }
                 });
     }
@@ -47,7 +73,6 @@ public class HomeModel implements HomeContract.Model {
                  .execute(new StringCallback() {
                      @Override
                      public void onSuccess(Response<String> response) {
-                         Log.e("订单价格",response.body());
                          Gson gson = new GsonBuilder().create();
                          OrderEstimatedPriceBean orderEstimatedPriceBean = gson.fromJson(response.body(), OrderEstimatedPriceBean.class);
                          if (orderEstimatedPriceBean.getCode()==200){
@@ -63,27 +88,38 @@ public class HomeModel implements HomeContract.Model {
      * 获取订单金额
      * */
     public void PostOrderPrice(HomePresenter homePresenter,String token,String order_id,String orderStatus){
+        if (orderStatus!=null){
+            status = Integer.parseInt(orderStatus);
+        }
         OkGo.<String>post(RequstUrlUtils.URL.orderInfo)
                 .params("token",token)
                 .params("order_id",order_id)
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(Response<String> response) {
-                        Log.e("订单详情",response.body());
                         Gson gson = new GsonBuilder().create();
-                        OrderDetailBean orderDetailBean = gson.fromJson(response.body(), OrderDetailBean.class);
-                        if (orderDetailBean.getCode()==200) {
-                            OrderDetailBean.DataBean data = orderDetailBean.getData();
-                            homePresenter.SetOrderDetail(data);
+                        if (status<2){
+                            OrderDetailOneBean orderDetailOneBean = gson.fromJson(response.body(), OrderDetailOneBean.class);
+                            if (orderDetailOneBean.getCode()==200){
+                                OrderDetailOneBean.DataBean data = orderDetailOneBean.getData();
+                                homePresenter.SetOrderDetailOne(data);
+                            }
+                        }else if (status<6){
+                            OrderDetailBean orderDetailBean = gson.fromJson(response.body(), OrderDetailBean.class);
+                            if (orderDetailBean.getCode() == 200) {
+                                OrderDetailBean.DataBean data = orderDetailBean.getData();
+                                homePresenter.SetOrderDetail(data);
+                            }
+                        }else if (status==6){
+                            OrderDetailBean orderDetailBean = gson.fromJson(response.body(), OrderDetailBean.class);
+                            if (orderDetailBean.getCode() == 200) {
+                                OrderDetailBean.DataBean data = orderDetailBean.getData();
+                                homePresenter.SetOrderDetail(data);
+                            }
                         }
-
                     }
                 });
     }
 
-    /*
-    * 订单评价
-    * */
-    public void PostEvaluate(HomePresenter homePresenter,String token,String order_id,String score,String comment){
-    }
+
 }

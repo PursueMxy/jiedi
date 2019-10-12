@@ -65,6 +65,8 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         mContext = getApplicationContext();
         loginPresenter = new LoginPresenter(this);
         token = share.getString("token", "");
+        mobile = share.getString("mobile", "");
+        edt_mobile.setText(mobile);
         if (!token.equals("")){
             startActivity(new Intent(this,HomeActivity.class));
         }

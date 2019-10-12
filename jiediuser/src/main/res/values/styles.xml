@@ -53,4 +53,10 @@
         <item name="android:windowEnterAnimation">@anim/actionsheet_dialog_in</item>
         <item name="android:windowExitAnimation">@anim/actionsheet_dialog_out</item>
     </style>
+
+
+    <style name="RatingBar" parent="Theme.AppCompat">
+        <item name="colorControlNormal">#00FFFFFF</item>
+        <item name="colorControlActivated">#FFCC00</item>
+    </style>
 </resources>

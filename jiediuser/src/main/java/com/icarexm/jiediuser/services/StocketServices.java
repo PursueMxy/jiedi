@@ -23,8 +23,10 @@ import com.icarexm.jiediuser.bean.PositionsBean;
 import com.icarexm.jiediuser.bean.RefuseOrderBean;
 import com.icarexm.jiediuser.bean.ServicesMsgBean;
 import com.icarexm.jiediuser.bean.pointsBean;
+import com.icarexm.jiediuser.presenter.HomePresenter;
 import com.icarexm.jiediuser.utils.RequstUrlUtils;
 import com.icarexm.jiediuser.utils.ToastUtils;
+import com.icarexm.jiediuser.view.HomeActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -190,7 +192,19 @@ public class StocketServices extends Service {
                           if (servicesMsgBean.getCode()==200){
                               String event = servicesMsgBean.getEvent();
                               if (event.equals("login")){
-//                                  MainActivity.GetOrderStatus();
+                                HomeActivity.GetOrderStatus();
+                              }else if (event.equals("place_order")){
+                                  HomeActivity.GetOrderStatus();
+                              }else if (event.equals("deliver")){
+                                  HomeActivity.GetOrderStatus();
+                              }else if (event.equals("driver_arrive")){
+                                  HomeActivity.GetOrderStatus();
+                              }else if (event.equals("passenger_boarding")){
+                                  HomeActivity.GetOrderStatus();
+                              }else if (event.equals("arrive")){
+                                  HomeActivity.GetOrderStatus();
+                              }else if (event.equals("refuse_order")){
+                                  HomeActivity.GetOrderStatus();
                               }
                           }else {
                               ToastUtils.showToast(getApplicationContext(),servicesMsgBean.getMsg());
@@ -234,7 +248,7 @@ public class StocketServices extends Service {
         @Override
         public void run() {
          position();
-         HeartBateHandler.postDelayed(this, 10000);//每隔一定的时间，对长连接进行一次心跳检测
+         HeartBateHandler.postDelayed(this, 10000);//每隔10s的时间，对长连接进行一次心跳检测
         }
     };
 
@@ -252,6 +266,7 @@ public class StocketServices extends Service {
         }
     }
 
+
     //用户下单
     public void place_order(String startingpointE,String startingpointN,String startingpoint,String destinationE,String destinationN,
                             String destination,String estimated_mileage,String estimated_time,String budget,String service_type,
@@ -264,7 +279,6 @@ public class StocketServices extends Service {
             mWebSocket.send(place_order);
         } else {//长连接处于连接状态
             mWebSocket.send(place_order);
-            Log.e("place_order",place_order);
         }
     }
 
@@ -272,6 +286,7 @@ public class StocketServices extends Service {
 
     //拒绝订单/取消订单
     public void refuse_order(String orderId,String reason,String remark){
+        Log.e("orderId",orderId);
         String Receipts = new Gson().toJson(new RefuseOrderBean(token, "0", user_id,"refuse_order", new RefuseOrderBean.data(orderId, reason,remark)));
         boolean isSuccess = mWebSocket.send("");
         if (!isSuccess) {//长连接已断开

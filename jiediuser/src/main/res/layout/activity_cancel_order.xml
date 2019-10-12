@@ -7,7 +7,6 @@
     android:orientation="vertical"
     tools:context=".view.CancelOrderActivity">
     <RelativeLayout
-        android:id="@+id/main_rl_top"
         android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="@dimen/top_height">

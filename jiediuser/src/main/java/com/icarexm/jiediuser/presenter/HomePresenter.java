@@ -1,6 +1,7 @@
 package com.icarexm.jiediuser.presenter;
 
 import com.icarexm.jiediuser.bean.OrderDetailBean;
+import com.icarexm.jiediuser.bean.OrderDetailOneBean;
 import com.icarexm.jiediuser.contract.HomeContract;
 import com.icarexm.jiediuser.model.HomeModel;
 
@@ -36,4 +37,8 @@ public class HomePresenter implements HomeContract.Presenter {
     public void SetOrderDetail(OrderDetailBean.DataBean data){
         mView.UpdateOrderDtl(data);
     }
+    public void SetOrderDetailOne(OrderDetailOneBean.DataBean data){
+        mView.UpdateOrderDtlOne(data);
+    }
+
 }

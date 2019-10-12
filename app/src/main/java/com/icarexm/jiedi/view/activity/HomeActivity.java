@@ -27,6 +27,9 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.autonavi.rtbt.IFrameForRTBT;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.icarexm.jiedi.Bean.DeliverBean;
 import com.icarexm.jiedi.Bean.OrderListBean;
 import com.icarexm.jiedi.R;
 import com.icarexm.jiedi.adapter.HomeAdapter;
@@ -70,10 +73,10 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private LinearLayoutManager mLayoutManager;
     private Context mContext;
     private HomeAdapter homeAdapter;
-    private AlertDialog alertDialog;
-    private View dialog_home;
-    private KeepCountdownView countDownProgressBar;
-    private AlertDialog.Builder builder;
+    private static AlertDialog alertDialog;
+    private static View dialog_home;
+    private static KeepCountdownView countDownProgressBar;
+    private static AlertDialog.Builder builder;
     private SharedPreferences sp;
     private String token;
     private String user_id;
@@ -97,6 +100,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
         }
     };
+    private static HomeActivity getthis;
 
 
     @Override
@@ -113,6 +117,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         SetLocations();
         orderHandler.postDelayed(orderRunnable,200);
         initService();
+        getthis=this;
     }
 
     //开启服务
@@ -291,8 +296,13 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     }
 
     //自动接单dialog
-    public void ShowDialog(){
-            builder = new AlertDialog.Builder(HomeActivity.this);
+    public static void ShowDialog(String orders){
+        Gson gson = new GsonBuilder().create();
+        DeliverBean deliverBean = gson.fromJson(orders, DeliverBean.class);
+        DeliverBean.DataBean data = deliverBean.getData();
+        DeliverBean.DataBean.OrderBean order = data.getOrder();
+        
+        builder = new AlertDialog.Builder(getthis);
             if (alertDialog==null) {
                 alertDialog = builder.setView(dialog_home)
                         .create();

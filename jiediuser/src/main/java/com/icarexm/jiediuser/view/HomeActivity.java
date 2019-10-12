@@ -4,8 +4,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -45,12 +47,16 @@ import com.amap.api.services.route.DistanceResult;
 import com.amap.api.services.route.DistanceSearch;
 import com.icarexm.jiediuser.R;
 import com.icarexm.jiediuser.bean.OrderDetailBean;
+import com.icarexm.jiediuser.bean.OrderDetailOneBean;
 import com.icarexm.jiediuser.contract.HomeContract;
 import com.icarexm.jiediuser.custview.BottomDialog;
 import com.icarexm.jiediuser.custview.mywheel.MyWheelView;
+import com.icarexm.jiediuser.custview.wheel.ScreenInfo;
+import com.icarexm.jiediuser.custview.wheel.WheelMain;
 import com.icarexm.jiediuser.model.AccountingRulesModel;
 import com.icarexm.jiediuser.presenter.HomePresenter;
 import com.icarexm.jiediuser.services.StocketServices;
+import com.icarexm.jiediuser.utils.ToastUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -99,34 +105,42 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     //下单页面
     @BindView(R.id.home_rl_setorder)
     RelativeLayout rl_order_setorder;
+    @BindView(R.id.home_ll_flight_transfer)
+    LinearLayout ll_flight_transfer;
+    @BindView(R.id.home_tv_flight_time)
+    TextView tv_flight_time;
+
     //预计价格页面
     @BindView(R.id.home_rl_estimated_price)
     RelativeLayout rl_order_estimated_price;
-    //取消订单页面
+    //取消订单页面 订单进行中
     @BindView(R.id.home_rl_cancel_order)
     RelativeLayout rl_order_cancel;
-    //订单评价页面
-    @BindView(R.id.home_rl_order_evaluate)
-    RelativeLayout rl_order_evaluate;
-    @BindView(R.id.home_define_tv_car_code)
-    TextView define_tv_car_code;
-    @BindView(R.id.home_define_tv_carName)
-    TextView define_tv_carName;
-    @BindView(R.id.home_define_tv_driver_evaluate)
-    TextView define_tv_driver_evaluate;
-    @BindView(R.id.home_define_ratingBar)
-    RatingBar define_ratingBar;
-    @BindView(R.id.home_define_tv_moneys)
-    TextView define_tv_money;
-    //订单已评价页面
-    @BindView(R.id.home_rl_order_stop_evaluate)
-    RelativeLayout rl_order_stop_evaluate;
+    @BindView(R.id.home_cancel_tv_cancelOrder)
+    TextView cancel_tv_cancelOrder;
+    @BindView(R.id.home_cancel_tv_carNumber)
+    TextView cancel_tv_carNumber;
+    @BindView(R.id.home_cancel_tv_carName)
+    TextView cancel_tv_carName;
     //订单已取消
     @BindView(R.id.home_rl_order_cancelled)
     RelativeLayout rl_order_cancelled;
+    //等待接单
+    @BindView(R.id.home_rl_wait_order)
+    RelativeLayout rl_wait_order;
+    //接送机页面
+    @BindView(R.id.home_rl_transfer)
+    RelativeLayout rl_transfer;
+    @BindView(R.id.home_transfer_radiocroup)
+    RadioGroup transfer_radiocroup;
+    @BindView(R.id.home_radiobutton_give)
+    RadioButton radiobutton_give;
+    @BindView(R.id.home_radiobutton_meet)
+    RadioButton radiobutton_meet;
 
 
 
+    private int CANCEL_ORDER_CODE=6698;
     private int INOUT_TIPS_CODE=6699;
     public static StocketServices stocketService;
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -145,9 +159,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private Context mContext;
     private String cityName;
     private int ORDER_TYPE=0;
-    private HomePresenter homePresenter;
+    private static HomePresenter homePresenter;
     private SharedPreferences sp;
-    private String token;
+    private static String token;
     private DistanceSearch distanceSearch;
     private double start_longitude;
     private double start_latitude;
@@ -181,6 +195,12 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private String DayString="今天";
     private String HoursString="00";
     private String MinString="00";
+    private static String order_id;
+    private String reason;
+    private String remark;
+    private String TRANSFER_TYPE="0";
+    private  int CITY_TYPE=1;
+    private Calendar calendar;
 
 
     @Override
@@ -189,6 +209,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
         mContext = getApplicationContext();
+        calendar = Calendar.getInstance();
         sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         token = sp.getString("token", "");
         homePresenter = new HomePresenter(this);
@@ -199,22 +220,15 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         InitUI();
         initService();
         SetLocations();
-        homePresenter.GetIndex(token);
 
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
-        String order_id = intent.getStringExtra("order_id");
+        order_id = intent.getStringExtra("order_id");
         String status = intent.getStringExtra("status");
         if (status.equals("6")){
-            rl_order_cancel.setVisibility(View.GONE);
-            rl_order_cancelled.setVisibility(View.GONE);
-            rl_order_estimated_price.setVisibility(View.GONE);
-            rl_order_stop_evaluate.setVisibility(View.GONE);
-            rl_order_setorder.setVisibility(View.GONE);
-            rl_order_evaluate.setVisibility(View.VISIBLE);
-            homePresenter.GetOrderPrice(token,order_id,status);
+            homePresenter.GetOrderPrice(token, order_id,status);
         }
         super.onNewIntent(intent);
         // 跳转首页或者其他操作
@@ -231,7 +245,15 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i){
                     case R.id.home_radiobutton_inside_city:
+                        rl_transfer.setVisibility(View.GONE);
+                        ll_flight_transfer.setVisibility(View.GONE);
+                        ll_city_type.setVisibility(View.VISIBLE);
                         ORDER_TYPE=0;
+                        if (CITY_TYPE==2){
+                            tv_estimated_time.setVisibility(View.VISIBLE);
+                        }else {
+                            tv_estimated_time.setVisibility(View.GONE);
+                        }
                         radioButton_inside_city.setBackgroundResource(R.drawable.myorder_choosed_color);
                         radioButton_inside_city.setTextColor(getResources().getColor(R.color.ff5181fb));
                         radioButton_interciry.setBackgroundResource(R.drawable.myorder_nochoosed_color);
@@ -240,7 +262,15 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                         radioButton_transfer.setTextColor(getResources().getColor(R.color.black));
                         break;
                     case R.id.home_radiobutton_intercity:
+                        rl_transfer.setVisibility(View.GONE);
+                        ll_flight_transfer.setVisibility(View.GONE);
+                        ll_city_type.setVisibility(View.VISIBLE);
                         ORDER_TYPE=1;
+                        if (CITY_TYPE==2){
+                            tv_estimated_time.setVisibility(View.VISIBLE);
+                        }else {
+                            tv_estimated_time.setVisibility(View.GONE);
+                        }
                         radioButton_inside_city.setBackgroundResource(R.drawable.myorder_nochoosed_color);
                         radioButton_inside_city.setTextColor(getResources().getColor(R.color.black));
                         radioButton_interciry.setBackgroundResource(R.drawable.myorder_choosed_color);
@@ -250,6 +280,12 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                         break;
                     case R.id.home_radiobutton_transfer:
                         ORDER_TYPE=2;
+                        radiobutton_give.setBackgroundResource(R.drawable.nochoosed_color);
+                        radiobutton_meet.setBackgroundResource(R.drawable.choosed_color);
+                        rl_transfer.setVisibility(View.VISIBLE);
+                        ll_flight_transfer.setVisibility(View.VISIBLE);
+                        ll_city_type.setVisibility(View.GONE);
+                        tv_estimated_time.setVisibility(View.GONE);
                         radioButton_inside_city.setBackgroundResource(R.drawable.myorder_nochoosed_color);
                         radioButton_inside_city.setTextColor(getResources().getColor(R.color.black));
                         radioButton_interciry.setBackgroundResource(R.drawable.myorder_nochoosed_color);
@@ -263,12 +299,30 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             }
         });
 
+        transfer_radiocroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i){
+                    case R.id.home_radiobutton_give:
+                        ORDER_TYPE=3;
+                        radiobutton_give.setBackgroundResource(R.drawable.choosed_color);
+                        radiobutton_meet.setBackgroundResource(R.drawable.nochoosed_color);
+                        break;
+                    case R.id.home_radiobutton_meet:
+                        ORDER_TYPE=2;
+                        radiobutton_give.setBackgroundResource(R.drawable.nochoosed_color);
+                        radiobutton_meet.setBackgroundResource(R.drawable.choosed_color);
+                        break;
+                }
+            }
+        });
     }
 
 
     @OnClick({R.id.home_tv_destination,R.id.home_top_img_left,R.id.home_tv_edt_materials,R.id.home_tv_myorder,R.id.home_tv_price
     ,R.id.home_tv_set,R.id.home_tv_message_center,R.id.home_tv_recommend,R.id.home_btn_confirm_order,R.id.home_tv_TypeNow,
-            R.id.home_tv_TypeMake,R.id.home_tv_estimated_time,R.id.home_tv_accounting_rules,R.id.home_define_btn_confirm})
+            R.id.home_tv_TypeMake,R.id.home_tv_estimated_time,R.id.home_tv_accounting_rules,
+    R.id.home_top_img_message,R.id.home_cancel_tv_cancelOrder,R.id.home_tv_flight_time})
     public void  onViewClick(View view){
         switch (view.getId()){
             case R.id.home_tv_destination:
@@ -309,12 +363,26 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                         estimated_mileage,estimated_time,budget,ORDER_TYPE+"",cityName,flightno,estimatedeparturetime);
                 break;
             case R.id.home_tv_TypeNow:
+                CITY_TYPE=1;
                 tv_estimated_time.setVisibility(View.GONE);
+                int HOUR = calendar.get(Calendar.HOUR_OF_DAY)+1;
+                if (HOUR<10){
+                    tv_estimated_time.setText("今天 0"+HOUR+":00");
+                }else {
+                    tv_estimated_time.setText("今天 "+HOUR+":00");
+                }
                 ll_city_type.setBackgroundResource(R.mipmap.icon_bluewhite);
                 tv_typeNow.setTextColor(getResources().getColor(R.color.white));
                 tv_typeMake.setTextColor(getResources().getColor(R.color.black));
                 break;
             case R.id.home_tv_TypeMake:
+                int HOURs = calendar.get(Calendar.HOUR_OF_DAY)+1;
+                if (HOURs<10){
+                    tv_estimated_time.setText("今天 0"+HOURs+":00");
+                }else {
+                    tv_estimated_time.setText("今天 "+HOURs+":00");
+                }
+                CITY_TYPE=2;
                 tv_estimated_time.setVisibility(View.VISIBLE);
                 ll_city_type.setBackgroundResource(R.mipmap.icon_whiteblue);
                 tv_typeNow.setTextColor(getResources().getColor(R.color.black));
@@ -327,17 +395,53 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 startActivity(new Intent(mContext, AccountingRulesActivity.class));
                 drawerLayout.closeDrawers();
                 break;
-            case R.id.home_define_btn_confirm:
-                float rating = define_ratingBar.getRating();
+            case R.id.home_top_img_message:
+                startActivity(new Intent(mContext,MessageCenterActivity.class));
+                break;
+            case R.id.home_cancel_tv_cancelOrder:
+                Intent intents = new Intent(mContext, CancelOrderActivity.class);
+                intents.putExtra("order_id", order_id);
+                startActivityForResult(intents, CANCEL_ORDER_CODE);
+                break;
+            case R.id.home_tv_flight_time:
+                View timepickerview = LayoutInflater.from(mContext).inflate(R.layout.timepicker, null);
+                final WheelMain wheelMain = new WheelMain(timepickerview,true);
+                ScreenInfo screenInfo = new ScreenInfo(HomeActivity.this);
+                wheelMain.screenheight = screenInfo.getHeight();
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month= calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
+                wheelMain.initDateTimePicker(year, month, day,hour,minute);
+                AlertDialog.Builder dialog = new AlertDialog.Builder(HomeActivity.this)
+                        .setTitle("请选择日期")
+                        .setView(timepickerview)
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
 
+                            }
+                        })
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                String time = wheelMain.getDate();
+                                tv_flight_time.setText(time);
+                                Log.e("当前时间",time);
+
+                            }
+                        });
+                dialog.show();
                 break;
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        try {
         if (requestCode==INOUT_TIPS_CODE){
-            try {
                 String type = data.getStringExtra("type");
                 String tip = data.getStringExtra("tip");
                 String latitude = data.getStringExtra("latitude");
@@ -359,8 +463,13 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 destinationN = latitude;
                 destinationE = longitude;
                 destination = tip;
-            }catch (Exception e){}
+        }else if (requestCode==CANCEL_ORDER_CODE){
+           order_id = data.getStringExtra("order_id");
+            reason = data.getStringExtra("reason");
+            remark = data.getStringExtra("remark");
+            stocketService.refuse_order(order_id,reason,remark);
         }
+        }catch (Exception e){}
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -535,12 +644,23 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     //选择时间dialog
     public void  AppointmentDialog(){
+        int HOUR = calendar.get(Calendar.HOUR_OF_DAY)+1;
+        int DAY=0;
+        if (HOUR>23){
+            HOUR=0;
+            DAY=1;
+        }
+        if (HOUR<10){
+            HoursString="0"+HOUR;
+        }else {
+            HoursString=HOUR+"";
+        }
         final BottomDialog bottomDialog = new BottomDialog(this, R.style.ActionSheetDialogStyle);
         View inflate = LayoutInflater.from(mContext).inflate(R.layout.dialog_reserce_time, null);
         MyWheelView wva = inflate.findViewById(R.id.dialog_reserce_time_wheel_one);
-        wva.setItems(Arrays.asList(PLANETS),0);//init selected position is 1 初始选中位置为1
+        wva.setItems(Arrays.asList(PLANETS),DAY);//init selected position is 1 初始选中位置为1
         MyWheelView wva_two = inflate.findViewById(R.id.dialog_reserce_time_wheel_two);
-        wva_two.setItems(Arrays.asList(HOURS_TYPE),0);//init selected position is 1 初始选中位置为1
+        wva_two.setItems(Arrays.asList(HOURS_TYPE),HOUR);//init selected position is 1 初始选中位置为1
         MyWheelView wva_three = inflate.findViewById(R.id.dialog_reserce_time_wheel_three);
         wva_three.setItems(Arrays.asList(min),0);
         wva.setOnItemSelectedListener(new MyWheelView.OnItemSelectedListener() {
@@ -570,7 +690,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         inflate.findViewById(R.id.dialog_reserce_time_confirm).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Calendar calendar = Calendar.getInstance();
                 int year = calendar.get(Calendar.YEAR);
                 int month = calendar.get(Calendar.MONTH);
                 int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -601,9 +720,64 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     //获取订单详情
     public void UpdateOrderDtl(OrderDetailBean.DataBean data){
-        define_tv_car_code.setText(data.getDriverInfo().getLicenseplate());
-        define_tv_carName.setText(data.getDriverInfo().getNickname()+"  "+data.getDriverInfo().getOrder_count());
-        define_tv_driver_evaluate.setText(data.getDriver_evaluate());
-        define_tv_money.setText(data.getMoney());
+       order_id = data.getId()+"";
+        if (data!=null) {
+            String status = data.getStatus();
+            if (status.equals("6")) {
+                Intent intent=new Intent(mContext,EvaluateActivity.class);
+                intent.putExtra("order_id",order_id);
+                startActivity(intent);
+            }else if (status.equals("2")){
+                rl_order_setorder.setVisibility(View.GONE);
+                rl_wait_order.setVisibility(View.GONE);
+                cancel_tv_cancelOrder.setVisibility(View.VISIBLE);
+                rl_order_cancel.setVisibility(View.VISIBLE);
+                cancel_tv_carNumber.setText(data.getDriverInfo().getLicenseplate());
+                cancel_tv_carName.setText(data.getDriverInfo().getNickname() + "  " + data.getDriverInfo().getOrder_count() + "单");
+            }else if (status.equals("3")){
+                rl_order_setorder.setVisibility(View.GONE);
+                rl_wait_order.setVisibility(View.GONE);
+                cancel_tv_cancelOrder.setVisibility(View.VISIBLE);
+                rl_order_cancel.setVisibility(View.VISIBLE);
+                cancel_tv_carNumber.setText(data.getDriverInfo().getLicenseplate());
+                cancel_tv_carName.setText(data.getDriverInfo().getNickname() + "  " + data.getDriverInfo().getOrder_count() + "单");
+            }else if (status.equals("4")){
+                rl_order_setorder.setVisibility(View.GONE);
+                rl_wait_order.setVisibility(View.GONE);
+                cancel_tv_cancelOrder.setVisibility(View.GONE);
+                rl_order_cancel.setVisibility(View.VISIBLE);
+                cancel_tv_carNumber.setText(data.getDriverInfo().getLicenseplate());
+                cancel_tv_carName.setText(data.getDriverInfo().getNickname() + "  " + data.getDriverInfo().getOrder_count() + "单");
+            }else if (status.equals("5")){
+                Intent intent = new Intent(mContext, OrderPayActivity.class);
+                intent.putExtra("order_id",order_id);
+                startActivity(intent);
+            }
+
+
+        }
+    }
+
+    //获取订单详情
+    public void UpdateOrderDtlOne(OrderDetailOneBean.DataBean data){
+        if (data!=null) {
+            order_id = data.getId()+"";
+            String status = data.getStatus();
+             if (status.equals("0")){
+                 rl_order_setorder.setVisibility(View.GONE);
+                 rl_order_estimated_price.setVisibility(View.GONE);
+                 cancel_tv_cancelOrder.setVisibility(View.VISIBLE);
+                 rl_wait_order.setVisibility(View.VISIBLE);
+                 rl_order_cancel.setVisibility(View.VISIBLE);
+                 cancel_tv_carNumber.setText("等待司机接单");
+                 cancel_tv_carName.setText("");
+            }
+        }
+    }
+
+    //获取订单详情
+    public static void GetOrderStatus(){
+        //获取订单状态
+       homePresenter.GetIndex(token);
     }
 }
