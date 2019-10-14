@@ -23,6 +23,7 @@ public class OrderPerDayAdapter extends HelperRecyclerViewAdapter<OrderListOneBe
         OrderListOneBean.DataBean.OrderBean data = getData(position);
         TextView order_status = viewHolder.getView(R.id.list_home_order_status);
         TextView tv_order_statusName = viewHolder.getView(R.id.list_home_order_statusName);
+        TextView tv_order_time = viewHolder.getView(R.id.list_home_order_time);
         if (data.getService_type().equals("0")||data.getService_type().equals("1")) {
             if (!data.getTime_of_appointment().equals("")) {
                 tv_order_statusName.setText(data.getTime_of_appointment());
@@ -61,5 +62,7 @@ public class OrderPerDayAdapter extends HelperRecyclerViewAdapter<OrderListOneBe
         }else if (data.getStatus().equals("10")){
             tv_status.setText("半途取消");
         }
+        String time = data.getTime();
+        tv_order_time.setText(time +"");
     }
 }

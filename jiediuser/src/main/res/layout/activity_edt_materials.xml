@@ -31,6 +31,7 @@
          android:layout_width="match_parent"
          android:layout_height="wrap_content">
     <com.icarexm.jiediuser.custview.CircleImageView
+        android:id="@+id/edt_materials_img_head_portrait"
         android:src="@mipmap/icon_head_portrait"
         android:layout_marginLeft="@dimen/dp_20"
         android:layout_marginTop="@dimen/dp_10"
@@ -59,6 +60,7 @@
                 />
 
             <EditText
+                android:id="@+id/edt_materials_edt_nickname"
                 android:textSize="@dimen/sp_15"
                 android:background="@null"
                 android:layout_marginTop="@dimen/dp_16"
@@ -91,13 +93,13 @@
             />
 
         <TextView
+            android:id="@+id/edt_materials_tv_gender"
             android:textSize="@dimen/sp_15"
-            android:background="@null"
             android:layout_marginTop="@dimen/dp_20"
             android:layout_marginBottom="@dimen/dp_11"
             android:layout_marginLeft="@dimen/dp_97"
             android:hint="请选择性别"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
     </RelativeLayout>
@@ -123,13 +125,14 @@
                 />
 
             <TextView
+                android:id="@+id/edt_materials_tv_age_group"
                 android:textSize="@dimen/sp_15"
                 android:background="@null"
                 android:layout_marginTop="@dimen/dp_20"
                 android:layout_marginBottom="@dimen/dp_11"
                 android:layout_marginLeft="@dimen/dp_97"
                 android:hint="请选择年龄"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
         </RelativeLayout>
@@ -156,6 +159,7 @@
                 />
 
             <EditText
+                android:id="@+id/edt_materials_edt_company"
                 android:textSize="@dimen/sp_15"
                 android:background="@null"
                 android:layout_marginTop="@dimen/dp_16"
@@ -187,14 +191,15 @@
                 android:textSize="@dimen/sp_15"
                 />
 
-            <TextView
+            <EditText
+                android:id="@+id/edt_materials_edt_occupation"
                 android:textSize="@dimen/sp_15"
                 android:background="@null"
                 android:layout_marginTop="@dimen/dp_20"
                 android:layout_marginBottom="@dimen/dp_11"
                 android:layout_marginLeft="@dimen/dp_97"
                 android:hint="添加你的职业"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
         </RelativeLayout>
@@ -219,14 +224,15 @@
                 android:textSize="@dimen/sp_15"
                 />
 
-            <TextView
+            <EditText
+                android:id="@+id/edt_materials_edt_bio"
                 android:textSize="@dimen/sp_15"
                 android:background="@null"
                 android:layout_marginTop="@dimen/dp_20"
                 android:layout_marginBottom="@dimen/dp_11"
                 android:layout_marginLeft="@dimen/dp_97"
                 android:hint="请简单的介绍下您自己"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
         </RelativeLayout>
@@ -275,6 +281,7 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/edt_materials_btn_confirm"
         android:text="保存"
         android:textColor="@color/white"
         android:textSize="@dimen/sp_16"

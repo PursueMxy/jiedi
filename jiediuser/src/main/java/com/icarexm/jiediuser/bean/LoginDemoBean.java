@@ -6,7 +6,23 @@ public class LoginDemoBean {
     public String send;
     public String event;
 
+    public data data;
 
+    public static class data{
+        public  String city;
+
+        public String getCity() {
+            return city;
+        }
+
+        public void setCity(String city) {
+            this.city = city;
+        }
+
+        public data(String city) {
+            this.city = city;
+        }
+    }
 
     public String getEvent() {
         return event;
@@ -40,10 +56,19 @@ public class LoginDemoBean {
         this.send = send;
     }
 
-    public LoginDemoBean(String token, String type, String send, String event) {
+    public LoginDemoBean.data getData() {
+        return data;
+    }
+
+    public void setData(LoginDemoBean.data data) {
+        this.data = data;
+    }
+
+    public LoginDemoBean(String token, String type, String send, String event, LoginDemoBean.data data) {
         this.token = token;
         this.type = type;
         this.send = send;
         this.event = event;
+        this.data = data;
     }
 }

@@ -50,7 +50,10 @@ public class RequstUrlUtils {
 //        结算支付 /api/order/settlement
         public static String Settlement=Host+"/api/order/settlement";
 
-
+        //上传文件ST 上传文件 /api/common/upload
+        public static String upload=Host+"/api/common/upload";
+//修改会员个人信息 /api/user/profile
+        public static String profile=Host+"/api/user/profile";
 
     }
 }

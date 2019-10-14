@@ -30,6 +30,7 @@
         android:layout_height="wrap_content" />
 
     <TextView
+        android:id="@+id/list_home_order_time"
         android:layout_marginRight="@dimen/dp_10"
         android:layout_alignParentRight="true"
         android:layout_marginTop="@dimen/dp_10"

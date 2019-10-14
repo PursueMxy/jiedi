@@ -71,7 +71,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     private List<OrderListBean.DataBean.OrderBean> list=new ArrayList<>();
     private LinearLayoutManager mLayoutManager;
-    private Context mContext;
+    private static Context mContext;
     private HomeAdapter homeAdapter;
     private static AlertDialog alertDialog;
     private static View dialog_home;
@@ -81,11 +81,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private String token;
     private String user_id;
     //声明AMapLocationClient类对象
-    public AMapLocationClient mLocationClient = null;
+    public static AMapLocationClient mLocationClient = null;
     private AMapLocationClientOption mLocationOption;
-    private String city="";
-    private double longitude=0;
-    private double latitude=0;
+    private static String city="";
+    private static double longitude=0;
+    private static double latitude=0;
     private HomePresenter homePresenter;
 
     public static StocketServices stocketService;
@@ -114,10 +114,18 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         ButterKnife.bind(this);
         InitUI();
         homePresenter = new HomePresenter(this);
+        homePresenter.GetIndex(token);
         SetLocations();
         orderHandler.postDelayed(orderRunnable,200);
         initService();
         getthis=this;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        homePresenter.GetIndex(token);
+        initService();
+        super.onNewIntent(intent);
     }
 
     //开启服务
@@ -297,36 +305,44 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     //自动接单dialog
     public static void ShowDialog(String orders){
-        Gson gson = new GsonBuilder().create();
-        DeliverBean deliverBean = gson.fromJson(orders, DeliverBean.class);
-        DeliverBean.DataBean data = deliverBean.getData();
-        DeliverBean.DataBean.OrderBean order = data.getOrder();
-        
-        builder = new AlertDialog.Builder(getthis);
-            if (alertDialog==null) {
-                alertDialog = builder.setView(dialog_home)
-                        .create();
-                alertDialog.show();
-            }else {
-                alertDialog.show();
-            }
-            countDownProgressBar.startCountDown();
-        }
-
-   //刷新订单列表handler
-    private Handler orderHandler=new Handler();
-    Runnable orderRunnable=new Runnable() {
-        @Override
-        public void run() {
-            if (longitude!=0&&latitude!=0&&!city.equals("")) {
-                homePresenter.GetOrder(token, city, longitude + "", latitude + "");
-                orderHandler.postDelayed(orderRunnable,10000);
-            }else {
-                orderHandler.postDelayed(orderRunnable,200);
+                    Gson gson = new GsonBuilder().create();
+                    DeliverBean deliverBean = gson.fromJson(orders, DeliverBean.class);
+                    DeliverBean.DataBean data = deliverBean.getData();
+                    DeliverBean.DataBean.OrderBean order = data.getOrder();
+                    builder = new AlertDialog.Builder(getthis);
+                    if (alertDialog==null) {
+                        alertDialog = builder.setView(dialog_home)
+                                .create();
+                        alertDialog.show();
+                    }else {
+                        alertDialog.show();
+                    }
+                    countDownProgressBar.startCountDown();
+                }
+                //刷新订单列表handler
+                private Handler orderHandler=new Handler();
+                Runnable orderRunnable=new Runnable() {
+                    @Override
+                    public void run() {
+                        if (longitude!=0&&latitude!=0&&!city.equals("")) {
+                            homePresenter.GetOrder(token, city, longitude + "", latitude + "");
+                            orderHandler.postDelayed(orderRunnable,10000);
+                        }else {
+                            orderHandler.postDelayed(orderRunnable,200);
             }
         }
     };
 
+//                有订单跳转到main
+    public  void UpdateOrder(String order_id){
+        Intent intent = new Intent(mContext, MainActivity.class);
+        intent.putExtra("order_id",order_id);
+        intent.putExtra("positionE",longitude+"");
+        intent.putExtra("positionN",latitude+"");
+        intent.putExtra("position",city);
+        startActivity(intent);
+        mLocationClient.stopLocation();
+    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

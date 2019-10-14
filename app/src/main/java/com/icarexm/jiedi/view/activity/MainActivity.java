@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 break;
             case R.id.main_img_back:
                 closeService();
+                startActivity(new Intent(mContext,HomeActivity.class));
                 finish();
                 break;
             case R.id.main_tv_order_type:
@@ -219,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode==KeyEvent.KEYCODE_BACK){
             closeService();
+            startActivity(new Intent(mContext,HomeActivity.class));
             finish();
         }
         return super.onKeyDown(keyCode, event);

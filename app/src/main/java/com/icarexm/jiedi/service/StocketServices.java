@@ -314,8 +314,9 @@ public class StocketServices extends Service {
      // 到达目的地
      public void arrive(String orderId){
         String Receipts = new Gson().toJson(new ReceiptBean(token, "1", user_id,"arrive", new ReceiptBean.data(orderId, longitude+"",latitude+"", positionS)));
-        boolean isSuccess = mWebSocket.send("");
-        if (!isSuccess) {//长连接已断开
+         boolean isSuccess = mWebSocket.send("");
+         Log.e("arrive",Receipts);
+         if (!isSuccess) {//长连接已断开
             mWebSocket.cancel();//取消掉以前的长连接
             mWebSocket.send(Receipts);
         } else {//长连接处于连接状态

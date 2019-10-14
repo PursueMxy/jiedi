@@ -32,4 +32,13 @@ public class HomePresenter implements HomeContract.Presenter {
     public  void SetAutoOrder(String content){
         mView.ShowToast(content);
     }
+
+    public void GetIndex(String token) {
+        HomeModel.PostIndex(this,token);
+    }
+
+    public void SetIndex(String order){
+      mView.UpdateOrder(order);
+    }
+
 }

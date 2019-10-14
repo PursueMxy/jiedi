@@ -133,7 +133,7 @@ public class EvaluateActivity extends AppCompatActivity implements EvaluateContr
         mLocationClient.startLocation();
     }
 
-    @OnClick({R.id.evaluate_img_back})
+    @OnClick({R.id.evaluate_img_back,R.id.evaluate_define_btn_confirm})
     public void onViewClick(View view){
         switch (view.getId()){
             case R.id.evaluate_img_back:
@@ -155,22 +155,22 @@ public class EvaluateActivity extends AppCompatActivity implements EvaluateContr
     }
 
     public void UpdateUI(OrderDetailBean.DataBean data){
-        String user_evaluate = data.getUser_evaluate();
-        if (user_evaluate.equals("")) {
+        String user_evaluate = data.getUser_score_order();
+        if (user_evaluate.equals("0")) {
             rl_order_stop_evaluate.setVisibility(View.GONE);
             rl_order_evaluate.setVisibility(View.VISIBLE);
             define_tv_car_code.setText(data.getDriverInfo().getLicenseplate());
             define_tv_carName.setText(data.getDriverInfo().getNickname() + "  " + data.getDriverInfo().getOrder_count() + "单");
             define_tv_driver_evaluate.setText(data.getDriver_evaluate());
-            define_tv_money.setText(data.getMoney());
+            define_tv_money.setText(data.getMoney()+"元");
         }else {
             rl_order_evaluate.setVisibility(View.GONE);
             rl_order_stop_evaluate.setVisibility(View.VISIBLE);
-            String driver_evaluate = data.getDriver_evaluate();
+            String driver_evaluate = data.getUser_score_order();
             todefine_ratingBar.setRating(Float.parseFloat(data.getUser_evaluate()));
             todefine_tv_carcode.setText(data.getDriverInfo().getLicenseplate());
             todefine_tv_carName.setText(data.getDriverInfo().getNickname() + "  " + data.getDriverInfo().getOrder_count() + "单");
-            todefine_tv_orderprice.setText(data.getMoney());
+            todefine_tv_orderprice.setText(data.getMoney()+"元");
             todefine_tv_ordercould.setText(driver_evaluate);
         }
     }

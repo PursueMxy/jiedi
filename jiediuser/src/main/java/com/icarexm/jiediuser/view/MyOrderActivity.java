@@ -206,12 +206,12 @@ public class MyOrderActivity extends AppCompatActivity implements MyOrderContrac
                     Intent intent = new Intent(mContext, OrderPayActivity.class);
                     intent.putExtra("order_id",list.get(position).getId()+"");
                     startActivity(intent);
-                }else if (Status==6){
+                }else if (Status==8){
                     Intent intent = new Intent(mContext, EvaluateActivity.class);
                     intent.putExtra("order_id",list.get(position).getId()+"");
                     intent.putExtra("status",list.get(position).getStatus());
                     startActivity(intent);
-                }else if (Status>6){
+                }else if (Status==6){
                     Intent intent = new Intent(mContext, CostDetailActivity.class);
                     intent.putExtra("order_id",list.get(position).getId()+"");
                     startActivity(intent);

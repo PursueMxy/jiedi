@@ -199,12 +199,14 @@ public class OrderListActivity extends AppCompatActivity implements OrderListCon
         orderPerDayAdapter.setOnItemClickListener(new BaseRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, Object item, int position) {
-                int Status = Integer.parseInt(list.get(position).getStatus());
-                if (Status>5) {
-                    Intent intent = new Intent(mContext, CostDetailActivity.class);
-                    intent.putExtra("order_id",list.get(position).getId()+"");
-                    startActivity(intent);
-                }
+                try {
+                    int Status = Integer.parseInt(list.get(position).getStatus());
+                    if (Status > 5) {
+                        Intent intent = new Intent(mContext, CostDetailActivity.class);
+                        intent.putExtra("order_id", list.get(position).getId() + "");
+                        startActivity(intent);
+                    }
+                }catch (Exception e){}
             }
         });
     }

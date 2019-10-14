@@ -47,13 +47,13 @@ public class HomeModel implements HomeContract.Model {
                             OrderListOneBean.DataBean data = orderListOneBean.getData();
                             if (data!=null){
                                 List<OrderListOneBean.DataBean.OrderBean> order = data.getOrder();
-                                if (order!=null){
-                                    String status = order.get(0).getStatus();
-                                    int i = Integer.parseInt(status);
-                                    if (i<6) {
-                                        int id = order.get(0).getId();
-                                        PostOrderPrice(homePresenter, token, id + "", status);
-                                    }
+                                if (order.size()>0){
+                                        String status = order.get(0).getStatus();
+                                        int i = Integer.parseInt(status);
+                                        if (i < 6) {
+                                            int id = order.get(0).getId();
+                                            PostOrderPrice(homePresenter, token, id + "", status);
+                                        }
                                 }
                             }
 

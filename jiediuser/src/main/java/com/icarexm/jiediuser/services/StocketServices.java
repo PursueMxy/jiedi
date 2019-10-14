@@ -17,8 +17,11 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.icarexm.jiediuser.bean.GetOrderDirverBean;
 import com.icarexm.jiediuser.bean.LoginDemoBean;
+import com.icarexm.jiediuser.bean.OrderDirverBean;
 import com.icarexm.jiediuser.bean.PlaceOrderBean;
+import com.icarexm.jiediuser.bean.PositionBean;
 import com.icarexm.jiediuser.bean.PositionsBean;
 import com.icarexm.jiediuser.bean.RefuseOrderBean;
 import com.icarexm.jiediuser.bean.ServicesMsgBean;
@@ -58,6 +61,10 @@ public class StocketServices extends Service {
     private int HEART_BEAT_RATE=3000;
     private List<pointsBean> pointsList=new ArrayList<>();
     private String mobile;
+    private boolean IsRecrivedOrders=false;
+    private int driverId=0;
+    private boolean IsCity=true;
+    private  int delayMillis=200;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -81,7 +88,6 @@ public class StocketServices extends Service {
         user_id = sp.getString("user_id", "");
         mobile = sp.getString("mobile", "");
         SetLocations();
-        initSocket();
     }
 
     //声明定位回调监听器
@@ -120,6 +126,10 @@ public class StocketServices extends Service {
                     String locations = longitude + "," + latitude ;
                     pointsBean pointsBean = new pointsBean(locations, format, aMapLocation.getSpeed() + "", aMapLocation.getDistrict() + "", aMapLocation.getAltitude() + "", aMapLocation.getAccuracy() + "");
                     pointsList.add(pointsBean);
+                    if (IsCity){
+                        initSocket();
+                        IsCity=false;
+                    }
                 }else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                     Log.e("AmapError","location Error, ErrCode:"
@@ -175,7 +185,7 @@ public class StocketServices extends Service {
                 super.onOpen(webSocket, response);
                 Log.e("BackService","进来了");
                 mWebSocket = webSocket;
-                String s = new Gson().toJson(new LoginDemoBean(token, "0", user_id,"login"));
+                String s = new Gson().toJson(new LoginDemoBean(token, "0", user_id,"login",new LoginDemoBean.data(city)));
                 mWebSocket.send(s);
                 HeartBateHandler.postDelayed(HeartBateRundbler, HEART_BEAT_RATE);
             }
@@ -192,19 +202,23 @@ public class StocketServices extends Service {
                           if (servicesMsgBean.getCode()==200){
                               String event = servicesMsgBean.getEvent();
                               if (event.equals("login")){
-                                HomeActivity.GetOrderStatus();
+                                HomeActivity.GetOrderStatus("0");
                               }else if (event.equals("place_order")){
-                                  HomeActivity.GetOrderStatus();
+                                  HomeActivity.GetOrderStatus("0");
                               }else if (event.equals("deliver")){
-                                  HomeActivity.GetOrderStatus();
+                                  IsRecrivedOrders=true;
+                                  delayMillis=500;
+                                  HomeActivity.GetOrderStatus("1");
                               }else if (event.equals("driver_arrive")){
-                                  HomeActivity.GetOrderStatus();
+                                  HomeActivity.GetOrderStatus("2");
                               }else if (event.equals("passenger_boarding")){
-                                  HomeActivity.GetOrderStatus();
+                                  HomeActivity.GetOrderStatus("3");
                               }else if (event.equals("arrive")){
-                                  HomeActivity.GetOrderStatus();
+                                  HomeActivity.GetOrderStatus("4");
                               }else if (event.equals("refuse_order")){
-                                  HomeActivity.GetOrderStatus();
+                                  HomeActivity.CancelOrder();
+                              }else if (event.equals("get_order_dirver")){
+                                 HomeActivity.UpdateDervierLoaction(text);
                               }
                           }else {
                               ToastUtils.showToast(getApplicationContext(),servicesMsgBean.getMsg());
@@ -248,7 +262,10 @@ public class StocketServices extends Service {
         @Override
         public void run() {
          position();
-         HeartBateHandler.postDelayed(this, 10000);//每隔10s的时间，对长连接进行一次心跳检测
+         HeartBateHandler.postDelayed(this, 5000);//每隔5s的时间，对长连接进行一次心跳检测
+            if (IsRecrivedOrders){
+               get_order_dirver();
+            }
         }
     };
 
@@ -286,7 +303,6 @@ public class StocketServices extends Service {
 
     //拒绝订单/取消订单
     public void refuse_order(String orderId,String reason,String remark){
-        Log.e("orderId",orderId);
         String Receipts = new Gson().toJson(new RefuseOrderBean(token, "0", user_id,"refuse_order", new RefuseOrderBean.data(orderId, reason,remark)));
         boolean isSuccess = mWebSocket.send("");
         if (!isSuccess) {//长连接已断开
@@ -296,6 +312,25 @@ public class StocketServices extends Service {
             mWebSocket.send(Receipts);
         }
     }
+
+    //获取司机的位置
+    public void get_order_dirver(){
+        String orderBean = new Gson().toJson(new OrderDirverBean(token, "0", user_id,"get_order_dirver"));
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(orderBean);
+        } else {//长连接处于连接状态
+            mWebSocket.send(orderBean);
+        }
+    }
+
+    //已经有订单需要更新司机位置
+    public void  UpdateRecrivedOrders(){
+        IsRecrivedOrders=true;
+        delayMillis=500;
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();

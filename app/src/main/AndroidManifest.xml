@@ -52,7 +52,7 @@
         <activity android:name=".view.activity.OrderPerDayActivity" />
         <activity
             android:name=".view.activity.HomeActivity"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"/>
         <activity android:name=".view.activity.LogonActivity" />
         <activity android:name=".view.activity.ForgetPasswordActivity" />
         <activity android:name=".view.activity.LoginActivity">

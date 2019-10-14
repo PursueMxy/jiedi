@@ -45,7 +45,10 @@ import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.DistanceItem;
 import com.amap.api.services.route.DistanceResult;
 import com.amap.api.services.route.DistanceSearch;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.icarexm.jiediuser.R;
+import com.icarexm.jiediuser.bean.GetOrderDirverBean;
 import com.icarexm.jiediuser.bean.OrderDetailBean;
 import com.icarexm.jiediuser.bean.OrderDetailOneBean;
 import com.icarexm.jiediuser.contract.HomeContract;
@@ -56,6 +59,7 @@ import com.icarexm.jiediuser.custview.wheel.WheelMain;
 import com.icarexm.jiediuser.model.AccountingRulesModel;
 import com.icarexm.jiediuser.presenter.HomePresenter;
 import com.icarexm.jiediuser.services.StocketServices;
+import com.icarexm.jiediuser.utils.StringFormatUtil;
 import com.icarexm.jiediuser.utils.ToastUtils;
 
 import java.text.SimpleDateFormat;
@@ -69,8 +73,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class HomeActivity extends AppCompatActivity implements HomeContract.View, DistanceSearch.OnDistanceSearchListener {
+import static com.icarexm.jiediuser.utils.RequstUrlUtils.URL.price;
 
+public class HomeActivity extends AppCompatActivity implements HomeContract.View, DistanceSearch.OnDistanceSearchListener, AMap.InfoWindowAdapter {
+
+    private static boolean IsCancelOrder=false;
+    private static boolean IsDervierLoaction=false;
+    private static Double DervierPositionE;
+    private static Double DervierPositionN;
     @BindView(R.id.home_map)
     MapView mMapView;
     private AMap aMap;
@@ -93,7 +103,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     @BindView(R.id.home_tv_estimated_price)
     TextView tv_estimated_price;
     @BindView(R.id.home_tv_estimated_time)
-    TextView tv_estimated_time;
+     TextView tv_estimated_time;
      @BindView(R.id.home_ll_lnside_city)
      LinearLayout ll_lnside_city;
      @BindView(R.id.home_ll_city_type)
@@ -109,6 +119,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     LinearLayout ll_flight_transfer;
     @BindView(R.id.home_tv_flight_time)
     TextView tv_flight_time;
+    @BindView(R.id.home_edt_flight_number)
+    TextView edt_flight_number;
 
     //预计价格页面
     @BindView(R.id.home_rl_estimated_price)
@@ -156,9 +168,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     };
     private AMapLocationClient mLocationClient;
     private AMapLocationClientOption mLocationOption;
-    private Context mContext;
+    private static Context mContext;
     private String cityName;
-    private int ORDER_TYPE=0;
+    private static int ORDER_TYPE=0;
     private static HomePresenter homePresenter;
     private SharedPreferences sp;
     private static String token;
@@ -199,9 +211,13 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private String reason;
     private String remark;
     private String TRANSFER_TYPE="0";
-    private  int CITY_TYPE=1;
+    private static int CITY_TYPE=1;
     private Calendar calendar;
-
+    private Marker derviermarker;
+    private static double dervierDistance;
+    private static int dervierDuration;
+   private static String OrderStatus;
+    private static String dervierMoney;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -217,6 +233,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         if (aMap == null) {
             aMap =mMapView.getMap();
         }
+        aMap.setInfoWindowAdapter(this);
         InitUI();
         initService();
         SetLocations();
@@ -359,8 +376,29 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 drawerLayout.closeDrawers();
                 break;
             case R.id.home_btn_confirm_order:
-                stocketService.place_order(startingpointE,startingpointN,startingpoint,destinationE,destinationN,destination,
-                        estimated_mileage,estimated_time,budget,ORDER_TYPE+"",cityName,flightno,estimatedeparturetime);
+                if(ORDER_TYPE>1){
+                    estimatedeparturetime = tv_flight_time.getText().toString();
+                    flightno = edt_flight_number.getText().toString();
+                    if (!estimatedeparturetime.equals("")&&!flightno.equals("")){
+                        stocketService.place_order(startingpointE,startingpointN,startingpoint,destinationE,destinationN,destination,
+                                estimated_mileage,estimated_time,budget,ORDER_TYPE+"",cityName,flightno,estimatedeparturetime);
+                    }else {
+                        ToastUtils.showToast(mContext,"航班号或者航班时间不能为空");
+                    }
+                }else{
+                    if (CITY_TYPE==1){
+                        estimatedeparturetime = tv_estimated_time.getText().toString();
+                        if (!estimatedeparturetime.equals("")){
+                            stocketService.place_order(startingpointE,startingpointN,startingpoint,destinationE,destinationN,destination,
+                                    estimated_mileage,estimated_time,budget,ORDER_TYPE+"",cityName,flightno,estimatedeparturetime);
+                        }else {
+                            ToastUtils.showToast(mContext,"预定时间不能为空");
+                        }
+                    }else {
+                        stocketService.place_order(startingpointE,startingpointN,startingpoint,destinationE,destinationN,destination,
+                                estimated_mileage,estimated_time,budget,ORDER_TYPE+"",cityName,flightno,estimatedeparturetime);
+                    }
+                }
                 break;
             case R.id.home_tv_TypeNow:
                 CITY_TYPE=1;
@@ -558,6 +596,36 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     aMap.moveCamera(cameraUpdate);
                     startingpoints = aMapLocation.getCity()+aMapLocation.getDistrict()+aMapLocation.getStreet()+aMapLocation.getAoiName()+aMapLocation.getStreetNum();
                     tv_startingpoint.setText(aMapLocation.getCity()+aMapLocation.getDistrict()+aMapLocation.getStreet()+aMapLocation.getAoiName()+aMapLocation.getStreetNum());
+                    if (IsCancelOrder){
+                        IsCancelOrder=false;
+                        rl_transfer.setVisibility(View.GONE);
+                        ll_flight_transfer.setVisibility(View.GONE);
+                        tv_estimated_time.setVisibility(View.GONE);
+                        ll_city_type.setVisibility(View.VISIBLE);
+                        radioButton_inside_city.setBackgroundResource(R.drawable.myorder_choosed_color);
+                        radioButton_inside_city.setTextColor(getResources().getColor(R.color.ff5181fb));
+                        radioButton_interciry.setBackgroundResource(R.drawable.myorder_nochoosed_color);
+                        radioButton_interciry.setTextColor(getResources().getColor(R.color.black));
+                        radioButton_transfer.setBackgroundResource(R.drawable.myorder_nochoosed_color);
+                        radioButton_transfer.setTextColor(getResources().getColor(R.color.black));
+                    }
+                    if (IsDervierLoaction){
+                        if (derviermarker!=null){
+                            derviermarker.remove();
+                            derviermarker=null;
+                        }
+                        MarkerOptions DervierOption = new MarkerOptions();
+                        DervierOption.snippet("距离你"+dervierDistance+"公里,"+dervierDuration+"分钟");
+                        DervierOption.position(new LatLng(DervierPositionN,DervierPositionE));
+                        DervierOption.draggable(false);//设置Marker可拖动
+                        DervierOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+                                .decodeResource(getResources(),R.mipmap.icon_car_top)));
+                        // 将Marker设置为贴地显示，可以双指下拉地图查看效果
+                        DervierOption.setFlat(true);//设置marker平贴地图效果
+                        derviermarker = aMap.addMarker(DervierOption);
+                        getInfoWindow(derviermarker);
+                        derviermarker.showInfoWindow();
+                    }
                 }else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                     Log.e("AmapError", aMapLocation.getErrorCode()+"");
@@ -734,6 +802,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 rl_order_cancel.setVisibility(View.VISIBLE);
                 cancel_tv_carNumber.setText(data.getDriverInfo().getLicenseplate());
                 cancel_tv_carName.setText(data.getDriverInfo().getNickname() + "  " + data.getDriverInfo().getOrder_count() + "单");
+                stocketService.UpdateRecrivedOrders();
             }else if (status.equals("3")){
                 rl_order_setorder.setVisibility(View.GONE);
                 rl_wait_order.setVisibility(View.GONE);
@@ -741,6 +810,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 rl_order_cancel.setVisibility(View.VISIBLE);
                 cancel_tv_carNumber.setText(data.getDriverInfo().getLicenseplate());
                 cancel_tv_carName.setText(data.getDriverInfo().getNickname() + "  " + data.getDriverInfo().getOrder_count() + "单");
+                stocketService.UpdateRecrivedOrders();
             }else if (status.equals("4")){
                 rl_order_setorder.setVisibility(View.GONE);
                 rl_wait_order.setVisibility(View.GONE);
@@ -748,11 +818,13 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 rl_order_cancel.setVisibility(View.VISIBLE);
                 cancel_tv_carNumber.setText(data.getDriverInfo().getLicenseplate());
                 cancel_tv_carName.setText(data.getDriverInfo().getNickname() + "  " + data.getDriverInfo().getOrder_count() + "单");
+                stocketService.UpdateRecrivedOrders();
             }else if (status.equals("5")){
                 Intent intent = new Intent(mContext, OrderPayActivity.class);
                 intent.putExtra("order_id",order_id);
                 startActivity(intent);
             }
+            OrderStatus=status;
 
 
         }
@@ -776,8 +848,80 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     }
 
     //获取订单详情
-    public static void GetOrderStatus(){
+    public static void GetOrderStatus(String orderStatus){
+        OrderStatus=orderStatus;
+        Log.e("OrderStatus",orderStatus);
         //获取订单状态
        homePresenter.GetIndex(token);
     }
+
+    //取消订单成功
+    public static void  CancelOrder(){
+    ToastUtils.showToast(mContext,"订单取消成功");
+    order_id="";
+        ORDER_TYPE=0;
+        CITY_TYPE=1;
+        IsCancelOrder=true;
+
+    }
+
+    //显示司机位置
+    public static void UpdateDervierLoaction(String text){
+        Gson DervierLoactiongson = new GsonBuilder().create();
+        GetOrderDirverBean getOrderDirverBean = DervierLoactiongson.fromJson(text, GetOrderDirverBean.class);
+        if (getOrderDirverBean.getData()!=null){
+            GetOrderDirverBean.DataBean data = getOrderDirverBean.getData();
+            GetOrderDirverBean.DataBean.DriverPositionBean driver_position = data.getDriver_position();
+            if (driver_position!=null){
+                DervierPositionE = Double.valueOf(driver_position.getPositionE());
+                DervierPositionN = Double.valueOf(driver_position.getPositionN());
+                dervierDistance = driver_position.getDistance();
+                dervierDuration = driver_position.getDuration();
+                dervierMoney = driver_position.getMoney();
+            }
+            IsDervierLoaction=true;
+        }
+
+    }
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        View infoWindow = getLayoutInflater().inflate(R.layout.map_infowindow, null);//display为自定义layout文件
+        TextView tv_content = infoWindow.findViewById(R.id.infowindow_tv_content);
+        TextView tv_distance = infoWindow.findViewById(R.id.infowindow_tv_distance);
+        TextView tv_duration = infoWindow.findViewById(R.id.infowindow_tv_duration);
+        TextView tv_price = infoWindow.findViewById(R.id.infowindow_tv_price);
+        if (OrderStatus.equals("2")) {
+            tv_distance.setVisibility(View.GONE);
+            tv_duration.setVisibility(View.GONE);
+            tv_price.setVisibility(View.GONE);
+            tv_content.setVisibility(View.VISIBLE);
+            StringFormatUtil spanStr = new StringFormatUtil(mContext, "距离您" + dervierDistance + "公里," + dervierDuration + "分钟", "距离您", R.color.black).fillColor();
+            tv_content.setText(spanStr.getResult());
+        }else if (OrderStatus.equals("3")){
+            tv_distance.setVisibility(View.GONE);
+            tv_duration.setVisibility(View.GONE);
+            tv_price.setVisibility(View.GONE);
+            tv_content.setVisibility(View.VISIBLE);
+            tv_content.setText("司机点击了到达，您可与司机确认上车地点");
+            tv_content.setTextColor(getResources().getColor(R.color.black));
+        }else if (OrderStatus.equals("4")){
+            tv_content.setVisibility(View.GONE);
+            tv_distance.setVisibility(View.VISIBLE);
+            tv_duration.setVisibility(View.VISIBLE);
+            tv_price.setVisibility(View.VISIBLE);
+            StringFormatUtil spanStr = new StringFormatUtil(mContext, "距离终点" + dervierDistance + "公里", "距离终点", R.color.black).fillColor();
+            tv_distance.setText(spanStr.getResult());
+            StringFormatUtil spanStr1 = new StringFormatUtil(mContext, "预计还需" + dervierDuration + "分钟", "预计还需", R.color.black).fillColor();
+            tv_duration.setText(spanStr1.getResult());
+            tv_price.setText(dervierMoney);
+        }
+        return infoWindow;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        return null;
+    }
+
 }

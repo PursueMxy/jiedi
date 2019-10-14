@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.icarexm.jiedi.Bean.AutoOrderBean;
 import com.icarexm.jiedi.Bean.OrderListBean;
+import com.icarexm.jiedi.Bean.OrderListOneBean;
 import com.icarexm.jiedi.contract.HomeContract;
 import com.icarexm.jiedi.presenter.HomePresenter;
 import com.icarexm.jiedi.utils.RequstUrlUtils;
@@ -15,7 +16,43 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 
+import java.util.List;
+
 public class HomeModel implements HomeContract.Model {
+
+    /*
+     * 获取订单
+     *
+     * */
+    public void  PostIndex(HomePresenter homePresenter,String token){
+        OkGo.<String>post(RequstUrlUtils.URL.OrderIndex)
+                .params("token",token)
+                .params("type","1")
+                .params("order_type","1")
+                .params("order_time","")
+                .params("limit","1")
+                .params("page","1")
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("获取订单",response.body());
+                        Gson gson = new GsonBuilder().create();
+                        OrderListOneBean orderListOneBean = gson.fromJson(response.body(), OrderListOneBean.class);
+                        int code = orderListOneBean.getCode();
+                        if (code==200){
+                            OrderListOneBean.DataBean data = orderListOneBean.getData();
+                            if (data!=null){
+                                List<OrderListOneBean.DataBean.OrderBean> order = data.getOrder();
+                                if (order!=null){
+                                    String order_id = order.get(0).getId()+"";
+                                    homePresenter.SetIndex(order_id);
+                                }
+                            }
+
+                        }
+                    }
+                });
+    }
 
     //获取订单信息
     public void PostOrder(HomePresenter homePresenter, String token, String city, String longitude, String latitude){
