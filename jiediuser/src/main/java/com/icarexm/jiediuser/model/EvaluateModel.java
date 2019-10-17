@@ -43,6 +43,7 @@ public class EvaluateModel implements EvaluateContract.Model {
         OkGo.<String>post(RequstUrlUtils.URL.evaluate)
                 .params("token",token)
                 .params("order_id",order_id)
+                .params("type","0")
                 .params("score",score)
                 .params("comment",comment)
                 .execute(new StringCallback() {

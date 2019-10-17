@@ -34,4 +34,9 @@ public class LoginPresenter implements LoginContract.Presenter {
     public void GetInit(){
         loginModel.PostInit();
     }
+
+    @Override
+    public void GetWeixinlogin(String type, String openid, String nickname, String avatar) {
+        loginModel.PostWeixinlogin(this,type,openid,nickname,avatar);
+    }
 }

@@ -14,8 +14,7 @@ import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 
 public class LoginModel implements LoginContract.Model {
-    /*
-    * 获取验证码
+    /** 获取验证码
     * @mobile 手机号
     * event 验证码类型
     * type 用户类型
@@ -39,8 +38,7 @@ public class LoginModel implements LoginContract.Model {
                 });
 
     }
-   /*
-   * 验证码登录
+   /** 验证码登录
    *
    * */
     public void  PostLogin(LoginPresenter loginPresenter, String mobile, String captcha, String event){
@@ -77,8 +75,7 @@ public class LoginModel implements LoginContract.Model {
 
     }
 
-/*
-*  数据初始化
+/**  数据初始化
 */
     public void PostInit(){
         OkGo.<String>post(RequstUrlUtils.URL.init)
@@ -89,4 +86,36 @@ public class LoginModel implements LoginContract.Model {
                     }
                 });
     }
+
+    /**
+* @param type 源字符串.
+*
+* */
+   public void PostWeixinlogin(LoginPresenter loginPresenter,String type,String openid,String nickname,String avatar){
+         OkGo.<String>post(RequstUrlUtils.URL.weixinlogin)
+                 .params("type",type)
+                 .params("openid",openid)
+                 .params("nickname",nickname)
+                 .params("avatar",avatar)
+                 .execute(new StringCallback() {
+                     @Override
+                     public void onSuccess(Response<String> response) {
+                         String body = response.body();
+                         Gson gson = new GsonBuilder().create();
+                         LoginBean loginBean = gson.fromJson(body, LoginBean.class);
+                         if (loginBean!=null){
+                             if (loginBean.getCode()==200){
+                                 LoginBean.DataBean data = loginBean.getData();
+                                 if (data!=null) {
+                                     LoginBean.DataBean.UserinfoBean userinfo = data.getUserinfo();
+                                     loginPresenter.SetLogin(userinfo);
+                                 }
+
+                             }else {
+                                 loginPresenter.SetMobuleCode(loginBean.getMsg());
+                             }
+                         }
+                     }
+                 });
+   }
 }

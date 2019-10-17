@@ -21,6 +21,10 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 在SDCard中创建与删除文件权限 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -30,7 +34,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".view.EvaluateActivity"></activity>
+        <activity android:name=".wxapi.WXEntryActivity"
+            android:exported="true"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".wxapi.WXPayEntryActivity"
+            android:exported="true"
+            android:launchMode="singleTop"/>
+        <activity android:name=".view.EvaluateActivity" />
         <activity android:name=".view.AccountingRulesActivity" />
         <activity android:name=".view.MyCouponActivity" />
         <activity android:name=".view.CouponActivity" />
@@ -62,7 +73,8 @@
         <activity
             android:name=".view.HomeActivity"
             android:launchMode="singleTask" />
-        <activity android:name=".view.LoginActivity">
+        <activity android:name=".view.LoginActivity"
+            android:launchMode="singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -71,7 +83,6 @@
         </activity>
         <activity android:name=".view.WeChatLoginActivity" />
         <activity android:name=".MainActivity" />
-
         <service android:name=".services.StocketServices" />
         <service android:name="com.amap.api.location.APSService" />
 

@@ -53,11 +53,12 @@
             />
 
         <TextView
+            android:id="@+id/price_tv_total_money"
             android:layout_marginTop="@dimen/dp_47"
             android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="￥21.50"
+            android:text=""
             android:textColor="@color/ffff383f"
             android:textSize="@dimen/sp_30"
             />

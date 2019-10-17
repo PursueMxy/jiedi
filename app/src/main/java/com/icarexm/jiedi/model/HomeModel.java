@@ -43,9 +43,15 @@ public class HomeModel implements HomeContract.Model {
                             OrderListOneBean.DataBean data = orderListOneBean.getData();
                             if (data!=null){
                                 List<OrderListOneBean.DataBean.OrderBean> order = data.getOrder();
-                                if (order!=null){
+                                if (order.size()>0){
+                                    int i = Integer.parseInt(order.get(0).getStatus());
+                                    OrderListOneBean.DataBean.OrderBean orderBean = order.get(0);
                                     String order_id = order.get(0).getId()+"";
-                                    homePresenter.SetIndex(order_id);
+                                    if (i>1&&i<5) {
+                                        homePresenter.SetIndex(order_id);
+                                    }else if (i==1){
+                                        homePresenter.SetSystemOrder(orderBean);
+                                    }
                                 }
                             }
 
@@ -86,10 +92,10 @@ public class HomeModel implements HomeContract.Model {
         OkGo.<String>post(RequstUrlUtils.URL.auto_order)
                 .params("token",token)
                 .params("status",status)
+                .params("type","1")
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(Response<String> response) {
-                        Log.e("接单功能",response.body());
                         Gson gson = new GsonBuilder().create();
                         AutoOrderBean autoOrderBean = gson.fromJson(response.body(), AutoOrderBean.class);
                         if (autoOrderBean.getCode()==201){

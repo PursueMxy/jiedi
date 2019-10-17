@@ -29,7 +29,9 @@ import com.icarexm.jiedi.Bean.pointsBean;
 import com.icarexm.jiedi.model.MainModel;
 import com.icarexm.jiedi.presenter.MainPresenter;
 import com.icarexm.jiedi.utils.RequstUrlUtils;
+import com.icarexm.jiedi.utils.ToastUtils;
 import com.icarexm.jiedi.view.activity.HomeActivity;
+import com.icarexm.jiedi.view.activity.LogonActivity;
 import com.icarexm.jiedi.view.activity.MainActivity;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
@@ -68,6 +70,8 @@ public class StocketServices extends Service {
     private int HEART_BEAT_RATE=3000;
     private List<pointsBean> pointsList=new ArrayList<>();
     private boolean IsCity=true;
+    private String type;
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -204,7 +208,12 @@ public class StocketServices extends Service {
                           if (servicesMsgBean.getCode()==200){
                               String event = servicesMsgBean.getEvent();
                               if (event.equals("login")){
-//                                  MainActivity.GetOrderStatus();
+                                  type = sp.getString("type","");
+                                  Log.e("type",type);
+                                  if (type.equals("main")) {
+                                  }else {
+
+                                  }
                               }else if (event.equals("receipt")){
                                  MainActivity.GetOrderStatus();
                               }else if (event.equals("driver_arrive")){
@@ -216,7 +225,13 @@ public class StocketServices extends Service {
                               }else if (event.equals("refuse_order")){
                                   MainActivity.GetOrderStatus();
                               }else if (event.equals("deliver")){
-                                  HomeActivity.ShowDialog(text);
+                                  HomeActivity.automatic(text);
+                              }
+                          }else if (servicesMsgBean.getCode()==401){
+                              if (servicesMsgBean.getEvent().equals("login")){
+                                  ToastUtils.showToast(getApplicationContext(),servicesMsgBean.getMsg());
+                                  startActivity(new Intent(getApplicationContext(), LogonActivity.class));
+                                  new HomeActivity().finish();
                               }
                           }
                       }
@@ -264,7 +279,6 @@ public class StocketServices extends Service {
 
     //司机接单/抢单
     public void  Receipt(String orderId,String positionE,String positionN,String position) {
-        Log.e("positionE",positionE+"和"+positionN);
         String Receipts = new Gson().toJson(new ReceiptBean(token, "1", user_id,"receipt", new ReceiptBean.data(orderId, positionE, positionN, position)));
         boolean isSuccess = mWebSocket.send("");
         if (!isSuccess) {//长连接已断开
@@ -326,7 +340,7 @@ public class StocketServices extends Service {
 
     // 用户发通知给用户
     public void user_to_driver(String orderId,String msg){
-        String Receipts = new Gson().toJson(new UserToDriverBean(token, "1", user_id,"user_to_driver",new UserToDriverBean.data(orderId,msg)));
+        String Receipts = new Gson().toJson(new UserToDriverBean(token, "1", user_id,"user_to_driver",new UserToDriverBean.data("190","998555444")));
         boolean isSuccess = mWebSocket.send("");
         if (!isSuccess) {//长连接已断开
             mWebSocket.cancel();//取消掉以前的长连接
@@ -346,8 +360,11 @@ public class StocketServices extends Service {
             mWebSocket.send(Receipts);
         } else {//长连接处于连接状态
             mWebSocket.send(Receipts);
+//            user_to_driver("190","");
         }
     }
+
+
 
     @Override
     public void onDestroy() {

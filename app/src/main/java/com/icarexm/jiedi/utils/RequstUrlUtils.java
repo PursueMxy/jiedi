@@ -5,7 +5,6 @@ public class RequstUrlUtils {
 
         //长连接 测试
         public static final String WEBSOCKET_HOST_AND_PORT = "ws://39.98.177.238:8284";
-//        public static final String WEBSOCKET_HOST_AND_PORT = "wss://iclock.zkteco.com:7272/wss";
 
         public static  String Host="http://jdcx.icarefz.cn";
 
@@ -36,5 +35,42 @@ public class RequstUrlUtils {
 
         //订单列表 /api/order/index
         public static String OrderIndex=Host+"/api/order/index";
+
+        //注册会员 /api/user/register
+        public static String register=Host+"/api/user/register";
+
+        //上传文件ST 上传文件 /api/common/upload
+        public static String upload=Host+"/api/common/upload";
+
+        //忘记密码 /api/user/resetpwd
+
+        //设置默认提现 /api/member/set_withdrawal
+        public static String set_withdrawal=Host+"/api/member/set_withdrawal";
+
+        //       我的钱包包括充值页面金额 /api/member/index
+        public static  String memberindex=Host+"/api/member/index";
+
+       // 用户信息 /api/user/getUserInfo
+        public static  String getUserInfo=Host+"/api/user/getUserInfo";
+
+        //        余额明细 /api/member/money_log
+        public static String money_log=Host+"/api/member/money_log";
+
+        //获取提现方式 /api/member/get_withdrawal
+        public static String getWithdrawal=Host+"/api/member/get_withdrawal";
+
+        //添加提现方式 /api/member/add_withdrawal
+        public static String add_withdrawal=Host+"/api/member/add_withdrawal";
+
+        // 删除提现方式 /api/member/del_withdrawal
+        public static String del_witgdrawal=Host+"/api/member/del_withdrawal";
+
+        //获取默认提现方式-主页 /api/member/get_withdrawal_default
+        public static String get_withdrawal_default=Host+"/api/member/get_withdrawal_default";
+
+        // 余额提现-司机 /api/member/withdraw
+        public static String withdraw=Host+"/api/member/withdraw";
+       //T 我的消息 /api/message/index
+        public static  String meaasgeIndex=Host+"/api/message/index";
     }
 }

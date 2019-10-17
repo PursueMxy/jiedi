@@ -56,26 +56,10 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     TextView tv_title;
     @BindView(R.id.main_tv_car_code)
     TextView tv_car_code;
-    @BindView(R.id.main_define_tv_car_code)
-    TextView tv_define_car_code;
-    @BindView(R.id. main_ratb_tv_car_code)
-    TextView tv_ratb_car_code;
     @BindView(R.id.main_tv_name)
     TextView tv_name;
-    @BindView(R.id.main_define_tv_name)
-    TextView tv_define_name;
-    @BindView(R.id.main_ratb_tv_name)
-    TextView tv_ratb_name;
     @BindView(R.id.main_tv_shape)
     TextView tv_shape;
-    @BindView(R.id.main_define_tv_ratingbar)
-    TextView tv_define_ratingbar;
-    @BindView(R.id.main_ratb_tv_ratingbar)
-    TextView tv_ratb_ratingbar;
-    @BindView(R.id.main_ratb_tv_money)
-    TextView tv_ratb_money;
-    @BindView(R.id.main_define_tv_money)
-    TextView tv_define_money;
     @BindView(R.id.main_tv_order_type)
     TextView tv_orderType;
     @BindView(R.id.main_img_safety)
@@ -87,21 +71,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     ImageView img_safety1;
     @BindView(R.id.main_rl_safety1)
     LinearLayout rl_safety1;
-    //订单评价
-    @BindView(R.id.main_img_safety2)
-    ImageView img_safety2;
-    @BindView(R.id.main_rl_safety2)
-    RelativeLayout rl_safety2;
-    //订单已评价
-    @BindView(R.id.main_img_safety3)
-    ImageView img_safety3;
-    @BindView(R.id.main_rl_safety3)
-    RelativeLayout rl_safety3;
-
-    @BindView(R.id.main_define_ratingBar1)
-    RatingBar define_ratingbar;
-    @BindView(R.id.main_ratb_ratingBar1)
-    RatingBar ratb__ratingBar1;
     @BindView(R.id.main_img_type)
     ImageView img_type;
 
@@ -141,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     private static String token;
     private String user_id;
     private Marker markers;
+    private static String order_status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         token = sp.getString("token", "");
         user_id = sp.getString("user_id", "");
         mianPresenter = new MainPresenter(this);
+        initService();
         mContext = getApplicationContext();
         mMapView.onCreate(savedInstanceState);
         if (aMap == null) {
@@ -161,14 +132,14 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         positionE = intent.getStringExtra("positionE");
         positionN = intent.getStringExtra("positionN");
         positionS = intent.getStringExtra("position");
+        order_status = intent.getStringExtra("order_status");
         //显示当前位置
         myLocation();
-        initService();
         SetLocations();
         mianPresenter.GetOrderInfo(token,order_id);
     }
 
-    @OnClick({R.id.main_tv_cancel_order,R.id.main_img_back,R.id.main_tv_order_type,R.id.main_define_btn_confirm,})
+    @OnClick({R.id.main_tv_cancel_order,R.id.main_img_back,R.id.main_tv_order_type})
     public void onViewClicked(View view){
         switch (view.getId()) {
             case R.id.main_tv_cancel_order:
@@ -178,6 +149,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             case R.id.main_img_back:
                 closeService();
                 startActivity(new Intent(mContext,HomeActivity.class));
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("type","home");
+                editor.commit();//提交
                 finish();
                 break;
             case R.id.main_tv_order_type:
@@ -188,14 +162,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                     stocketService.passenger_boarding(order_id);
                 }else if (typeName.equals("到达终点")){
                     stocketService.arrive(order_id);
-                }
-                break;
-            case R.id.main_define_btn_confirm:
-                float rating = define_ratingbar.getRating();
-                if (rating!=0){
-                    mianPresenter.GetEvaluate(token,order_id,rating+"","");
-                }else {
-                    ToastUtils.showToast(mContext,"评价不能为空");
                 }
                 break;
         }
@@ -221,6 +187,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         if (keyCode==KeyEvent.KEYCODE_BACK){
             closeService();
             startActivity(new Intent(mContext,HomeActivity.class));
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("type","home");
+            editor.commit();//提交
             finish();
         }
         return super.onKeyDown(keyCode, event);
@@ -346,21 +315,13 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     public void UpdateUI(OrderTypeBean.DataBean data){
         OrderTypeBean.DataBean.UserInfoBean userInfo = data.getUserInfo();
         tv_name.setText(userInfo.getNickname());
-        tv_ratb_name.setText(userInfo.getNickname());
-        tv_define_name.setText(userInfo.getNickname());
         tv_shape.setText(data.getUser_evaluate());
-        tv_define_ratingbar.setText(data.getUser_evaluate());
-        tv_ratb_ratingbar.setText(data.getUser_evaluate());
-        tv_define_money.setText("¥ "+data.getBudget()+"");
-        tv_ratb_money.setText("¥ "+data.getBudget()+"");
         //订单状态:0=发起订单,1=订单分配中,2=司机接单,3=已到达,4=乘客已上车,5=到达目的地,6=订单完成,7=订单异常,8=取消订单,9=已评价,10=半途取消
         String status = data.getStatus();
         //服务类型 0-城内出行 1-城际出行 2-接机 3-送机
         String service_type = data.getService_type();
         if (service_type.equals("0")||service_type.equals("1")){
             tv_car_code.setVisibility(View.INVISIBLE);
-            tv_define_car_code.setVisibility(View.INVISIBLE);
-            tv_ratb_car_code.setVisibility(View.INVISIBLE);
             tv_title.setText("捷滴出行");
             img_type.setImageResource(R.mipmap.icon_car1);
             if (service_type.equals("1")){
@@ -372,8 +333,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             }
         }else {
             tv_car_code.setText(data.getFlightno());
-            tv_define_car_code.setText(data.getFlightno());
-            tv_ratb_car_code.setText(data.getFlightno());
             tv_title.setText("捷滴接机");
             img_type.setImageResource(R.mipmap.icon_plane1);
             if (service_type.equals("3")){
@@ -384,13 +343,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         }
         if (status.equals("0")){
             MainActivity.PlaceOrders();
-        } else if (status.equals("2")){
+        }else if (status.equals("2")){
             img_safety1.setVisibility(View.GONE);
-            img_safety2.setVisibility(View.GONE);
-            img_safety3.setVisibility(View.GONE);
             rl_safety1.setVisibility(View.GONE);
-            rl_safety2.setVisibility(View.GONE);
-            rl_safety3.setVisibility(View.GONE);
             img_safety.setVisibility(View.VISIBLE);
             rl_safety.setVisibility(View.VISIBLE);
             tv_orderType.setText("到达上车点");
@@ -406,11 +361,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         }
         else if (status.equals("3")){
             img_safety1.setVisibility(View.GONE);
-            img_safety2.setVisibility(View.GONE);
-            img_safety3.setVisibility(View.GONE);
             rl_safety1.setVisibility(View.GONE);
-            rl_safety2.setVisibility(View.GONE);
-            rl_safety3.setVisibility(View.GONE);
             img_safety.setVisibility(View.VISIBLE);
             rl_safety.setVisibility(View.VISIBLE);
             tv_orderType.setText("乘客已上车");
@@ -426,11 +377,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         }
         else  if (status.equals("4")){
             img_safety1.setVisibility(View.GONE);
-            img_safety2.setVisibility(View.GONE);
-            img_safety3.setVisibility(View.GONE);
             rl_safety1.setVisibility(View.GONE);
-            rl_safety2.setVisibility(View.GONE);
-            rl_safety3.setVisibility(View.GONE);
             img_safety.setVisibility(View.VISIBLE);
             rl_safety.setVisibility(View.VISIBLE);
             tv_orderType.setText("到达终点");
@@ -453,39 +400,28 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             // 将Marker设置为贴地显示，可以双指下拉地图查看效果
             markerOption1.setFlat(false);//设置marker平贴地图效果
             aMap.addMarker(markerOption1);
-        }else if (status.equals("5")){
+        }
+        else if (status.equals("5")){
             closeService();
             finish();
-        }else if (status.equals("6")){
+        }
+        else if (status.equals("6")){
            String score = data.getScore();
             if (score.equals("0")) {
                 img_safety.setVisibility(View.GONE);
                 rl_safety.setVisibility(View.GONE);
                 img_safety1.setVisibility(View.GONE);
                 rl_safety1.setVisibility(View.GONE);
-                img_safety2.setVisibility(View.GONE);
-                rl_safety2.setVisibility(View.GONE);
-                img_safety3.setVisibility(View.VISIBLE);
-                rl_safety3.setVisibility(View.VISIBLE);
-                ratb__ratingBar1.setRating(data.getFree_kilometre());
             }else {
                 img_safety.setVisibility(View.GONE);
                 rl_safety.setVisibility(View.GONE);
                 img_safety1.setVisibility(View.GONE);
                 rl_safety1.setVisibility(View.GONE);
-                img_safety3.setVisibility(View.GONE);
-                rl_safety3.setVisibility(View.GONE);
-                img_safety2.setVisibility(View.VISIBLE);
-                rl_safety2.setVisibility(View.VISIBLE);
             }
         }
         else if (status.equals("8")){
             img_safety.setVisibility(View.GONE);
             rl_safety.setVisibility(View.GONE);
-            img_safety2.setVisibility(View.GONE);
-            rl_safety2.setVisibility(View.GONE);
-            img_safety3.setVisibility(View.GONE);
-            rl_safety3.setVisibility(View.GONE);
             img_safety1.setVisibility(View.VISIBLE);
             rl_safety1.setVisibility(View.VISIBLE);
             tv_title.setText("订单结束");
@@ -497,22 +433,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     //根据订单状态修改UI
     public void UpdateUI1(OrderType1Bean.DataBean data){
         OrderType1Bean.DataBean.UserInfoBean userInfo = data.getUserInfo();
-        tv_name.setText(userInfo.getNickname());
-        tv_ratb_name.setText(userInfo.getNickname());
-        tv_define_name.setText(userInfo.getNickname());
-        tv_shape.setText(data.getUser_evaluate());
-        tv_define_ratingbar.setText(data.getUser_evaluate());
-        tv_ratb_ratingbar.setText(data.getUser_evaluate());
-        tv_define_money.setText("¥ "+data.getMoney()+"");
-        tv_ratb_money.setText("¥ "+data.getMoney()+"");
         //订单状态:0=发起订单,1=订单分配中,2=司机接单,3=已到达,4=乘客已上车,5=到达目的地,6=订单完成,7=订单异常,8=取消订单,9=已评价,10=半途取消
         String status = data.getStatus();
+        tv_name.setText(userInfo.getNickname());
+        tv_shape.setText(data.getUser_evaluate());
+
         //服务类型 0-城内出行 1-城际出行 2-接机 3-送机
         String service_type = data.getService_type();
         if (service_type.equals("0")&&service_type.equals("1")){
             tv_car_code.setVisibility(View.GONE);
-            tv_define_car_code.setVisibility(View.GONE);
-            tv_ratb_car_code.setVisibility(View.GONE);
             tv_title.setText("捷滴出行");
             img_type.setImageResource(R.mipmap.icon_car1);
             if (service_type.equals("0")){
@@ -523,8 +452,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         }
         else {
             tv_car_code.setText(data.getFlightno());
-            tv_define_car_code.setText(data.getFlightno());
-            tv_ratb_car_code.setText(data.getFlightno());
             tv_title.setText("捷滴接机");
             img_type.setImageResource(R.mipmap.icon_plane1);
             if (service_type.equals("3")){
@@ -546,11 +473,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             markerOption.setFlat(false);//设置marker平贴地图效果
             aMap.addMarker(markerOption);
             img_safety1.setVisibility(View.GONE);
-            img_safety2.setVisibility(View.GONE);
-            img_safety3.setVisibility(View.GONE);
             rl_safety1.setVisibility(View.GONE);
-            rl_safety2.setVisibility(View.GONE);
-            rl_safety3.setVisibility(View.GONE);
             img_safety.setVisibility(View.VISIBLE);
             rl_safety.setVisibility(View.VISIBLE);
             tv_orderType.setText("到达上车点");
@@ -566,11 +489,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             markerOption.setFlat(false);//设置marker平贴地图效果
             aMap.addMarker(markerOption);
             img_safety1.setVisibility(View.GONE);
-            img_safety2.setVisibility(View.GONE);
-            img_safety3.setVisibility(View.GONE);
             rl_safety1.setVisibility(View.GONE);
-            rl_safety2.setVisibility(View.GONE);
-            rl_safety3.setVisibility(View.GONE);
             img_safety.setVisibility(View.VISIBLE);
             rl_safety.setVisibility(View.VISIBLE);
             tv_orderType.setText("乘客已上车");
@@ -586,11 +505,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             markerOption.setFlat(false);//设置marker平贴地图效果
             aMap.addMarker(markerOption);
             img_safety1.setVisibility(View.GONE);
-            img_safety2.setVisibility(View.GONE);
-            img_safety3.setVisibility(View.GONE);
             rl_safety1.setVisibility(View.GONE);
-            rl_safety2.setVisibility(View.GONE);
-            rl_safety3.setVisibility(View.GONE);
             img_safety.setVisibility(View.VISIBLE);
             rl_safety.setVisibility(View.VISIBLE);
             tv_orderType.setText("到达终点");
@@ -604,29 +519,16 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 rl_safety.setVisibility(View.GONE);
                 img_safety1.setVisibility(View.GONE);
                 rl_safety1.setVisibility(View.GONE);
-                img_safety2.setVisibility(View.GONE);
-                rl_safety2.setVisibility(View.GONE);
-                img_safety3.setVisibility(View.VISIBLE);
-                rl_safety3.setVisibility(View.VISIBLE);
-                ratb__ratingBar1.setRating(data.getFree_kilometre());
             }else {
                 img_safety.setVisibility(View.GONE);
                 rl_safety.setVisibility(View.GONE);
                 img_safety1.setVisibility(View.GONE);
                 rl_safety1.setVisibility(View.GONE);
-                img_safety3.setVisibility(View.GONE);
-                rl_safety3.setVisibility(View.GONE);
-                img_safety2.setVisibility(View.VISIBLE);
-                rl_safety2.setVisibility(View.VISIBLE);
             }
         }
         else if (status.equals("8")){
             img_safety.setVisibility(View.GONE);
             rl_safety.setVisibility(View.GONE);
-            img_safety2.setVisibility(View.GONE);
-            rl_safety2.setVisibility(View.GONE);
-            img_safety3.setVisibility(View.GONE);
-            rl_safety3.setVisibility(View.GONE);
             img_safety1.setVisibility(View.VISIBLE);
             rl_safety1.setVisibility(View.VISIBLE);
             tv_title.setText("订单结束");
@@ -697,4 +599,5 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
+
 }

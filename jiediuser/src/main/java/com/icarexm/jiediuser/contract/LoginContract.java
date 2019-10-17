@@ -8,6 +8,7 @@ public interface LoginContract {
         void PostMobileCode(LoginPresenter loginPresenter, String mobile,String event,String type);
         void  PostLogin(LoginPresenter loginPresenter, String mobile, String captcha, String event);
         void PostInit();
+        void PostWeixinlogin(LoginPresenter loginPresenter,String type,String openid,String nickname,String avatar);
     }
 
     interface View {
@@ -21,5 +22,6 @@ public interface LoginContract {
         void GetLogin(String mobile, String captcha, String event);
         void  SetLogin(LoginBean.DataBean.UserinfoBean userinfo);
         void GetInit();
+        void GetWeixinlogin(String type,String openid,String nickname,String avatar);
     }
 }

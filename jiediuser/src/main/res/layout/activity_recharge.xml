@@ -81,6 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_45">
             <Button
+                android:id="@+id/recharge_btn_wechatPay"
                 android:background="@drawable/bg_blue_stroke"
                 android:textSize="@dimen/sp_16"
                 android:textColor="@color/ff5181fb"
@@ -95,6 +96,7 @@
                 />
 
             <Button
+                android:id="@+id/recharge_btn_aliPay"
                 android:textSize="@dimen/sp_16"
                 android:textColor="@color/white"
                 android:background="@drawable/bg_blue"

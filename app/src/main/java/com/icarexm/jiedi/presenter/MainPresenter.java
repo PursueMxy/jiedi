@@ -20,7 +20,6 @@ public class MainPresenter implements MainContract.Presenter {
    public void GetOrderInfo(String token,String order_id){
         //获取订单详情
         mianModel.PostOrderInfo(this,token,order_id);
-
    }
 
     @Override

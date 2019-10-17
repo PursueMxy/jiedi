@@ -1,6 +1,8 @@
 package com.icarexm.jiedi.contract;
 
+import com.icarexm.jiedi.Bean.DeliverBean;
 import com.icarexm.jiedi.Bean.OrderListBean;
+import com.icarexm.jiedi.Bean.OrderListOneBean;
 import com.icarexm.jiedi.presenter.HomePresenter;
 
 public interface HomeContract {
@@ -14,6 +16,8 @@ public interface HomeContract {
         void UpdateOrderList(OrderListBean.DataBean data);
         void ShowToast(String content);
         void UpdateOrder(String order_id);
+        void ShowDialog(DeliverBean.DataBean.OrderBean order);
+        void UpSyatemOrder(OrderListOneBean.DataBean.OrderBean orderBean);
     }
 
     interface Presenter {
@@ -23,5 +27,7 @@ public interface HomeContract {
         void SetAutoOrder(String content);
         void GetIndex(String token);
         void SetIndex(String order);
+        void SetOrderUpload(DeliverBean.DataBean.OrderBean order);
+        void SetSystemOrder(OrderListOneBean.DataBean.OrderBean orderBean);
     }
 }

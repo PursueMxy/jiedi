@@ -155,6 +155,7 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/login_tv_wachat"
         android:layout_gravity="center"
         android:drawablePadding="@dimen/dp_10"
         android:drawableTop="@mipmap/icon_wechat"

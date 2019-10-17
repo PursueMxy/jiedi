@@ -30,7 +30,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".view.activity.AddWithdrawActivity"></activity>
+        <activity android:name=".view.activity.EvaluateActivity"></activity>
+        <activity android:name=".view.activity.AddWithdrawActivity" />
         <activity android:name=".view.activity.WithDrawTypeActivity" />
         <activity android:name=".view.activity.WithDrawActivity" />
         <activity android:name=".view.activity.AboutActivity" />
@@ -50,9 +51,7 @@
             android:value="4373020d9452a548fb2be61a1e13e3f9" />
 
         <activity android:name=".view.activity.OrderPerDayActivity" />
-        <activity
-            android:name=".view.activity.HomeActivity"
-            android:launchMode="singleTask"/>
+        <activity android:name=".view.activity.HomeActivity" />
         <activity android:name=".view.activity.LogonActivity" />
         <activity android:name=".view.activity.ForgetPasswordActivity" />
         <activity android:name=".view.activity.LoginActivity">

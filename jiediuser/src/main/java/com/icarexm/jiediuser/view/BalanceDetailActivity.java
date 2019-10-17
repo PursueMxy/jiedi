@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.icarexm.jiediuser.R;
 import com.icarexm.jiediuser.adapter.BalanceDtlAdapter;
+import com.icarexm.jiediuser.bean.BalanceDtlBean;
 import com.icarexm.jiediuser.bean.OrderListOneBean;
 import com.icarexm.jiediuser.contract.BalanceDetailContract;
 import com.icarexm.jiediuser.custview.wheel.ScreenInfo;
@@ -44,7 +45,7 @@ public class BalanceDetailActivity extends AppCompatActivity implements BalanceD
     private Context mContext;
     private LinearLayoutManager mLayoutManager;
     private BalanceDtlAdapter balanceDtlAdapter;
-    private List<OrderListOneBean.DataBean.OrderBean> list=new ArrayList<>();
+    private List<BalanceDtlBean.DataBean> list=new ArrayList<>();
     private BalanceDetailPresenter balanceDetailPresenter;
     private String token;
     private String OrderTime;
@@ -75,6 +76,7 @@ public class BalanceDetailActivity extends AppCompatActivity implements BalanceD
         mRecyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
+                balanceDetailPresenter.GetBalanceDtl(token,OrderTime,limit,page+"");
                 mRecyclerView.refreshComplete();//刷新动画完成
             }
 
@@ -97,12 +99,6 @@ public class BalanceDetailActivity extends AppCompatActivity implements BalanceD
         balanceDtlAdapter.setOnItemClickListener(new BaseRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, Object item, int position) {
-                int Status = Integer.parseInt(list.get(position).getStatus());
-                if (Status>5) {
-//                    Intent intent = new Intent(mContext, .class);
-//                    intent.putExtra("order_id",list.get(position).getId()+"");
-//                    startActivity(intent);
-                }
             }
         });
     }
@@ -145,6 +141,26 @@ public class BalanceDetailActivity extends AppCompatActivity implements BalanceD
                 dialog.show();
                 break;
         }
+    }
+
+    public void  UpdateList(List<BalanceDtlBean.DataBean> data){
+          list.addAll(data);
+        if (data!=null){
+            if (page>1){
+                balanceDtlAdapter.addItemsToLast(data);
+                balanceDtlAdapter.notifyDataSetChanged();
+            }else {
+                list.clear();
+                list.addAll(list);
+                balanceDtlAdapter.setListAll(list);
+                balanceDtlAdapter.notifyDataSetChanged();
+            }
+        }else {
+            page=1;
+            mRecyclerView.setNoMore(true);//数据加载完成
+        }
+        //加载更多
+        mRecyclerView.loadMoreComplete();//加载动画完成
     }
 
     @Override

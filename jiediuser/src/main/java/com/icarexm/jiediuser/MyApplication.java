@@ -2,6 +2,8 @@ package com.icarexm.jiediuser;
 
 import android.app.Application;
 
+import com.icarexm.jiediuser.utils.AppCont;
+import com.icarexm.jiediuser.wxapi.WXEntryActivity;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.cache.CacheEntity;
 import com.lzy.okgo.cache.CacheMode;
@@ -12,6 +14,8 @@ import com.lzy.okgo.interceptor.HttpLoggingInterceptor;
 import com.lzy.okgo.model.HttpHeaders;
 import com.lzy.okgo.model.HttpParams;
 import com.tencent.bugly.crashreport.CrashReport;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -19,6 +23,8 @@ import java.util.logging.Level;
 import okhttp3.OkHttpClient;
 
 public class MyApplication extends Application {
+
+    public static IWXAPI iwxapi;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -26,8 +32,16 @@ public class MyApplication extends Application {
         OkGo.getInstance().init(this);
         //配置网络请求OkGo
         SetOkGohttp();
+        InitWeixin();
     }
 
+    private void InitWeixin() {
+        final IWXAPI api = WXAPIFactory.createWXAPI(getApplicationContext(), null,false);
+        // 将该app注册到微信
+        api.registerApp(AppCont.WX_APP_ID);
+         iwxapi = WXEntryActivity.InitWeiXin(this, AppCont.WX_APP_ID);
+    }
+    
     private void SetOkGohttp() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 

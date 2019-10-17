@@ -201,8 +201,8 @@ public class OrderListActivity extends AppCompatActivity implements OrderListCon
             public void onItemClick(View view, Object item, int position) {
                 try {
                     int Status = Integer.parseInt(list.get(position).getStatus());
-                    if (Status > 5) {
-                        Intent intent = new Intent(mContext, CostDetailActivity.class);
+                    if (Status ==6) {
+                        Intent intent = new Intent(mContext, EvaluateActivity.class);
                         intent.putExtra("order_id", list.get(position).getId() + "");
                         startActivity(intent);
                     }

@@ -1,5 +1,6 @@
 package com.icarexm.jiediuser.presenter;
 
+import com.icarexm.jiediuser.bean.CostDetailBean;
 import com.icarexm.jiediuser.contract.CostDetailContract;
 import com.icarexm.jiediuser.model.CostDetailModel;
 
@@ -16,7 +17,7 @@ public class CostDetailPresenter implements CostDetailContract.Presenter {
     public void GetOrderDetail(String token, String order_id) {
        costDetailModel.PostOrderDetail(this,token,order_id);
     }
-    public void setOrderDetail(){
-
+    public void SetOrderDetail(CostDetailBean.DataBean data){
+        mView.UpdateUI(data);
     }
 }

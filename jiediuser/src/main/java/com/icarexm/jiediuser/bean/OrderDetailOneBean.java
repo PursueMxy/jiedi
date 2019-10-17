@@ -180,7 +180,7 @@ public class OrderDetailOneBean {
         private String user_score_order;
         private int info_submited;
         private String score;
-        private List<?> driverInfo;
+        private Object driverInfo;
 
         public int getId() {
             return id;
@@ -686,11 +686,11 @@ public class OrderDetailOneBean {
             this.score = score;
         }
 
-        public List<?> getDriverInfo() {
+        public Object getDriverInfo() {
             return driverInfo;
         }
 
-        public void setDriverInfo(List<?> driverInfo) {
+        public void setDriverInfo(Object driverInfo) {
             this.driverInfo = driverInfo;
         }
 

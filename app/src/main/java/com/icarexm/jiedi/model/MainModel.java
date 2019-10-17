@@ -20,6 +20,7 @@ public class MainModel implements MainContract.Model {
     public  void PostOrderInfo(MainPresenter mainPresenter, String token, String order_id){
         OkGo.<String>post(RequstUrlUtils.URL.orderInfo)
                 .params("order_id",order_id)
+                .params("type","1")
                 .params("token", token)
                 .execute(new StringCallback() {
                     @Override
@@ -58,6 +59,7 @@ public class MainModel implements MainContract.Model {
                 .params("order_id",order_id)
                 .params("score",score)
                 .params("comment",comment)
+                .params("type","1")
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(Response<String> response) {

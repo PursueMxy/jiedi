@@ -54,7 +54,8 @@ public class PersonalActivity extends AppCompatActivity {
         Glide.with(this).load(avatar).into(img_head_portrait);
     }
 
-    @OnClick({R.id.personal_img_back,R.id.personal_rl_order,R.id.personal_rl_price,R.id.personal_rl_message,R.id.personal_rl_set})
+    @OnClick({R.id.personal_img_back,R.id.personal_rl_order,R.id.personal_rl_price,R.id.personal_rl_message
+            ,R.id.personal_rl_set,R.id.personal_tv_accountingRules})
     public void onViewClicked(View view){
         switch (view.getId()) {
             case R.id.personal_img_back:
@@ -71,6 +72,9 @@ public class PersonalActivity extends AppCompatActivity {
                 break;
             case R.id.personal_rl_set:
                 startActivity(new Intent(mContext,SetActivity.class));
+                break;
+            case R.id.personal_tv_accountingRules:
+                startActivity(new Intent(mContext,AccountingRulesActivity.class));
                 break;
             default:
                 break;

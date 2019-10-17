@@ -31,6 +31,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.icarexm.jiedi.Bean.DeliverBean;
 import com.icarexm.jiedi.Bean.OrderListBean;
+import com.icarexm.jiedi.Bean.OrderListOneBean;
 import com.icarexm.jiedi.R;
 import com.icarexm.jiedi.adapter.HomeAdapter;
 import com.icarexm.jiedi.contract.HomeContract;
@@ -86,7 +87,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private static String city="";
     private static double longitude=0;
     private static double latitude=0;
-    private HomePresenter homePresenter;
+    private static HomePresenter homePresenter;
 
     public static StocketServices stocketService;
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -100,7 +101,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
         }
     };
-    private static HomeActivity getthis;
+    private TextView dialog_home_tv_time;
+    private TextView dialog_home_tv_distance;
+    private TextView home_dialog_tv_startingpoint;
+    private TextView home_dialog_tv_destination;
+    private String order_id;
 
 
     @Override
@@ -112,13 +117,12 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         token = sp.getString("token", "");
         user_id = sp.getString("user_id", "");
         ButterKnife.bind(this);
+        initService();
         InitUI();
         homePresenter = new HomePresenter(this);
         homePresenter.GetIndex(token);
         SetLocations();
         orderHandler.postDelayed(orderRunnable,200);
-        initService();
-        getthis=this;
     }
 
     @Override
@@ -173,21 +177,28 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     private void InitUI() {
         dialog_home = getLayoutInflater().inflate(R.layout.dialog_home, null);
+        dialog_home_tv_time = dialog_home.findViewById(R.id.dialog_home_tv_time);
+        dialog_home_tv_distance = dialog_home.findViewById(R.id.dialog_home_tv_distance);
+        home_dialog_tv_startingpoint = dialog_home.findViewById(R.id.home_dialog_tv_startingpoint);
+        home_dialog_tv_destination = dialog_home.findViewById(R.id.home_dialog_tv_destination);
         countDownProgressBar = dialog_home.findViewById(R.id.dialog_home_countDownProgress);
         countDownProgressBar.plus(10);
         countDownProgressBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                stocketService.Receipt(order_id,longitude+"",latitude+"",city);
                 alertDialog.dismiss();
+                alertDialog=null;
                 homePresenter.GetAutoOrder(token,"0");
                 btn_gainorder.setText("接单");
                 btn_gainorder.setBackground(getResources().getDrawable(R.drawable.btn_login));
                 orderHandler.removeCallbacks(orderRunnable);
                 Intent intent = new Intent(mContext, MainActivity.class);
-                intent.putExtra("order_id","162");
+                intent.putExtra("order_id",order_id);
                 intent.putExtra("positionE",longitude+"");
                 intent.putExtra("positionN",latitude+"");
                 intent.putExtra("position",city);
+                intent.putExtra("order_status","1");
                 startActivity(intent);
                 mLocationClient.stopLocation();
             }
@@ -202,6 +213,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             @Override
             public void onEnd() {
                 alertDialog.dismiss();
+                alertDialog=null;
                 Log.e("home","结束");
             }
         });
@@ -241,11 +253,13 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             @Override
             public void onItemClick(View view, Object item, int position) {
                 orderHandler.removeCallbacks(orderRunnable);
+                stocketService.Receipt(order_id,longitude+"",latitude+"",city);
                 Intent intent = new Intent(mContext, MainActivity.class);
                 intent.putExtra("order_id",list.get(position).getId()+"");
                 intent.putExtra("positionE",longitude+"");
                 intent.putExtra("positionN",latitude+"");
                 intent.putExtra("position",city);
+                intent.putExtra("order_status","2");
                 startActivity(intent);
                 mLocationClient.stopLocation();
             }
@@ -304,24 +318,51 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     }
 
     //自动接单dialog
-    public static void ShowDialog(String orders){
-                    Gson gson = new GsonBuilder().create();
-                    DeliverBean deliverBean = gson.fromJson(orders, DeliverBean.class);
-                    DeliverBean.DataBean data = deliverBean.getData();
-                    DeliverBean.DataBean.OrderBean order = data.getOrder();
-                    builder = new AlertDialog.Builder(getthis);
-                    if (alertDialog==null) {
-                        alertDialog = builder.setView(dialog_home)
-                                .create();
-                        alertDialog.show();
-                    }else {
-                        alertDialog.show();
-                    }
-                    countDownProgressBar.startCountDown();
-                }
-                //刷新订单列表handler
-                private Handler orderHandler=new Handler();
-                Runnable orderRunnable=new Runnable() {
+    public  void ShowDialog(DeliverBean.DataBean.OrderBean order){
+             order_id = order.getId()+"";
+             home_dialog_tv_destination.setText(order.getDestination());
+             home_dialog_tv_startingpoint.setText(order.getStartingpoint());
+             dialog_home_tv_time.setText(order.getTime());
+             dialog_home_tv_distance.setText(order.getDistance()+"");
+             builder = new AlertDialog.Builder(this);
+             if (alertDialog == null) {
+             alertDialog = builder.setView(dialog_home).create();
+             alertDialog.show();
+              } else {
+             alertDialog.show();
+              }
+             countDownProgressBar.startCountDown();
+              }
+
+    //系统自动接单接到新订单了
+    public static void automatic(String orders){
+        Gson gson = new GsonBuilder().create();
+        DeliverBean deliverBean = gson.fromJson(orders, DeliverBean.class);
+        DeliverBean.DataBean data = deliverBean.getData();
+        DeliverBean.DataBean.OrderBean order = data.getOrder();
+        homePresenter.SetOrderUpload(order);
+    }
+
+    //获取到系统派单
+    public  void UpSyatemOrder(OrderListOneBean.DataBean.OrderBean orderBean){
+        order_id = orderBean.getId()+"";
+        home_dialog_tv_destination.setText( orderBean.getDestination());
+        home_dialog_tv_startingpoint.setText( orderBean.getStartingpoint());
+        dialog_home_tv_time.setText( orderBean.getTime());
+        dialog_home_tv_distance.setText("");
+        builder = new AlertDialog.Builder(this);
+        if (alertDialog == null) {
+            alertDialog = builder.setView(dialog_home).create();
+            alertDialog.show();
+        } else {
+            alertDialog.show();
+        }
+        countDownProgressBar.startCountDown();
+    }
+
+     //刷新订单列表handler
+    private Handler orderHandler=new Handler();
+    Runnable orderRunnable=new Runnable() {
                     @Override
                     public void run() {
                         if (longitude!=0&&latitude!=0&&!city.equals("")) {
@@ -333,13 +374,14 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         }
     };
 
-//                有订单跳转到main
+//    有订单跳转到main
     public  void UpdateOrder(String order_id){
         Intent intent = new Intent(mContext, MainActivity.class);
         intent.putExtra("order_id",order_id);
         intent.putExtra("positionE",longitude+"");
         intent.putExtra("positionN",latitude+"");
         intent.putExtra("position",city);
+        intent.putExtra("order_status","2");
         startActivity(intent);
         mLocationClient.stopLocation();
     }
@@ -363,6 +405,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             }
         }
     }
+
+
     //声明定位回调监听器
     public AMapLocationListener mLocationListener = new AMapLocationListener() {
         @Override
@@ -408,4 +452,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+
 }

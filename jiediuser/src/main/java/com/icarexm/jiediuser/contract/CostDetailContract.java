@@ -1,5 +1,6 @@
 package com.icarexm.jiediuser.contract;
 
+import com.icarexm.jiediuser.bean.CostDetailBean;
 import com.icarexm.jiediuser.presenter.CostDetailPresenter;
 
 public interface CostDetailContract {
@@ -8,9 +9,11 @@ public interface CostDetailContract {
     }
 
     interface View {
+        void UpdateUI(CostDetailBean.DataBean data);
     }
 
     interface Presenter {
         void GetOrderDetail(String token, String order_id);
+        void SetOrderDetail(CostDetailBean.DataBean data);
     }
 }

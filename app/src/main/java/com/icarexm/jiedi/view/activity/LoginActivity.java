@@ -21,6 +21,9 @@ import com.icarexm.jiedi.contract.LoginContract;
 import com.icarexm.jiedi.custView.CircleImageView;
 import com.icarexm.jiedi.presenter.LoginPresenter;
 import com.icarexm.jiedi.utils.ToastUtils;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.Response;
 
 import java.util.List;
 
@@ -150,6 +153,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         String avatar = userinfo.getAvatar();
         String licenseplate = userinfo.getLicenseplate();
         SharedPreferences.Editor editor = share.edit();
+        editor.putString("type","home");
         editor.putString("mobile", mobile);
         editor.putString("password", password);
         editor.putString("token",token);

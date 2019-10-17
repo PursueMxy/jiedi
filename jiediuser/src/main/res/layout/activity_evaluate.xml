@@ -101,7 +101,7 @@
                 android:layout_marginTop="@dimen/dp_25"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="￥21.50"
+                android:text=""
                 android:textColor="@color/ffff383f"
                 android:textSize="@dimen/sp_20"
                 />
@@ -235,6 +235,7 @@
                 android:id="@+id/evaluate_todefine_ratingBar"
                 android:stepSize="1"
                 android:rating="5"
+                android:isIndicator="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"

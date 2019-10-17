@@ -6,14 +6,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 
+import com.google.gson.GsonBuilder;
+import com.icarexm.jiedi.Bean.CashOutBean;
 import com.icarexm.jiedi.R;
 import com.icarexm.jiedi.adapter.CashoutAdapter;
 import com.icarexm.jiedi.utils.MxyUtils;
+import com.icarexm.jiedi.utils.RequstUrlUtils;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.Response;
 import com.zhouyou.recyclerview.XRecyclerView;
 
 import java.util.ArrayList;
@@ -21,34 +28,60 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class CashOutActivity extends AppCompatActivity {
 
     @BindView(R.id.cashout_recyclerView)
     XRecyclerView mRecyclerView;
 
-    private List<String> list=new ArrayList<>();
+    private List<CashOutBean.DataBean> list=new ArrayList<>();
     private Context mContext;
     private CashoutAdapter cashoutAdapter;
-
+    private String token;
+    private String limit="50";
+    private int page=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cash_out);
         mContext = getApplicationContext();
+        SharedPreferences sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        token = sp.getString("token", "");
         ButterKnife.bind(this);
         InitUI();
+        InitData();
+    }
+    @OnClick({R.id.cashout_img_back})
+    public void onViewClick(View view){
+        switch (view.getId()){
+            case R.id.cashout_img_back:
+                finish();
+                break;
+        }
+    }
+
+    private void InitData() {
+        OkGo.<String>post(RequstUrlUtils.URL.money_log)
+                .params("token", token)
+                .params("type","1")
+                .params("select_time","")
+                .params("limit",limit)
+                .params("page",page)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        CashOutBean balanceDtlBean = new GsonBuilder().create().fromJson(response.body(), CashOutBean.class);
+                        if (balanceDtlBean.getCode()==200){
+                            List<CashOutBean.DataBean> data = balanceDtlBean.getData();
+                            cashoutAdapter .addItemsToLast(data);
+                            cashoutAdapter .notifyDataSetChanged();
+                        }
+                    }
+                });
     }
 
     private void InitUI() {
-        list.add("102");
-        list.add("112");
-        list.add("122");
-        list.add("132");
-        list.add("142");
-        list.add("152");
-        list.add("162");
-        list.add("172");
         mRecyclerView.setNestedScrollingEnabled(false);
         LinearLayoutManager   mLayoutManager = new LinearLayoutManager(mContext);
         cashoutAdapter = new CashoutAdapter(this);

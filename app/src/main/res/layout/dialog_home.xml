@@ -20,7 +20,7 @@
                 android:layout_marginTop="@dimen/dp_8"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="10:39"
+                android:text=""
                 android:textColor="@color/white"
                 android:textSize="@dimen/sp_15"
                 />
@@ -46,7 +46,7 @@
                 android:layout_marginTop="@dimen/dp_8"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="0.35公里"
+                android:text=""
                 android:textColor="@color/white"
                 android:textSize="@dimen/sp_15"
                 />
@@ -62,24 +62,26 @@
         </RelativeLayout>
     </LinearLayout>
     <TextView
+        android:id="@+id/home_dialog_tv_startingpoint"
         android:drawableLeft="@mipmap/icon_location_blue"
         android:drawablePadding="@dimen/dp_10"
         android:layout_marginLeft="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="厦门国贸大厦西北侧"
+        android:text=""
         android:textColor="@color/black"
         android:textSize="@dimen/sp_11"
         />
     <TextView
+        android:id="@+id/home_dialog_tv_destination"
         android:drawableLeft="@mipmap/icon_location_red"
         android:drawablePadding="@dimen/dp_10"
         android:layout_marginLeft="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="厦门火车站"
+        android:text=""
         android:textColor="@color/black"
         android:textSize="@dimen/sp_11"
         />

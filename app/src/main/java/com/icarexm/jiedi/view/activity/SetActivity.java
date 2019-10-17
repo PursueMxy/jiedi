@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageStats;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.icarexm.jiedi.R;
+import com.icarexm.jiedi.utils.DataCleanManagerUtils;
 import com.icarexm.jiedi.utils.ToastUtils;
 
 import butterknife.ButterKnife;
@@ -29,6 +31,11 @@ public class SetActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set);
         mContext = getApplicationContext();
+        try {
+            String totalCacheSize = DataCleanManagerUtils.getTotalCacheSize(mContext);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         ButterKnife.bind(this);
     }
 
@@ -72,6 +79,7 @@ public class SetActivity extends AppCompatActivity {
                 alertDialog.show();
                 break;
             case R.id.set_rl_clear_cache:
+                DataCleanManagerUtils.cleanInternalCache(mContext);
                 ToastUtils.showToast(mContext,"清除缓存成功");
                 break;
         }

@@ -1,5 +1,6 @@
 package com.icarexm.jiedi.presenter;
 
+import com.icarexm.jiedi.Bean.CostDetailBean;
 import com.icarexm.jiedi.contract.CostDetailContract;
 import com.icarexm.jiedi.model.CostDetailModel;
 
@@ -14,6 +15,10 @@ public class CostDetailPresenter implements CostDetailContract.Presenter {
     }
 
     public void GetOrderPriceInfo(String order_id,String token){
-        costDetailModel.PostOrderPriceInfo(order_id,token);
+        costDetailModel.PostOrderPriceInfo(this,order_id,token);
+    }
+
+    public void SetOrderDetail(CostDetailBean.DataBean data){
+        mView.UpdateUI(data);
     }
 }

@@ -133,7 +133,7 @@ public class EvaluateActivity extends AppCompatActivity implements EvaluateContr
         mLocationClient.startLocation();
     }
 
-    @OnClick({R.id.evaluate_img_back,R.id.evaluate_define_btn_confirm})
+    @OnClick({R.id.evaluate_img_back,R.id.evaluate_define_btn_confirm,R.id.evaluate_define_tv_moneys,R.id.evaluate_todefine_tv_orderprice})
     public void onViewClick(View view){
         switch (view.getId()){
             case R.id.evaluate_img_back:
@@ -142,6 +142,16 @@ public class EvaluateActivity extends AppCompatActivity implements EvaluateContr
             case R.id.evaluate_define_btn_confirm:
                 float rating = define_ratingBar.getRating();
                 evaluatePresenter.GetEvaluate(token,order_id,rating+"","");
+                break;
+            case R.id.evaluate_define_tv_moneys:
+                Intent intent = new Intent(mContext, CostDetailActivity.class);
+                intent.putExtra("order_id",order_id);
+                startActivity(intent);
+                break;
+            case R.id.evaluate_todefine_tv_orderprice:
+                Intent intent1 = new Intent(mContext, CostDetailActivity.class);
+                intent1.putExtra("order_id",order_id);
+                startActivity(intent1);
                 break;
         }
     }
@@ -167,7 +177,7 @@ public class EvaluateActivity extends AppCompatActivity implements EvaluateContr
             rl_order_evaluate.setVisibility(View.GONE);
             rl_order_stop_evaluate.setVisibility(View.VISIBLE);
             String driver_evaluate = data.getUser_score_order();
-            todefine_ratingBar.setRating(Float.parseFloat(data.getUser_evaluate()));
+            todefine_ratingBar.setRating(Float.parseFloat(data.getUser_score_order()));
             todefine_tv_carcode.setText(data.getDriverInfo().getLicenseplate());
             todefine_tv_carName.setText(data.getDriverInfo().getNickname() + "  " + data.getDriverInfo().getOrder_count() + "单");
             todefine_tv_orderprice.setText(data.getMoney()+"元");

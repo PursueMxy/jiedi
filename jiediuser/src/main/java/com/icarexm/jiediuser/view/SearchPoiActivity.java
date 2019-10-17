@@ -167,7 +167,6 @@ public class SearchPoiActivity extends AppCompatActivity implements TextWatcher,
         setLoadingVisible(false);
         try {
             if (rCode == 1000) {
-                Log.e("数据长度",tipList.size()+"条");
                 mCurrentTipList = new ArrayList<Tip>();
                 for (Tip tip : tipList) {
                     if (null == tip.getPoint()) {

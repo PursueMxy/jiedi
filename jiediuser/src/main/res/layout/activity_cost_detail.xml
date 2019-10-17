@@ -86,29 +86,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
+                android:id="@+id/cost_dtl_mileage_tv_title"
                 android:layout_marginLeft="@dimen/dp_10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="时长费(18分钟)"
+                android:text=""
                 android:textColor="@color/black"
                 android:textSize="@dimen/sp_14"
                 />
             <TextView
+                android:id="@+id/cost_dtl_mileage_tv_money"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="@dimen/dp_10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="19.00元"
+                android:text=""
                 android:textColor="@color/black"
                 android:textSize="@dimen/sp_14"
                 />
         </RelativeLayout>
         <TextView
+            android:id="@+id/cost_dtl_start_mileage_tv_title"
             android:layout_marginLeft="@dimen/dp_10"
             android:layout_marginTop="@dimen/dp_5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="起步里程(3公里)"
+            android:text=""
             android:textColor="@color/ff707070"
             android:textSize="@dimen/sp_12"
             />
@@ -117,20 +120,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
+                android:id="@+id/cost_dtl_stop_mileage_tv_title"
                 android:layout_marginLeft="@dimen/dp_10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="普通时段(6.7公里)"
+                android:text=""
                 android:textColor="@color/ff707070"
                 android:textSize="@dimen/sp_12"
                 />
             <TextView
-                android:id="@+id/cost_dtl_tv_tatol_money"
+                android:id="@+id/cost_dtl_stop_mileage_tv_money"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="@dimen/dp_10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="19.00元"
+                android:text=""
                 android:textColor="@color/ff707070"
                 android:textSize="@dimen/sp_12"
                 />
@@ -141,29 +145,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
+                android:id="@+id/cost_dtl_duration_tv_title"
                 android:layout_marginLeft="@dimen/dp_10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="里程费9.7公里"
+                android:text=""
                 android:textColor="@color/black"
                 android:textSize="@dimen/sp_14"
                 />
             <TextView
+                android:id="@+id/cost_dtl_duration_tv_money"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="@dimen/dp_10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="5.76元"
+                android:text=""
                 android:textColor="@color/black"
                 android:textSize="@dimen/sp_14"
                 />
         </RelativeLayout>
         <TextView
+            android:id="@+id/cost_dtl_start_duration_tv_title"
             android:layout_marginLeft="@dimen/dp_10"
             android:layout_marginTop="@dimen/dp_5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="起步时长（6分钟钟）"
+            android:text=""
             android:textColor="@color/ff707070"
             android:textSize="@dimen/sp_12"
             />
@@ -172,19 +179,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
+                android:id="@+id/cost_dtl_stop_duration_tv_title"
                 android:layout_marginLeft="@dimen/dp_10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="行驶时长（12分钟）"
+                android:text=""
                 android:textColor="@color/ff707070"
                 android:textSize="@dimen/sp_12"
                 />
             <TextView
+                android:id="@+id/cost_dtl_stop_duration_tv_money"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="@dimen/dp_10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="19.00元"
+                android:text=""
                 android:textColor="@color/ff707070"
                 android:textSize="@dimen/sp_12"
                 />
@@ -197,6 +206,7 @@
             android:layout_height="2dp"/>
 
         <TextView
+            android:id="@+id/cost_dtl_tv_tatol_money"
             android:layout_marginTop="@dimen/dp_20"
             android:layout_marginRight="@dimen/dp_10"
             android:layout_gravity="end"
@@ -220,11 +230,12 @@
                 android:textSize="@dimen/sp_14"
                 />
             <TextView
+                android:id="@+id/cost_dtl_tv_coupon_money"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="@dimen/dp_10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="-6.00元"
+                android:text="元"
                 android:textColor="@color/ff5181fb"
                 android:textSize="@dimen/sp_14"
                 />
@@ -236,6 +247,7 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"/>
         <TextView
+            android:id="@+id/cost_dtl_tv_meet_money"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/dp_22"
             android:layout_width="wrap_content"

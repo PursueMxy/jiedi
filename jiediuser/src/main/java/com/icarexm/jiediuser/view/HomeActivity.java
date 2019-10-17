@@ -697,7 +697,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             float distance = distanceResults.get(0).getDistance()/1000;//长度(公里）
             estimated_mileage=distance+"";
             estimated_time=duration+"";
-            homePresenter.GetPrice(estimated_mileage,"0",estimated_time);
+            homePresenter.GetPrice(estimated_mileage,"",estimated_time);
         }
     }
 
@@ -826,7 +826,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             }
             OrderStatus=status;
 
-
         }
     }
 
@@ -835,7 +834,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         if (data!=null) {
             order_id = data.getId()+"";
             String status = data.getStatus();
-             if (status.equals("0")){
+             if (status.equals("0")||status.equals("1")){
                  rl_order_setorder.setVisibility(View.GONE);
                  rl_order_estimated_price.setVisibility(View.GONE);
                  cancel_tv_cancelOrder.setVisibility(View.VISIBLE);
@@ -850,7 +849,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     //获取订单详情
     public static void GetOrderStatus(String orderStatus){
         OrderStatus=orderStatus;
-        Log.e("OrderStatus",orderStatus);
         //获取订单状态
        homePresenter.GetIndex(token);
     }
@@ -858,7 +856,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     //取消订单成功
     public static void  CancelOrder(){
     ToastUtils.showToast(mContext,"订单取消成功");
-    order_id="";
+        OrderStatus="8";
+         order_id="";
         ORDER_TYPE=0;
         CITY_TYPE=1;
         IsCancelOrder=true;
@@ -915,7 +914,12 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             StringFormatUtil spanStr1 = new StringFormatUtil(mContext, "预计还需" + dervierDuration + "分钟", "预计还需", R.color.black).fillColor();
             tv_duration.setText(spanStr1.getResult());
             tv_price.setText(dervierMoney);
+        }else if (OrderStatus.equals("8")){
+            OrderStatus="0";
+            rl_order_cancel.setVisibility(View.GONE);
+            rl_order_cancelled.setVisibility(View.VISIBLE);
         }
+
         return infoWindow;
     }
 

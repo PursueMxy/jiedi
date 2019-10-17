@@ -52,7 +52,11 @@ public class OrderPerDayAdapter extends HelperRecyclerViewAdapter<OrderListOneBe
         }else if (data.getStatus().equals("5")){
             tv_status.setText("到达目的地");
         }else if (data.getStatus().equals("6")){
-            tv_status.setText("等待评价");
+            if (data.getDriver_score_order().equals("0")) {
+                tv_status.setText("等待评价");
+            }else {
+                tv_status.setText("已评价");
+            }
         }else if (data.getStatus().equals("7")){
             tv_status.setText("订单异常");
         }else if (data.getStatus().equals("8")){

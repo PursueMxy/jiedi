@@ -6,14 +6,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
 import com.icarexm.jiediuser.R;
 import com.icarexm.jiediuser.adapter.MessageCenterAdapter;
 import com.icarexm.jiediuser.utils.MxyUtils;
+import com.icarexm.jiediuser.utils.RequstUrlUtils;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.Response;
 import com.zhouyou.recyclerview.XRecyclerView;
 
 import java.util.ArrayList;
@@ -28,25 +34,37 @@ public class MessageCenterActivity extends AppCompatActivity {
     private List<String> list=new ArrayList<>();
     private Context mContext;
     private MessageCenterAdapter messageCenterAdapter;
+    private String limit="20";
+    private int page=1;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_center);
         mContext = getApplicationContext();
+        SharedPreferences sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        token = sp.getString("token", "");
         ButterKnife.bind(this);
         InitUI();
+        InitData();
+    }
+
+    private void InitData() {
+        OkGo.<String>post(RequstUrlUtils.URL.messageindex)
+                .params("token",token)
+                .params("type","0")
+                .params("limit",limit)
+                .params("page",page+"")
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        Log.e("response",response.body());
+                    }
+                });
     }
 
     private void InitUI() {
-        list.add("102");
-        list.add("112");
-        list.add("122");
-        list.add("132");
-        list.add("142");
-        list.add("152");
-        list.add("162");
-        list.add("172");
         mRecyclerView.setNestedScrollingEnabled(false);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(mContext);
         messageCenterAdapter = new MessageCenterAdapter(this);
@@ -88,4 +106,6 @@ public class MessageCenterActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
+
 }

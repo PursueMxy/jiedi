@@ -1,6 +1,10 @@
 package com.icarexm.jiedi.presenter;
 
+import android.util.Log;
+
+import com.icarexm.jiedi.Bean.DeliverBean;
 import com.icarexm.jiedi.Bean.OrderListBean;
+import com.icarexm.jiedi.Bean.OrderListOneBean;
 import com.icarexm.jiedi.contract.HomeContract;
 import com.icarexm.jiedi.contract.LoginContract;
 import com.icarexm.jiedi.model.HomeModel;
@@ -37,8 +41,22 @@ public class HomePresenter implements HomeContract.Presenter {
         HomeModel.PostIndex(this,token);
     }
 
+    //系统派单等待接收
+    public void SetSystemOrder(OrderListOneBean.DataBean.OrderBean orderBean){
+       mView.UpSyatemOrder(orderBean);
+    }
+
+    //有订单还未完成
     public void SetIndex(String order){
       mView.UpdateOrder(order);
+    }
+
+
+
+
+    //自动接单更新
+    public void SetOrderUpload(DeliverBean.DataBean.OrderBean order){
+    mView.ShowDialog(order);
     }
 
 }
