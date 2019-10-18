@@ -19,6 +19,13 @@ public class DateUtils {
     private final static long month = 31 * day;
     private final static long year = 12 * month;
 
+
+    public static String getDateToString(long milSecond) {
+        Date date = new Date(milSecond* 1000);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return format.format(date);
+    }
+
     public static String getTodayDate() {
         SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd",
                 Locale.getDefault());

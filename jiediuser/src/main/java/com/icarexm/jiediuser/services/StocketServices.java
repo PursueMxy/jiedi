@@ -183,7 +183,7 @@ public class StocketServices extends Service {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {//开启长连接成功的回调
                 super.onOpen(webSocket, response);
-                Log.e("BackService",user_id+"进来了"+token);
+                Log.e("BackService",city+"进来了"+token);
                 mWebSocket = webSocket;
                 String s = new Gson().toJson(new LoginDemoBean(token, "0", user_id,"login",new LoginDemoBean.data(city)));
                 mWebSocket.send(s);
@@ -194,7 +194,7 @@ public class StocketServices extends Service {
             public void onMessage(WebSocket webSocket, final String text) {//接收消息的回调
                 super.onMessage(webSocket, text);
                 //收到服务器端传过来的消息text
-                Log.e("BackService1",text);
+//                Log.e("BackService1",text);
                   try {
                       Gson gson = new GsonBuilder().create();
                       ServicesMsgBean servicesMsgBean = gson.fromJson(text, ServicesMsgBean.class);
@@ -287,9 +287,9 @@ public class StocketServices extends Service {
     //用户下单
     public void place_order(String startingpointE,String startingpointN,String startingpoint,String destinationE,String destinationN,
                             String destination,String estimated_mileage,String estimated_time,String budget,String service_type,
-                            String city,String flightnom,String estimatedeparturetime){
+                            String city,String flightno,String estimatedeparturetime){
         String place_order = new Gson().toJson(new PlaceOrderBean(token, "0", mobile, user_id, "place_order", new PlaceOrderBean.data(startingpointE, startingpointN, startingpoint, destinationE, destinationN, destination, estimated_mileage
-                , estimated_time, budget, service_type, city, flightnom, estimatedeparturetime)));
+                , estimated_time, budget, service_type, city, flightno, estimatedeparturetime)));
         boolean isSuccess = mWebSocket.send("");
         if (!isSuccess) {//长连接已断开
             mWebSocket.cancel();//取消掉以前的长连接

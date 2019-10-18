@@ -326,6 +326,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_169">
                 <TextView
+                    android:id="@+id/home_ll_estimated_price_tv_time"
                     android:drawablePadding="@dimen/dp_10"
                     android:drawableLeft="@mipmap/icon_alarm"
                     android:layout_gravity="center"
@@ -578,6 +579,7 @@
             />
         
         <com.icarexm.jiediuser.custview.CircleImageView
+            android:id="@+id/home_img_head_portrait"
             android:src="@mipmap/icon_head_portrait"
             android:layout_marginLeft="@dimen/dp_24"
             android:layout_marginTop="@dimen/dp_21"
@@ -585,6 +587,7 @@
             android:layout_height="@dimen/dp_64" />
 
         <TextView
+            android:id="@+id/home_tv_nikename"
             android:layout_marginTop="@dimen/dp_7"
             android:layout_marginLeft="@dimen/dp_24"
             android:layout_width="wrap_content"

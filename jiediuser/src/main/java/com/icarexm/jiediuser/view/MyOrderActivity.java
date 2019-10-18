@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -217,9 +218,8 @@ public class MyOrderActivity extends AppCompatActivity implements MyOrderContrac
         myOrderPresenter.GetOrderList(token,OrderType,OrderTime,limit,page+"");
     }
 
-    public void UpdateOrderList(List<OrderListOneBean.DataBean.OrderBean> order)
-{
-        if (order!=null){
+    public void UpdateOrderList(List<OrderListOneBean.DataBean.OrderBean> order) {
+        if (order.size()>0){
             if (page>1){
                 orderPerDayAdapter .addItemsToLast(order);
                 orderPerDayAdapter .notifyDataSetChanged();

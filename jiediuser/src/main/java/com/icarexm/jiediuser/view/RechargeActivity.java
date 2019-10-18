@@ -83,7 +83,7 @@ public class RechargeActivity extends AppCompatActivity {
             case R.id.recharge_btn_wechatPay:
                 OkGo.<String>post(RequstUrlUtils.URL.memberrecharge)
                         .params("token",token)
-                        .params("money","0.01")
+                        .params("money",SLT_PRICE)
                         .params("pay_type","wechat")
                         .execute(new StringCallback() {
                             @Override
@@ -120,7 +120,7 @@ public class RechargeActivity extends AppCompatActivity {
             case R.id.recharge_btn_aliPay:
                 OkGo.<String>post(RequstUrlUtils.URL.memberrecharge)
                         .params("token",token)
-                        .params("money","0.01")
+                        .params("money",SLT_PRICE)
                         .params("pay_type","alipay")
                         .execute(new StringCallback() {
                             @Override

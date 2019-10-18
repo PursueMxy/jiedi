@@ -15,6 +15,7 @@ public interface HomeContract {
         void UpdateEstimatedPrice(String money);
         void UpdateOrderDtl(OrderDetailBean.DataBean data);
         void UpdateOrderDtlOne(OrderDetailOneBean.DataBean data);
+        void UpdateCancelOrder();
     }
 
     interface Presenter {
@@ -22,5 +23,6 @@ public interface HomeContract {
         void GetPrice(String kilometre,String order_id,String run_time);
         void GetOrderPrice(String token,String order_id,String orderStatus);
         void SetOrderDetail(OrderDetailBean.DataBean data);
+        void GetCancelOrder();
     }
 }

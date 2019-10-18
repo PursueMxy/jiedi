@@ -73,7 +73,6 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         edt_mobile.setText(mobile);
         if (!token.equals("")){
             startActivity(new Intent(this,HomeActivity.class));
-//            finish();
         }
         try{
             String type = intent.getStringExtra("type");
@@ -141,6 +140,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         editor.commit();//提交
         loginPresenter.GetInit();
         startActivity(new Intent(this,HomeActivity.class));
+
     }
 
     @Override

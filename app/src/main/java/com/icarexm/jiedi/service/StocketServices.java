@@ -189,7 +189,7 @@ public class StocketServices extends Service {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {//开启长连接成功的回调
                 super.onOpen(webSocket, response);
-                Log.e("BackService","进来了");
+                Log.e("BackService","进来了"+city);
                 mWebSocket = webSocket;
                 String s = new Gson().toJson(new LoginDemoBean(token, "1", user_id,"login",new LoginDemoBean.data(city)));
                 mWebSocket.send(s);
@@ -208,12 +208,7 @@ public class StocketServices extends Service {
                           if (servicesMsgBean.getCode()==200){
                               String event = servicesMsgBean.getEvent();
                               if (event.equals("login")){
-                                  type = sp.getString("type","");
-                                  Log.e("type",type);
-                                  if (type.equals("main")) {
-                                  }else {
 
-                                  }
                               }else if (event.equals("receipt")){
                                  MainActivity.GetOrderStatus();
                               }else if (event.equals("driver_arrive")){
@@ -360,7 +355,6 @@ public class StocketServices extends Service {
             mWebSocket.send(Receipts);
         } else {//长连接处于连接状态
             mWebSocket.send(Receipts);
-//            user_to_driver("190","");
         }
     }
 

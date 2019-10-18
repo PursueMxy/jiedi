@@ -119,6 +119,7 @@
                 />
 
             <TextView
+                android:id="@+id/price_tv_coupon_number"
                 android:drawablePadding="@dimen/dp_10"
                 android:drawableRight="@mipmap/icon_right"
                 android:layout_marginRight="@dimen/dp_24"
@@ -126,7 +127,7 @@
                 android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1张"
+                android:text="0张"
                 android:textColor="@color/ff707070"
                 android:textSize="@dimen/sp_15"
                 />

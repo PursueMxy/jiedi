@@ -106,6 +106,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private TextView home_dialog_tv_startingpoint;
     private TextView home_dialog_tv_destination;
     private String order_id;
+    private static String automaticOrder;
+    private static boolean isAutomatic=false;
 
 
     @Override
@@ -319,19 +321,15 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     //自动接单dialog
     public  void ShowDialog(DeliverBean.DataBean.OrderBean order){
-             order_id = order.getId()+"";
-             home_dialog_tv_destination.setText(order.getDestination());
-             home_dialog_tv_startingpoint.setText(order.getStartingpoint());
-             dialog_home_tv_time.setText(order.getTime());
-             dialog_home_tv_distance.setText(order.getDistance()+"");
-             builder = new AlertDialog.Builder(this);
-             if (alertDialog == null) {
-             alertDialog = builder.setView(dialog_home).create();
-             alertDialog.show();
-              } else {
-             alertDialog.show();
-              }
-             countDownProgressBar.startCountDown();
+//             order_id = order.getId()+"";
+//             home_dialog_tv_destination.setText(order.getDestination());
+//             home_dialog_tv_startingpoint.setText(order.getStartingpoint());
+//             dialog_home_tv_time.setText(order.getTime());
+//             dialog_home_tv_distance.setText(order.getDistance()+"");
+//              builder = new AlertDialog.Builder(this);
+//             alertDialog = builder.setView(dialog_home).create();
+//             alertDialog.show();
+//             countDownProgressBar.startCountDown();
               }
 
     //系统自动接单接到新订单了
@@ -340,7 +338,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         DeliverBean deliverBean = gson.fromJson(orders, DeliverBean.class);
         DeliverBean.DataBean data = deliverBean.getData();
         DeliverBean.DataBean.OrderBean order = data.getOrder();
-        homePresenter.SetOrderUpload(order);
+//        homePresenter.SetOrderUpload(order);
+        automaticOrder = orders;
+        isAutomatic = true;
     }
 
     //获取到系统派单
@@ -370,7 +370,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                             orderHandler.postDelayed(orderRunnable,10000);
                         }else {
                             orderHandler.postDelayed(orderRunnable,200);
-            }
+                        }
+                        if (isAutomatic){
+                            homePresenter.GetIndex(token);
+                            isAutomatic=false;
+                        }
         }
     };
 

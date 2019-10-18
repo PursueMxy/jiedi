@@ -29,6 +29,8 @@ public class PriceActivity extends AppCompatActivity {
 
     @BindView(R.id.price_tv_total_money)
     TextView tv_total_money;
+    @BindView(R.id.price_tv_coupon_number)
+    TextView tv_coupon_number;
     private Context mContext;
     private String token;
 
@@ -56,6 +58,7 @@ public class PriceActivity extends AppCompatActivity {
                             if (data!=null){
                                 String money = data.getMoney();
                                 tv_total_money.setText(money);
+                                tv_coupon_number.setText(data.getCoipon_count()+"张");
                             }
 
                         }

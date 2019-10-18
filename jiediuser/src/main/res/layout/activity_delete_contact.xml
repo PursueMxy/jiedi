@@ -35,10 +35,11 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_100">
         <TextView
+            android:id="@+id/dlt_contact_tv_mobile"
             android:drawablePadding="@dimen/dp_8"
             android:drawableLeft="@mipmap/icon_mobile"
             android:layout_marginLeft="@dimen/dp_16"
-            android:text="18569696123"
+            android:text=""
             android:textColor="@color/black"
             android:textSize="@dimen/sp_15"
             android:layout_weight="1"
@@ -50,10 +51,11 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_2"/>
         <TextView
+            android:id="@+id/dlt_contact_tv_name"
             android:drawablePadding="@dimen/dp_8"
             android:drawableLeft="@mipmap/icon_man1"
             android:layout_marginLeft="@dimen/dp_16"
-            android:text="曹操"
+            android:text=""
             android:gravity="center|left"
             android:textColor="@color/black"
             android:textSize="@dimen/sp_15"

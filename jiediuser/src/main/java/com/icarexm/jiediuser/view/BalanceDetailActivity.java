@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -49,7 +50,7 @@ public class BalanceDetailActivity extends AppCompatActivity implements BalanceD
     private BalanceDetailPresenter balanceDetailPresenter;
     private String token;
     private String OrderTime;
-    private String limit="10";
+    private String limit="50";
     private int page=1;
 
     @Override
@@ -82,6 +83,7 @@ public class BalanceDetailActivity extends AppCompatActivity implements BalanceD
 
             @Override
             public void onLoadMore() {
+                mRecyclerView.refreshComplete();//刷新动画完成
             }
         });
         mRecyclerView.setAdapter(balanceDtlAdapter);
@@ -151,12 +153,15 @@ public class BalanceDetailActivity extends AppCompatActivity implements BalanceD
                 balanceDtlAdapter.notifyDataSetChanged();
             }else {
                 list.clear();
-                list.addAll(list);
+                list.addAll(data);
                 balanceDtlAdapter.setListAll(list);
                 balanceDtlAdapter.notifyDataSetChanged();
             }
         }else {
             page=1;
+            list.clear();
+            balanceDtlAdapter.setListAll(list);
+            balanceDtlAdapter.notifyDataSetChanged();
             mRecyclerView.setNoMore(true);//数据加载完成
         }
         //加载更多

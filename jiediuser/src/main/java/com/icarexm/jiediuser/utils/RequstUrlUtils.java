@@ -67,5 +67,15 @@ public class RequstUrlUtils {
 
         //我的消息 /api/message/index
         public static String messageindex=Host+"/api/message/index";
+
+        //紧急联系人 页面 /api/emergencycontact/index
+        public static String emergencycontactIndex=Host+"/api/emergencycontact/index";
+
+        //新增紧急联系人 /api/emergencycontact/add
+        public static String emergencycontactAdd=Host+"/api/emergencycontact/add";
+
+        //删除联系人 /api/emergencycontact/delete
+        public static String emergencycontactDelete=Host+"/api/emergencycontact/delete";
+
     }
 }

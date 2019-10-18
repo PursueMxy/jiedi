@@ -45,6 +45,7 @@ import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.DistanceItem;
 import com.amap.api.services.route.DistanceResult;
 import com.amap.api.services.route.DistanceSearch;
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.icarexm.jiediuser.R;
@@ -53,6 +54,7 @@ import com.icarexm.jiediuser.bean.OrderDetailBean;
 import com.icarexm.jiediuser.bean.OrderDetailOneBean;
 import com.icarexm.jiediuser.contract.HomeContract;
 import com.icarexm.jiediuser.custview.BottomDialog;
+import com.icarexm.jiediuser.custview.CircleImageView;
 import com.icarexm.jiediuser.custview.mywheel.MyWheelView;
 import com.icarexm.jiediuser.custview.wheel.ScreenInfo;
 import com.icarexm.jiediuser.custview.wheel.WheelMain;
@@ -125,6 +127,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     //预计价格页面
     @BindView(R.id.home_rl_estimated_price)
     RelativeLayout rl_order_estimated_price;
+    @BindView(R.id.home_ll_estimated_price_tv_time)
+    TextView estimated_price_tv_time;
     //取消订单页面 订单进行中
     @BindView(R.id.home_rl_cancel_order)
     RelativeLayout rl_order_cancel;
@@ -149,6 +153,10 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     RadioButton radiobutton_give;
     @BindView(R.id.home_radiobutton_meet)
     RadioButton radiobutton_meet;
+    @BindView(R.id.home_img_head_portrait)
+    CircleImageView img_head_portrait;
+    @BindView(R.id.home_tv_nikename)
+    TextView tv_nikename;
 
 
 
@@ -218,6 +226,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private static int dervierDuration;
    private static String OrderStatus;
     private static String dervierMoney;
+    private String avatar;
+    private int years;
+    private int months;
+    private int days;
+    private String nickname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -226,8 +239,15 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         ButterKnife.bind(this);
         mContext = getApplicationContext();
         calendar = Calendar.getInstance();
+        years = calendar.get(Calendar.YEAR);
+        months = calendar.get(Calendar.MONTH);
+        days = calendar.get(Calendar.DAY_OF_MONTH);
+        initService();
         sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         token = sp.getString("token", "");
+        avatar = sp.getString("avatar", "");
+        nickname = sp.getString("nickname", "");
+        tv_nikename.setText(nickname);
         homePresenter = new HomePresenter(this);
         mMapView.onCreate(savedInstanceState);
         if (aMap == null) {
@@ -235,17 +255,21 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         }
         aMap.setInfoWindowAdapter(this);
         InitUI();
-        initService();
         SetLocations();
-
+        Glide.with(this).load(avatar).into(img_head_portrait);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
-        order_id = intent.getStringExtra("order_id");
-        String status = intent.getStringExtra("status");
-        if (status.equals("6")){
-            homePresenter.GetOrderPrice(token, order_id,status);
+        try {
+
+            order_id = intent.getStringExtra("order_id");
+            String status = intent.getStringExtra("status");
+            if (status.equals("6")) {
+                homePresenter.GetOrderPrice(token, order_id, status);
+            }
+        }catch (Exception e){
+
         }
         super.onNewIntent(intent);
         // 跳转首页或者其他操作
@@ -386,8 +410,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                         ToastUtils.showToast(mContext,"航班号或者航班时间不能为空");
                     }
                 }else{
-                    if (CITY_TYPE==1){
-                        estimatedeparturetime = tv_estimated_time.getText().toString();
+                    if (CITY_TYPE==2){
+//                        estimatedeparturetime = tv_estimated_time.getText().toString();
                         if (!estimatedeparturetime.equals("")){
                             stocketService.place_order(startingpointE,startingpointN,startingpoint,destinationE,destinationN,destination,
                                     estimated_mileage,estimated_time,budget,ORDER_TYPE+"",cityName,flightno,estimatedeparturetime);
@@ -398,6 +422,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                         stocketService.place_order(startingpointE,startingpointN,startingpoint,destinationE,destinationN,destination,
                                 estimated_mileage,estimated_time,budget,ORDER_TYPE+"",cityName,flightno,estimatedeparturetime);
                     }
+
                 }
                 break;
             case R.id.home_tv_TypeNow:
@@ -414,11 +439,19 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 tv_typeMake.setTextColor(getResources().getColor(R.color.black));
                 break;
             case R.id.home_tv_TypeMake:
-                int HOURs = calendar.get(Calendar.HOUR_OF_DAY)+1;
-                if (HOURs<10){
-                    tv_estimated_time.setText("今天 0"+HOURs+":00");
+                int HOURS = calendar.get(Calendar.HOUR_OF_DAY)+1;
+                String hours="";
+                if (HOURS<10){
+                    tv_estimated_time.setText("今天 0"+HOURS+":00");
+                    hours="0"+HOURS;
                 }else {
-                    tv_estimated_time.setText("今天 "+HOURs+":00");
+                    tv_estimated_time.setText("今天 "+HOURS+":00");
+                    hours=HOURS+"";
+                }
+                if (months<9){
+                    estimatedeparturetime=years+"-0"+(months+1)+"-"+days+" "+hours+":00";
+                }else {
+                    estimatedeparturetime=years+"-"+(months+1)+"-"+days+" "+hours+":00";
                 }
                 CITY_TYPE=2;
                 tv_estimated_time.setVisibility(View.VISIBLE);
@@ -468,7 +501,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                                 String time = wheelMain.getDate();
                                 tv_flight_time.setText(time);
                                 Log.e("当前时间",time);
-
                             }
                         });
                 dialog.show();
@@ -596,19 +628,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     aMap.moveCamera(cameraUpdate);
                     startingpoints = aMapLocation.getCity()+aMapLocation.getDistrict()+aMapLocation.getStreet()+aMapLocation.getAoiName()+aMapLocation.getStreetNum();
                     tv_startingpoint.setText(aMapLocation.getCity()+aMapLocation.getDistrict()+aMapLocation.getStreet()+aMapLocation.getAoiName()+aMapLocation.getStreetNum());
-                    if (IsCancelOrder){
-                        IsCancelOrder=false;
-                        rl_transfer.setVisibility(View.GONE);
-                        ll_flight_transfer.setVisibility(View.GONE);
-                        tv_estimated_time.setVisibility(View.GONE);
-                        ll_city_type.setVisibility(View.VISIBLE);
-                        radioButton_inside_city.setBackgroundResource(R.drawable.myorder_choosed_color);
-                        radioButton_inside_city.setTextColor(getResources().getColor(R.color.ff5181fb));
-                        radioButton_interciry.setBackgroundResource(R.drawable.myorder_nochoosed_color);
-                        radioButton_interciry.setTextColor(getResources().getColor(R.color.black));
-                        radioButton_transfer.setBackgroundResource(R.drawable.myorder_nochoosed_color);
-                        radioButton_transfer.setTextColor(getResources().getColor(R.color.black));
-                    }
                     if (IsDervierLoaction){
                         if (derviermarker!=null){
                             derviermarker.remove();
@@ -703,10 +722,14 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     //显示路程预计价格
     public void UpdateEstimatedPrice(String money){
+
         rl_order_setorder.setVisibility(View.GONE);
         rl_order_estimated_price.setVisibility(View.VISIBLE);
         tv_estimated_price.setText(money);
         tv_original_price.setText(money);
+        if (CITY_TYPE==2) {
+            estimated_price_tv_time.setText(tv_estimated_time.getText().toString());
+        }
         budget=money;
     }
 
@@ -772,7 +795,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 }else if (DayString.equals("后天")){
                     getDay=""+(day+2);
                 }
-                estimatedeparturetime=year+"-"+month+"-"+getDay+"  "+HoursString+":"+MinString;
+                if (month<9) {
+                    estimatedeparturetime = year + "-0" + (month + 1) + "-" + getDay + " " + HoursString + ":" + MinString;
+                }else {
+                    estimatedeparturetime = year + "-" + (month + 1) + "-" + getDay + " " + HoursString + ":" + MinString;
+                }
                 tv_estimated_time.setText(DayString+" "+HoursString+":"+MinString);
                 bottomDialog.dismiss();
             }
@@ -857,11 +884,30 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     public static void  CancelOrder(){
     ToastUtils.showToast(mContext,"订单取消成功");
         OrderStatus="8";
-         order_id="";
+        order_id="";
         ORDER_TYPE=0;
         CITY_TYPE=1;
         IsCancelOrder=true;
+    }
 
+    //取消订单成功
+    public void UpdateCancelOrder(){
+        if (IsCancelOrder){
+            IsCancelOrder=false;
+            rl_transfer.setVisibility(View.GONE);
+            ll_flight_transfer.setVisibility(View.GONE);
+            tv_estimated_time.setVisibility(View.GONE);
+            ll_city_type.setVisibility(View.GONE);
+            radioButton_inside_city.setBackgroundResource(R.drawable.myorder_choosed_color);
+            radioButton_inside_city.setTextColor(getResources().getColor(R.color.ff5181fb));
+            radioButton_interciry.setBackgroundResource(R.drawable.myorder_nochoosed_color);
+            radioButton_interciry.setTextColor(getResources().getColor(R.color.black));
+            radioButton_transfer.setBackgroundResource(R.drawable.myorder_nochoosed_color);
+            radioButton_transfer.setTextColor(getResources().getColor(R.color.black));
+            OrderStatus="0";
+            rl_order_cancel.setVisibility(View.GONE);
+            rl_order_cancelled.setVisibility(View.VISIBLE);
+        }
     }
 
     //显示司机位置
@@ -914,10 +960,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             StringFormatUtil spanStr1 = new StringFormatUtil(mContext, "预计还需" + dervierDuration + "分钟", "预计还需", R.color.black).fillColor();
             tv_duration.setText(spanStr1.getResult());
             tv_price.setText(dervierMoney);
-        }else if (OrderStatus.equals("8")){
-            OrderStatus="0";
-            rl_order_cancel.setVisibility(View.GONE);
-            rl_order_cancelled.setVisibility(View.VISIBLE);
         }
 
         return infoWindow;

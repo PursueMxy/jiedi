@@ -227,7 +227,8 @@ public class OrderListActivity extends AppCompatActivity implements OrderListCon
     @Override
     public void UpdateOrderList(OrderListOneBean.DataBean data) {
         List<OrderListOneBean.DataBean.OrderBean>  order = data.getOrder();
-        if (order!=null){
+        if (order.size()>0){
+            Log.e("orderlist",order.size()+"和"+page);
              if (page>1){
                  orderPerDayAdapter .addItemsToLast(list);
                  orderPerDayAdapter .notifyDataSetChanged();

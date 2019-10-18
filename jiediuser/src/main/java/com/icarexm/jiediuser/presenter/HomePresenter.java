@@ -41,4 +41,9 @@ public class HomePresenter implements HomeContract.Presenter {
         mView.UpdateOrderDtlOne(data);
     }
 
+    //取消订单页面更新
+    public void GetCancelOrder(){
+        mView.UpdateCancelOrder();
+    }
+
 }

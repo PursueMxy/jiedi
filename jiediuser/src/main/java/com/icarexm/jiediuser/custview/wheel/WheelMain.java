@@ -316,7 +316,7 @@ public class WheelMain {
 					.append(wv_hours.getCurrentItem()).append(":")
 					.append(wv_mins.getCurrentItem());
 
-			SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd HH:mm");
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 			Date date = DateUtils.parseDateHm(sb.toString());
 
 			return format.format(date);

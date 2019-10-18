@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.icarexm.jiedi.Bean.DriverArriveBean;
 import com.icarexm.jiedi.Bean.OrderType1Bean;
 import com.icarexm.jiedi.Bean.OrderTypeBean;
+import com.icarexm.jiedi.Bean.ResultBean;
 import com.icarexm.jiedi.contract.MainContract;
 import com.icarexm.jiedi.presenter.MainPresenter;
 import com.icarexm.jiedi.utils.RequstUrlUtils;
@@ -27,26 +28,31 @@ public class MainModel implements MainContract.Model {
                     public void onSuccess(Response<String> response) {
                         String body = response.body();
                         Gson gson = new GsonBuilder().create();
-                        try {
-                            OrderTypeBean orderTypeBean = gson.fromJson(body, OrderTypeBean.class);
-                            if (orderTypeBean != null) {
-                                if (orderTypeBean.getCode() == 200) {
-                                    if (orderTypeBean.getData() != null) {
-                                        OrderTypeBean.DataBean data = orderTypeBean.getData();
-                                        mainPresenter.SetOrderInfo(data);
+                        ResultBean resultBean = gson.fromJson(body, ResultBean.class);
+                        if (resultBean.getCode()==200) {
+                            try {
+
+                                OrderTypeBean orderTypeBean = gson.fromJson(body, OrderTypeBean.class);
+                                if (orderTypeBean != null) {
+                                    if (orderTypeBean.getCode() == 200) {
+                                        if (orderTypeBean.getData() != null) {
+                                            OrderTypeBean.DataBean data = orderTypeBean.getData();
+                                            mainPresenter.SetOrderInfo(data);
+                                        }
+                                    }
+                                }
+                            } catch (Exception e) {
+                                OrderType1Bean orderType1Bean = gson.fromJson(body, OrderType1Bean.class);
+                                if (orderType1Bean != null) {
+                                    if (orderType1Bean.getCode() == 200) {
+                                        if (orderType1Bean.getData() != null) {
+                                            OrderType1Bean.DataBean data = orderType1Bean.getData();
+                                            mainPresenter.SetOrderInfo1(data);
+                                        }
                                     }
                                 }
                             }
-                        }catch (Exception e){
-                            OrderType1Bean orderType1Bean = gson.fromJson(body, OrderType1Bean.class);
-                            if (orderType1Bean!=null){
-                                if (orderType1Bean.getCode()==200){
-                                    if (orderType1Bean.getData()!=null){
-                                        OrderType1Bean.DataBean data = orderType1Bean.getData();
-                                        mainPresenter.SetOrderInfo1(data);
-                                    }
-                                }
-                            }
+                        }else {
                         }
                     }
                 });

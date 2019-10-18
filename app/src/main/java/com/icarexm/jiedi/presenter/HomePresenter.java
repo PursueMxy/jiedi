@@ -56,7 +56,7 @@ public class HomePresenter implements HomeContract.Presenter {
 
     //自动接单更新
     public void SetOrderUpload(DeliverBean.DataBean.OrderBean order){
-    mView.ShowDialog(order);
+     mView.ShowDialog(order);
     }
 
 }

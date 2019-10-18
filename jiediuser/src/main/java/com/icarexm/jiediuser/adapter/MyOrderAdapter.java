@@ -66,6 +66,8 @@ public class MyOrderAdapter extends HelperRecyclerViewAdapter<OrderListOneBean.D
             tv_status.setText("已评价");
         }else if (data.getStatus().equals("10")){
             tv_status.setText("半途取消");
+        }else {
+            tv_status.setText("等待接单");
         }
 
     }

@@ -5,7 +5,7 @@
     android:background="@color/white"
     >
     <TextView
-        android:id="@+id/list_home_order_status"
+        android:id="@+id/list_message_center_status"
         android:paddingTop="@dimen/dp_3"
         android:paddingBottom="@dimen/dp_3"
         android:paddingLeft="@dimen/dp_10"
@@ -23,41 +23,44 @@
     <TextView
         android:layout_marginLeft="@dimen/dp_5"
         android:layout_marginTop="@dimen/dp_9"
-        android:layout_toRightOf="@+id/list_home_order_status"
-        android:id="@+id/list_home_order_type"
+        android:layout_toRightOf="@+id/list_message_center_status"
+        android:id="@+id/list_message_center_title"
         android:text="系统消息"
         android:textColor="@color/ff5181fb"
         android:textSize="@dimen/sp_14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <TextView
+        android:id="@+id/list_message_center_tv_content"
         android:layout_marginTop="@dimen/dp_38"
         android:layout_marginLeft="@dimen/dp_10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:lines="1"
-        android:text="您的预约订单即将到达预定时间，请尽快联系乘客"
+        android:text=""
         android:textColor="@color/black"
         android:textSize="@dimen/sp_12"
         />
 
     <TextView
+        android:id="@+id/list_message_center_tv_link"
         android:layout_marginLeft="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_60"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="18865498711"
+        android:text=""
         android:textColor="@color/ff5181fb"
         android:textSize="@dimen/sp_12"
         />
 
     <TextView
+        android:id="@+id/list_message_center_tv_time"
         android:layout_marginBottom="@dimen/dp_8"
         android:layout_marginLeft="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_86"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2019年07月06日 16:40"
+        android:text=""
         android:textColor="@color/ff707070"
         android:textSize="@dimen/sp_12"
         />

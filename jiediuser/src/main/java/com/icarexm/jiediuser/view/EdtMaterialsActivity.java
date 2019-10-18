@@ -120,7 +120,8 @@ public class EdtMaterialsActivity extends AppCompatActivity {
                                        Gson gson = new GsonBuilder().create();
                                        ProfileBean profileBean = gson.fromJson(response.body(), ProfileBean.class);
                                        if (profileBean.getCode()==200){
-
+                                           ToastUtils.showToast(mContext,profileBean.getMsg());
+                                        finish();
                                        }else {
                                            ToastUtils.showToast(mContext,profileBean.getMsg());
                                        }

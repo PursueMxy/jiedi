@@ -35,6 +35,9 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_100">
         <EditText
+            android:maxLength="11"
+            android:inputType="number"
+            android:id="@+id/add_contact_edt_mobile"
             android:background="@null"
             android:drawablePadding="@dimen/dp_8"
             android:drawableLeft="@mipmap/icon_mobile"
@@ -51,6 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_2"/>
         <EditText
+            android:id="@+id/add_contact_edt_name"
             android:background="@null"
             android:drawablePadding="@dimen/dp_8"
             android:drawableLeft="@mipmap/icon_man1"

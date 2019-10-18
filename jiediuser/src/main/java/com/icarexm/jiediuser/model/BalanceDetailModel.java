@@ -21,6 +21,7 @@ public class BalanceDetailModel implements BalanceDetailContract.Model {
     public void PostBalanceDtl(BalanceDetailPresenter balanceDetailPresenter,String token,String select_time,String limit,String page){
         OkGo.<String>post(RequstUrlUtils.URL.money_log)
                 .params("token",token)
+                .params("type","0")
                 .params("select_time",select_time)
                 .params("limit",limit)
                 .params("page",page)

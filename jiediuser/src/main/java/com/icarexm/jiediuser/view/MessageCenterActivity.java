@@ -13,8 +13,10 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
+import com.google.gson.GsonBuilder;
 import com.icarexm.jiediuser.R;
 import com.icarexm.jiediuser.adapter.MessageCenterAdapter;
+import com.icarexm.jiediuser.bean.MessageBean;
 import com.icarexm.jiediuser.utils.MxyUtils;
 import com.icarexm.jiediuser.utils.RequstUrlUtils;
 import com.lzy.okgo.OkGo;
@@ -31,7 +33,7 @@ import butterknife.ButterKnife;
 public class MessageCenterActivity extends AppCompatActivity {
     @BindView(R.id.message_center_recyclerView)
     XRecyclerView mRecyclerView;
-    private List<String> list=new ArrayList<>();
+    private List<MessageBean.DataBean.ListBean> list=new ArrayList<>();
     private Context mContext;
     private MessageCenterAdapter messageCenterAdapter;
     private String limit="20";
@@ -60,6 +62,15 @@ public class MessageCenterActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Response<String> response) {
                         Log.e("response",response.body());
+                        try {
+                            MessageBean messageBean = new GsonBuilder().create().fromJson(response.body(), MessageBean.class);
+                            MessageBean.DataBean data = messageBean.getData();
+                            List<MessageBean.DataBean.ListBean> listBean = data.getList();
+                            list.clear();
+                            list.addAll(listBean);
+                            messageCenterAdapter.setListAll(list);
+                            messageCenterAdapter.notifyDataSetChanged();
+                        }catch (Exception e){}
                     }
                 });
     }
