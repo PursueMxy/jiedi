@@ -77,5 +77,24 @@ public class RequstUrlUtils {
         //删除联系人 /api/emergencycontact/delete
         public static String emergencycontactDelete=Host+"/api/emergencycontact/delete";
 
+
+        //注销登录 /api/user/logout
+        public static String logout=Host+"/api/user/logout";
+
+
+        //订单详情[根据行程ID] /api/order/order_Info
+        public static String order_info=Host+"/api/order/order_Info";
+
+        //清空 /api/message/del_all
+        public static String messageDlt=Host+"/api/message/del_all";
+
+        // 根据订货获取可用优惠券 /api/coupon/order_coupon
+        public static String order_coupon=Host+"/api/coupon/order_coupon";
+
+        // 根据优惠券id获取优惠券详情 /api/coupon/couponInfo
+        public static  String couponInfo=Host+"/api/coupon/couponInfo";
+
+        // 检测Token是否过期 /api/token/check
+        public static String TokenCheck=Host+"/api/token/check";
     }
 }

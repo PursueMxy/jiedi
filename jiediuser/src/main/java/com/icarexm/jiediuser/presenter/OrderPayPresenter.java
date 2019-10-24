@@ -1,6 +1,8 @@
 package com.icarexm.jiediuser.presenter;
 
+import com.icarexm.jiediuser.bean.AliPayBean;
 import com.icarexm.jiediuser.bean.OrderDetailBean;
+import com.icarexm.jiediuser.bean.WechatPayBean;
 import com.icarexm.jiediuser.contract.OrderPayContract;
 import com.icarexm.jiediuser.model.OrderPayModel;
 
@@ -30,6 +32,14 @@ public class OrderPayPresenter implements OrderPayContract.Presenter {
     @Override
     public void SetSettlement(String msg, int codes) {
       mView.UpdateToast(msg,codes);
+    }
+
+    public void SetWechatPay(WechatPayBean wechatPayBean){
+        mView.WechatPay(wechatPayBean);
+    }
+
+    public void SetAliPay(AliPayBean aliPayBean){
+        mView.AliPay(aliPayBean);
     }
 
 }

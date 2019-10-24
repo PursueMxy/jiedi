@@ -30,7 +30,11 @@ import com.icarexm.jiediuser.R;
 import com.icarexm.jiediuser.bean.OrderDetailBean;
 import com.icarexm.jiediuser.contract.EvaluateContract;
 import com.icarexm.jiediuser.presenter.EvaluatePresenter;
+import com.icarexm.jiediuser.utils.RequstUrlUtils;
 import com.icarexm.jiediuser.utils.ToastUtils;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.Response;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,7 +43,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class EvaluateActivity extends AppCompatActivity implements EvaluateContract.View {
+public class EvaluateActivity extends AppCompatActivity implements EvaluateContract.View, AMap.InfoWindowAdapter {
 
     @BindView(R.id.evaluate_map)
     MapView mMapView;
@@ -77,6 +81,7 @@ public class EvaluateActivity extends AppCompatActivity implements EvaluateContr
     private AMap aMap;
     private AMapLocationClient mLocationClient;
     private AMapLocationClientOption mLocationOption;
+    private Marker markerDestinations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +98,7 @@ public class EvaluateActivity extends AppCompatActivity implements EvaluateContr
         mMapView.onCreate(savedInstanceState);
         if (aMap == null) {
             aMap =mMapView.getMap();
+            aMap.setInfoWindowAdapter(this);
         }
         SetLocations();
     }
@@ -183,6 +189,48 @@ public class EvaluateActivity extends AppCompatActivity implements EvaluateContr
             todefine_tv_orderprice.setText(data.getMoney()+"元");
             todefine_tv_ordercould.setText(driver_evaluate);
         }
+        MarkerOptions markerOption = new MarkerOptions();
+        markerOption.position(new LatLng(Double.valueOf(data.getStartingpointN()),Double.valueOf(data.getStartingpointE())));
+        markerOption.title("起点").snippet(data.getStartingpoint());
+        markerOption.draggable(false);//设置Marker可拖动
+        markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+                .decodeResource(getResources(),R.mipmap.icon_my_location)));
+        // 将Marker设置为贴地显示，可以双指下拉地图查看效果
+        markerOption.setFlat(false);//设置marker平贴地图效果
+        if (markers !=null){
+            markers.remove();
+            markers =null;
+        }
+        markers = aMap.addMarker(markerOption);
+        getInfoWindow(markers);
+        markers.showInfoWindow();
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(new LatLng(Double.valueOf(data.getStartingpointN()),Double.valueOf(data.getStartingpointE())));
+        aMap.moveCamera(cameraUpdate);
+        MarkerOptions markerDestination= new MarkerOptions();
+        markerDestination.position(new LatLng(Double.valueOf(data.getDestinationN()),Double.valueOf(data.getStartingpointE())));
+        markerDestination.title("终点").snippet(data.getStartingpoint());
+        markerDestination.draggable(false);//设置Marker可拖动
+        markerDestination.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+                .decodeResource(getResources(),R.mipmap.destination_red)));
+        // 将Marker设置为贴地显示，可以双指下拉地图查看效果
+        markerDestination.setFlat(false);//设置marker平贴地图效果
+        if (markerDestinations !=null){
+            markerDestinations.remove();
+            markerDestinations =null;
+        }
+        markerDestinations = aMap.addMarker(markerDestination);
+        getInfoWindow(markerDestinations);
+        markerDestinations.showInfoWindow();
+        int order_trip_id = data.getOrder_trip_id();
+//        OkGo.<String>post(RequstUrlUtils.URL.order_info)
+//                .params("token",token)
+//                .params("order_trip_id",order_trip_id+"")
+//                .execute(new StringCallback() {
+//                    @Override
+//                    public void onSuccess(Response<String> response) {
+//
+//                    }
+//                });
     }
 
     //评价成功界面更新
@@ -235,22 +283,7 @@ public class EvaluateActivity extends AppCompatActivity implements EvaluateContr
                     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = new Date(aMapLocation.getTime());
                     String format = df.format(date);
-                    MarkerOptions markerOption = new MarkerOptions();
-                    markerOption.position(new LatLng(aMapLocation.getLatitude(),aMapLocation.getLongitude()));
-                    markerOption.title(aMapLocation.getStreetNum()).snippet(aMapLocation.getStreet()+aMapLocation.getStreetNum());
-                    markerOption.draggable(false);//设置Marker可拖动
-                    markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
-                            .decodeResource(getResources(),R.mipmap.icon_my_location)));
-                    // 将Marker设置为贴地显示，可以双指下拉地图查看效果
-                    markerOption.setFlat(false);//设置marker平贴地图效果
-                    if (markers !=null){
-                        markers.remove();
-                        markers =null;
-                    }
-                    markers = aMap.addMarker(markerOption);
-                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude()));
-                    aMap.moveCamera(cameraUpdate);
-                    startingpoints = aMapLocation.getCity()+aMapLocation.getDistrict()+aMapLocation.getStreet()+aMapLocation.getAoiName()+aMapLocation.getStreetNum();
+
                 }else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                     Log.e("AmapError", aMapLocation.getErrorCode()+"");
@@ -258,4 +291,21 @@ public class EvaluateActivity extends AppCompatActivity implements EvaluateContr
             }
         }
     };
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        View inflate = getLayoutInflater().inflate(R.layout.evaluate_infowindow, null);
+        String title = marker.getTitle();
+        TextView tv_title = inflate.findViewById(R.id.evaluate_info_tv_title);
+        TextView tv_content = inflate.findViewById(R.id.evaluate_info_tv_content);
+        tv_content.setText(marker.getSnippet());
+        tv_title.setText(marker.getTitle());
+        Log.e("title",title);
+        return inflate;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        return null;
+    }
 }

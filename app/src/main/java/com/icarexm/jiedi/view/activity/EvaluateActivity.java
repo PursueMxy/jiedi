@@ -183,9 +183,9 @@ public class EvaluateActivity extends AppCompatActivity implements EvaluateContr
     }
 
     public void UpdateUI(OrderTypeBean.DataBean data){
-        String user_evaluate = data.getDriver_evaluate();
+        String user_evaluate = data.getDriver_score_order();
         String Flightno = data.getFlightno() + "";
-        if (user_evaluate.equals("0")) {
+        if (user_evaluate.equals("0")||user_evaluate.equals("")) {
             img_safety3.setVisibility(View.GONE);
             rl_safety3.setVisibility(View.GONE);
             img_safety2.setVisibility(View.VISIBLE);

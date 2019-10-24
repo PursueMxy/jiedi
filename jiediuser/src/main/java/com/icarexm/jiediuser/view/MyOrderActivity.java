@@ -178,7 +178,7 @@ public class MyOrderActivity extends AppCompatActivity implements MyOrderContrac
             @Override
             public void onRefresh() {
                 page =1;
-                mRecyclerView.refreshComplete();//刷新动画完成
+                myOrderPresenter.GetOrderList(token,OrderType,OrderTime,limit,page+"");
             }
 
             @Override
@@ -235,6 +235,7 @@ public class MyOrderActivity extends AppCompatActivity implements MyOrderContrac
         }
         //加载更多
         mRecyclerView.loadMoreComplete();//加载动画完成
+        mRecyclerView.refreshComplete();//刷新动画完成
     }
 
     @Override

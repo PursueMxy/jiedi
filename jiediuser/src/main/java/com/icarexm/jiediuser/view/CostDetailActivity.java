@@ -12,10 +12,16 @@ import android.view.View;
 import android.widget.CalendarView;
 import android.widget.TextView;
 
+import com.google.gson.GsonBuilder;
 import com.icarexm.jiediuser.R;
 import com.icarexm.jiediuser.bean.CostDetailBean;
+import com.icarexm.jiediuser.bean.CouponDetailBean;
 import com.icarexm.jiediuser.contract.CostDetailContract;
 import com.icarexm.jiediuser.presenter.CostDetailPresenter;
+import com.icarexm.jiediuser.utils.RequstUrlUtils;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.Response;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -60,7 +66,7 @@ public class CostDetailActivity extends AppCompatActivity implements CostDetailC
     private CostDetailPresenter costDetailPresenter;
     private String token;
     private String order_id;
-    private double coupon_mone=0.0;
+    private double coupon_money=0.0;
     private Context mContext;
 
 
@@ -112,11 +118,33 @@ public class CostDetailActivity extends AppCompatActivity implements CostDetailC
         String time = data.getTime();
         tv_time.setText(time);
         if (data.getCoupon_money()!=null){
-            tv_coupon_money.setText(data.getCoupon_money()+"");
-            coupon_mone = (double) data.getCoupon_money();
+//            tv_coupon_money.setText(data.getCoupon_money()+"");
+//            coupon_money = (double) data.getCoupon_money();
         }
-        tv_tatol_money.setText("合计"+(data.getTatol_money()+coupon_mone)+"元");
-        tv_meet_money.setText("支付金额"+data.getTatol_money()+"元");
+        try {
+            String s = data.getCoupon_id().toString()+"";
+            if (!s.equals("")){
+                OkGo.<String>get(RequstUrlUtils.URL.couponInfo)
+                        .params("token",token)
+                        .params("type","0")
+                        .params("coupon_id",data.getCoupon_id().toString())
+                        .execute(new StringCallback() {
+                            @Override
+                            public void onSuccess(Response<String> response) {
+                                CouponDetailBean couponDetailBean = new GsonBuilder().create().fromJson(response.body(), CouponDetailBean.class);
+                                String money = couponDetailBean.getData().getCoupon().getMoney();
+                                tv_coupon_money.setText("-"+money+"元");
+                                coupon_money=Double.valueOf(money);
+                                tv_tatol_money.setText("合计"+(data.getTatol_money()+coupon_money)+"元");
+                            }
+                        });
+            }else {
+                tv_tatol_money.setText("合计"+(data.getTatol_money()+coupon_money)+"元");
+            }
+        }catch (Exception e){
+            tv_tatol_money.setText("合计"+(data.getTatol_money()+coupon_money)+"元");
+        }
+        tv_meet_money.setText("支付金额"+data.getPaymoney()+"元");
         String price_info_json = data.getPrice_info_json();
         parseJSONWithJSONObject(price_info_json);
     }

@@ -38,7 +38,7 @@ public class MyCouponAdapter extends HelperRecyclerViewAdapter<CouponListBean.Da
         tv_timeend.setText("使用期限："+start_time+"~"+end_time);
         tv_price_limit.setText(data.getName());
         tv_price_name.setText(money+"元优惠券");
-        if (data.getStatus()==0){
+        if (data.getStatus()==0||data.getStatus()==1){
             my_coupon_rl.setBackgroundResource(R.mipmap.icon_coupon_blue);
         }else {
             my_coupon_rl.setBackgroundResource(R.mipmap.icon_coupon_gray);

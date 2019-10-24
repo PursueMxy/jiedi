@@ -18,6 +18,7 @@ public interface HomeContract {
         void UpdateOrder(String order_id);
         void ShowDialog(DeliverBean.DataBean.OrderBean order);
         void UpSyatemOrder(OrderListOneBean.DataBean.OrderBean orderBean);
+        void Logout();
     }
 
     interface Presenter {
@@ -29,5 +30,6 @@ public interface HomeContract {
         void SetIndex(String order);
         void SetOrderUpload(DeliverBean.DataBean.OrderBean order);
         void SetSystemOrder(OrderListOneBean.DataBean.OrderBean orderBean);
+        void SetLogout();
     }
 }

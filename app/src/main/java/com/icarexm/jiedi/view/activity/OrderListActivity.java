@@ -212,6 +212,12 @@ public class OrderListActivity extends AppCompatActivity implements OrderListCon
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        orderListPresenter.GetOrderList(token,OrderType,OrderTime,limit,page+"");
+        super.onNewIntent(intent);
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode==KeyEvent.KEYCODE_BACK){
             finish();
@@ -228,7 +234,6 @@ public class OrderListActivity extends AppCompatActivity implements OrderListCon
     public void UpdateOrderList(OrderListOneBean.DataBean data) {
         List<OrderListOneBean.DataBean.OrderBean>  order = data.getOrder();
         if (order.size()>0){
-            Log.e("orderlist",order.size()+"和"+page);
              if (page>1){
                  orderPerDayAdapter .addItemsToLast(list);
                  orderPerDayAdapter .notifyDataSetChanged();
@@ -239,9 +244,15 @@ public class OrderListActivity extends AppCompatActivity implements OrderListCon
                  orderPerDayAdapter .notifyDataSetChanged();
              }
         }else {
+            if (page==1){
+                list.clear();
+                orderPerDayAdapter.setListAll(list);
+                orderPerDayAdapter .notifyDataSetChanged();
+            }
             page=1;
             mRecyclerView.setNoMore(true);//数据加载完成
         }
+
         //加载更多
         mRecyclerView.loadMoreComplete();//加载动画完成
     }

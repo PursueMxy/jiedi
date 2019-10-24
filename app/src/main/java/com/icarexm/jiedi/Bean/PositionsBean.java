@@ -5,6 +5,16 @@ public class PositionsBean {
     public String type;
     public String send;
     public String event;
+    public String equipment;
+
+    public String getEquipment() {
+        return equipment;
+    }
+
+    public void setEquipment(String equipment) {
+        this.equipment = equipment;
+    }
+
     public data data;
 
     public static class data{
@@ -110,6 +120,15 @@ public class PositionsBean {
     }
 
     public void setData(PositionsBean.data data) {
+        this.data = data;
+    }
+
+    public PositionsBean(String token, String type, String send, String event, String equipment, PositionsBean.data data) {
+        this.token = token;
+        this.type = type;
+        this.send = send;
+        this.event = event;
+        this.equipment = equipment;
         this.data = data;
     }
 

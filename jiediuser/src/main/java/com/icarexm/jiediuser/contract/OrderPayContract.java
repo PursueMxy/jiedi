@@ -1,6 +1,8 @@
 package com.icarexm.jiediuser.contract;
 
+import com.icarexm.jiediuser.bean.AliPayBean;
 import com.icarexm.jiediuser.bean.OrderDetailBean;
+import com.icarexm.jiediuser.bean.WechatPayBean;
 import com.icarexm.jiediuser.presenter.OrderPayPresenter;
 
 public interface OrderPayContract {
@@ -12,6 +14,9 @@ public interface OrderPayContract {
     interface View {
         void UpdateUI(OrderDetailBean.DataBean data);
         void UpdateToast(String msg,int codes);
+        void WechatPay(WechatPayBean wechatPayBean);
+        void  AliPay(AliPayBean aliPayBean);
+
     }
 
     interface Presenter {

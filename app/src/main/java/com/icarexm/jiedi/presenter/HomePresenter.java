@@ -27,6 +27,11 @@ public class HomePresenter implements HomeContract.Presenter {
         mView.UpdateOrderList(data);
     }
 
+    //已经退出登录
+    public void SetLogout(){
+        mView.Logout();
+    }
+
     @Override
     public void GetAutoOrder(String token, String status) {
         HomeModel.PostAutoOrder(this,token,status);

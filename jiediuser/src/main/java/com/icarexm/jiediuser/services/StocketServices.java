@@ -31,6 +31,7 @@ import com.icarexm.jiediuser.utils.RequstUrlUtils;
 import com.icarexm.jiediuser.utils.ToastUtils;
 import com.icarexm.jiediuser.view.HomeActivity;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,8 +54,8 @@ public class StocketServices extends Service {
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     private AMapLocationClientOption mLocationOption;
-    private double longitude;
-    private double latitude;
+    private String longitude;
+    private String latitude;
     private String positionS;
     private float speed;
     private String city;
@@ -65,6 +66,7 @@ public class StocketServices extends Service {
     private int driverId=0;
     private boolean IsCity=true;
     private  int delayMillis=200;
+    private com.icarexm.jiediuser.bean.pointsBean pointsBean;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -99,9 +101,9 @@ public class StocketServices extends Service {
                     //可在其中解析amapLocation获取相应内容。
                     aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
                     //获取纬度
-                    latitude = aMapLocation.getLatitude();
+                    latitude = new DecimalFormat("0.000000").format(aMapLocation.getLatitude());
                     //获取经度
-                    longitude = aMapLocation.getLongitude();
+                    longitude = new DecimalFormat("0.000000").format(aMapLocation.getLongitude());
                     aMapLocation.getAccuracy();//获取精度信息
                     aMapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
                     aMapLocation.getCountry();//国家信息
@@ -124,12 +126,13 @@ public class StocketServices extends Service {
                     String format = df.format(date);
                     positionS = aMapLocation.getProvince()+aMapLocation.getProvince()+aMapLocation.getDistrict()+aMapLocation.getStreetNum();
                     String locations = longitude + "," + latitude ;
-                    pointsBean pointsBean = new pointsBean(locations, format, aMapLocation.getSpeed() + "", aMapLocation.getDistrict() + "", aMapLocation.getAltitude() + "", aMapLocation.getAccuracy() + "");
+                    pointsBean = new pointsBean(locations, format, aMapLocation.getSpeed() + "", aMapLocation.getBearing()+ "", aMapLocation.getAltitude() + "", aMapLocation.getAccuracy() + "");
                     pointsList.add(pointsBean);
                     if (IsCity){
                         initSocket();
                         IsCity=false;
                     }
+//                    LocationPosition();
                 }else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                     Log.e("AmapError","location Error, ErrCode:"
@@ -194,7 +197,7 @@ public class StocketServices extends Service {
             public void onMessage(WebSocket webSocket, final String text) {//接收消息的回调
                 super.onMessage(webSocket, text);
                 //收到服务器端传过来的消息text
-//                Log.e("BackService1",text);
+                Log.e("BackService1",text);
                   try {
                       Gson gson = new GsonBuilder().create();
                       ServicesMsgBean servicesMsgBean = gson.fromJson(text, ServicesMsgBean.class);
@@ -262,7 +265,7 @@ public class StocketServices extends Service {
         @Override
         public void run() {
          position();
-         HeartBateHandler.postDelayed(this, 5000);//每隔5s的时间，对长连接进行一次心跳检测
+         HeartBateHandler.postDelayed(this, 10000);//每隔5s的时间，对长连接进行一次心跳检测
             if (IsRecrivedOrders){
                get_order_dirver();
             }
@@ -272,7 +275,21 @@ public class StocketServices extends Service {
 
     //更新自己位置 /api/socketobj/position
     public void position(){
-        String Receipts=new Gson().toJson(new PositionsBean(token, "0", user_id,"position",new PositionsBean.data(longitude+"",latitude+"",positionS,speed+"",city,new Gson().toJson(pointsList))));
+        String Receipts=new Gson().toJson(new PositionsBean(token, "0", user_id,"position","android",new PositionsBean.data(longitude+"",latitude+"",positionS,speed+"",city,new Gson().toJson(pointsList))));
+        pointsList.clear();
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
+
+
+    //根据定位实时更新自己的位置
+    public void LocationPosition(){
+        String Receipts=new Gson().toJson(new PositionsBean(token, "0", user_id,"position",new PositionsBean.data(longitude+"",latitude+"",positionS,speed+"",city,new Gson().toJson(pointsBean))));
         pointsList.clear();
         boolean isSuccess = mWebSocket.send("");
         if (!isSuccess) {//长连接已断开
@@ -334,6 +351,7 @@ public class StocketServices extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        HeartBateHandler.removeCallbacks(HeartBateRundbler);
         mLocationClient.stopLocation();
         mLocationClient.onDestroy();
     }

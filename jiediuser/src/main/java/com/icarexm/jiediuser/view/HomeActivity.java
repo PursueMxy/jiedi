@@ -13,10 +13,12 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -231,6 +233,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private int months;
     private int days;
     private String nickname;
+    private View dialog_callphone;
+    private TextView tv_phone_number;
+    private androidx.appcompat.app.AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -262,7 +267,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     @Override
     protected void onNewIntent(Intent intent) {
         try {
-
             order_id = intent.getStringExtra("order_id");
             String status = intent.getStringExtra("status");
             if (status.equals("6")) {
@@ -363,9 +367,20 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     @OnClick({R.id.home_tv_destination,R.id.home_top_img_left,R.id.home_tv_edt_materials,R.id.home_tv_myorder,R.id.home_tv_price
     ,R.id.home_tv_set,R.id.home_tv_message_center,R.id.home_tv_recommend,R.id.home_btn_confirm_order,R.id.home_tv_TypeNow,
             R.id.home_tv_TypeMake,R.id.home_tv_estimated_time,R.id.home_tv_accounting_rules,
-    R.id.home_top_img_message,R.id.home_cancel_tv_cancelOrder,R.id.home_tv_flight_time})
+    R.id.home_top_img_message,R.id.home_cancel_tv_cancelOrder,R.id.home_tv_flight_time,R.id.home_img_safety,R.id.home_img_cancel_safety,
+    R.id.home_img_estimated_safety})
     public void  onViewClick(View view){
         switch (view.getId()){
+            case R.id.home_img_safety:
+                callPhoneDialog();
+                break;
+            case R.id.home_img_cancel_safety:
+                callPhoneDialog();
+                break;
+            case R.id.home_img_estimated_safety:
+                callPhoneDialog();
+                break;
+
             case R.id.home_tv_destination:
                 Intent intent = new Intent(mContext, SearchPoiActivity.class);
                 intent.putExtra("city", cityName);
@@ -722,7 +737,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     //显示路程预计价格
     public void UpdateEstimatedPrice(String money){
-
         rl_order_setorder.setVisibility(View.GONE);
         rl_order_estimated_price.setVisibility(View.VISIBLE);
         tv_estimated_price.setText(money);
@@ -966,8 +980,74 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode==KeyEvent.KEYCODE_BACK){
+           androidx.appcompat.app.AlertDialog isExit = new androidx.appcompat.app.AlertDialog.Builder(this).create();
+            isExit.setTitle("系统提示");
+            isExit.setMessage("是否退出应用");
+            isExit.setButton(DialogInterface.BUTTON_POSITIVE, "取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    rl_transfer.setVisibility(View.GONE);
+                    ll_flight_transfer.setVisibility(View.GONE);
+                    ll_city_type.setVisibility(View.VISIBLE);
+                    ORDER_TYPE=0;
+                    if (CITY_TYPE==2){
+                        tv_estimated_time.setVisibility(View.VISIBLE);
+                    }else {
+                        tv_estimated_time.setVisibility(View.GONE);
+                    }
+                }
+            });
+            isExit.setButton(DialogInterface.BUTTON_NEUTRAL, "确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    closeService();
+//                    startActivity(new Intent(mContext,LoginActivity.class));
+                    finish();
+                    System.exit(0);
+                }
+            });
+            isExit.show();
+
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
     public View getInfoContents(Marker marker) {
         return null;
     }
+
+    //联系客服
+    public void callPhoneDialog(){
+        dialog_callphone = getLayoutInflater().inflate(R.layout.dialog_callphone, null);
+        tv_phone_number = dialog_callphone.findViewById(R.id.dialog_callphone_tv_number);
+        dialog_callphone.findViewById(R.id.dialog_callphone_tv_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        dialog_callphone.findViewById(R.id.dialog_callphone_tv_call).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String mobile = tv_phone_number.getText().toString();
+                Intent intentcall = new Intent();
+                //设置拨打电话的动作
+                intentcall.setAction(Intent.ACTION_CALL);
+                //设置拨打电话的号码
+                intentcall.setData(Uri.parse("tel:" + mobile));
+                //开启打电话的意图
+                startActivity(intentcall);
+                alertDialog.dismiss();
+            }
+        });
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        alertDialog = builder.setView(dialog_callphone)
+                .create();
+        alertDialog.show();
+    }
+
 
 }

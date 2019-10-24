@@ -72,5 +72,18 @@ public class RequstUrlUtils {
         public static String withdraw=Host+"/api/member/withdraw";
        //T 我的消息 /api/message/index
         public static  String meaasgeIndex=Host+"/api/message/index";
+
+        //注销登录 /api/user/logout
+        public static String logout=Host+"/api/user/logout";
+
+        //清空 /api/message/del_all
+        public static String messageDlt=Host+"/api/message/del_all";
+
+
+        //刷新Token /api/token/refresh
+        public static String tokenRrfresh=Host+"/api/token/refresh";
+
+        // 检测Token是否过期 /api/token/check
+        public static String TokenCheck=Host+"/api/token/check";
     }
 }

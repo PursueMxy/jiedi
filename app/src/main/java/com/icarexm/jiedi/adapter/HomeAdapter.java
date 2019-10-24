@@ -9,6 +9,8 @@ import com.icarexm.jiedi.R;
 import com.zhouyou.recyclerview.adapter.HelperRecyclerViewAdapter;
 import com.zhouyou.recyclerview.adapter.HelperRecyclerViewHolder;
 
+import java.text.DecimalFormat;
+
 public class HomeAdapter extends HelperRecyclerViewAdapter<OrderListBean.DataBean.OrderBean> {
     public Context context;
 
@@ -31,7 +33,10 @@ public class HomeAdapter extends HelperRecyclerViewAdapter<OrderListBean.DataBea
          TextView tv_destination = viewHolder.getView(R.id.list_home_order_destination);
          tv_destination.setText(data.getDestination());
         TextView tv_paymoney = viewHolder.getView(R.id.list_home_order_paymoney);
-        tv_paymoney.setText(data.getPaymoney()+"");
+        String paymoney = data.getPaymoney();
+        double aDouble = Double.valueOf(paymoney);
+        DecimalFormat df = new DecimalFormat("#.00");
+        tv_paymoney.setText(df.format(aDouble));
 
 
     }

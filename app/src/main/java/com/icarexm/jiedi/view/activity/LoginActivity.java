@@ -13,13 +13,16 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.GsonBuilder;
 import com.hjq.permissions.OnPermission;
 import com.hjq.permissions.XXPermissions;
 import com.icarexm.jiedi.Bean.LoginBean;
+import com.icarexm.jiedi.Bean.ResultBean;
 import com.icarexm.jiedi.R;
 import com.icarexm.jiedi.contract.LoginContract;
 import com.icarexm.jiedi.custView.CircleImageView;
 import com.icarexm.jiedi.presenter.LoginPresenter;
+import com.icarexm.jiedi.utils.RequstUrlUtils;
 import com.icarexm.jiedi.utils.ToastUtils;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
@@ -64,6 +67,8 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     private String password="";
     private SharedPreferences share;
     private String avatar="";
+    private String token="";
+    private Context mContext;
 
 
     @Override
@@ -85,7 +90,9 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
                     }
                 });
         ButterKnife.bind(this);
+        mContext = getApplicationContext();
         share = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        token = share.getString("token", "");
         mobile = share.getString("mobile", "");
         password = share.getString("password", "");
         avatar = share.getString("avatar", "");
@@ -96,6 +103,9 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         }
         activity = LoginActivity.this;
         loginPresenter = new LoginPresenter(this);
+        if (!token.equals("")){
+            TokenCheck();
+        }
     }
 
      @OnClick ({R.id.login_btn_login,R.id.login_tv_forget_psw,R.id.login_tv_logon})
@@ -146,11 +156,13 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         }
         return statusBarHeight;
     }
-    public void LoginBack( LoginBean.DataBean.UserinfoBean userinfo){
-        String token = userinfo.getToken();
+
+    public void LoginBack( LoginBean.DataBean.UserinfoBean userinfo)
+    {
+         token = userinfo.getToken();
         int user_id = userinfo.getUser_id();
         String nickname = userinfo.getNickname();
-        String avatar = userinfo.getAvatar();
+        avatar = userinfo.getAvatar();
         String licenseplate = userinfo.getLicenseplate();
         SharedPreferences.Editor editor = share.edit();
         editor.putString("type","home");
@@ -165,4 +177,36 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         startActivity(new Intent(this,HomeActivity.class));
     }
 
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        OkGo.<String>get(RequstUrlUtils.URL.tokenRrfresh)
+                .params("token", this.token)
+                .params("type","0")
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+
+                    }
+                });
+        super.onNewIntent(intent);
+    }
+
+
+    //检查token是否过期
+    public void TokenCheck(){
+        OkGo.<String>get(RequstUrlUtils.URL.TokenCheck)
+                .params("token",token)
+                .params("type","1")
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        ResultBean resultBean = new GsonBuilder().create().fromJson(response.body(), ResultBean.class);
+                        if (resultBean.getCode()==200){
+                            startActivity(new Intent(mContext,HomeActivity.class));
+                            finish();
+                        }
+                    }
+                });
+    }
 }

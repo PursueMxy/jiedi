@@ -2,7 +2,7 @@ package com.icarexm.jiediuser.bean;
 
 public class pointsBean {
    private String location;
-   private String loactetime;
+   private String locatetime;
    private String speed;
    private String direction;
    private String height;
@@ -16,12 +16,12 @@ public class pointsBean {
         this.location = location;
     }
 
-    public String getLoactetime() {
-        return loactetime;
+    public String getlocatetime() {
+        return locatetime;
     }
 
-    public void setLoactetime(String loactetime) {
-        this.loactetime = loactetime;
+    public void setlocatetime(String locatetime) {
+        this.locatetime = locatetime;
     }
 
     public String getSpeed() {
@@ -56,9 +56,9 @@ public class pointsBean {
         this.accuracy = accuracy;
     }
 
-    public pointsBean(String location, String loactetime, String speed, String direction, String height, String accuracy) {
+    public pointsBean(String location, String locatetime, String speed, String direction, String height, String accuracy) {
         this.location = location;
-        this.loactetime = loactetime;
+        this.locatetime = locatetime;
         this.speed = speed;
         this.direction = direction;
         this.height = height;

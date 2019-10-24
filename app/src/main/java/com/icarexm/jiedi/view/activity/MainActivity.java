@@ -1,14 +1,17 @@
 package com.icarexm.jiedi.view.activity;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -111,6 +114,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     private String user_id;
     private Marker markers;
     private static String order_status;
+    private View dialog_callphone;
+    private TextView tv_phone_number;
+    private AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +152,12 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 Intent intent = new Intent(mContext, CancelOrderActivity.class);
                 startActivityForResult(intent,CANCELORDER_CODE);
                 break;
+            case R.id.main_img_safety:
+                callPhoneDialog();
+                break;
+            case R.id.main_img_safety1:
+                callPhoneDialog();
+                break;
             case R.id.main_img_back:
                 closeService();
                 startActivity(new Intent(mContext,HomeActivity.class));
@@ -157,43 +169,88 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             case R.id.main_tv_order_type:
                 String typeName= tv_orderType.getText().toString();
                 if (typeName.equals("到达上车点")){
-                    stocketService.driver_arrive(order_id);
+                    AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+                    alertDialog.setTitle("系统提示");
+                    alertDialog.setMessage("是否已经到达上车点");
+                    alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+                    alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            stocketService.driver_arrive(order_id);
+                        }
+                    });
+                    alertDialog.show();
                 }else if (typeName.equals("乘客已上车")){
-                    stocketService.passenger_boarding(order_id);
+                    AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+                    alertDialog.setTitle("系统提示");
+                    alertDialog.setMessage("是否乘客已上车");
+                    alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+                    alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            stocketService.passenger_boarding(order_id);
+                        }
+                    });
+                    alertDialog.show();
                 }else if (typeName.equals("到达终点")){
-                    stocketService.arrive(order_id);
-                }
+                    AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+                    alertDialog.setTitle("系统提示");
+                    alertDialog.setMessage("是否到达终点");
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "取消", new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {
+
+        }
+    });
+                    alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "确定", new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {
+            stocketService.arrive(order_id);
+        }
+    });
+                    alertDialog.show();
+}
                 break;
-        }
-        }
+                        }
+                        }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+@Override
+protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-            if (requestCode == CANCELORDER_CODE) {
-                String type = data.getStringExtra("type");
-                if (type.equals("1")) {
-                    String reason = data.getStringExtra("reason");
-                    String remark = data.getStringExtra("remark");
-                    stocketService.refuse_order(order_id, reason, remark);
-                }
-            }
+        if (requestCode == CANCELORDER_CODE) {
+        String type = data.getStringExtra("type");
+        if (type.equals("1")) {
+        String reason = data.getStringExtra("reason");
+        String remark = data.getStringExtra("remark");
+        stocketService.refuse_order(order_id, reason, remark);
+        }
+        }
 
-    }
+        }
 
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+@Override
+public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode==KeyEvent.KEYCODE_BACK){
-            closeService();
-            startActivity(new Intent(mContext,HomeActivity.class));
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putString("type","home");
-            editor.commit();//提交
-            finish();
+        closeService();
+        startActivity(new Intent(mContext,HomeActivity.class));
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("type","home");
+        editor.commit();//提交
+        finish();
         }
         return super.onKeyDown(keyCode, event);
-    }
+        }
 
     private void SetLocations() {
         //初始化定位
@@ -300,6 +357,36 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         CameraUpdate mCameraUpdate = CameraUpdateFactory.zoomTo(16);
         aMap.moveCamera(mCameraUpdate);
 
+    }
+
+    //联系客服
+    public void callPhoneDialog(){
+        dialog_callphone = getLayoutInflater().inflate(R.layout.dialog_callphone, null);
+        tv_phone_number = dialog_callphone.findViewById(R.id.dialog_callphone_tv_number);
+        dialog_callphone.findViewById(R.id.dialog_callphone_tv_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        dialog_callphone.findViewById(R.id.dialog_callphone_tv_call).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String mobile = tv_phone_number.getText().toString();
+                Intent intentcall = new Intent();
+                //设置拨打电话的动作
+                intentcall.setAction(Intent.ACTION_CALL);
+                //设置拨打电话的号码
+                intentcall.setData(Uri.parse("tel:" + mobile));
+                //开启打电话的意图
+                startActivity(intentcall);
+                alertDialog.dismiss();
+            }
+        });
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        alertDialog = builder.setView(dialog_callphone)
+                .create();
+        alertDialog.show();
     }
 
     //开启服务

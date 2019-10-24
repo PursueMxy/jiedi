@@ -27,6 +27,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MessageCenterActivity extends AppCompatActivity {
     @BindView(R.id.message_center_recyclerView)
@@ -96,6 +97,30 @@ public class MessageCenterActivity extends AppCompatActivity {
                         , MxyUtils.dpToPx(mContext, MxyUtils.getDimens(mContext, R.dimen.dp_20)));
             }
         });
+    }
+
+    @OnClick({R.id.message_tv_clear})
+    public void onViewClick(View view){
+        switch (view.getId()){
+            case R.id.message_tv_clear:
+                clearMessage();
+                break;
+            case R.id.message_center_img_back:
+                finish();
+                break;
+        }
+    }
+
+    private void clearMessage() {
+        OkGo.<String>post(RequstUrlUtils.URL.messageDlt)
+                .params("token",token)
+                .params("type","0")
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+
+                    }
+                });
     }
 
     @Override

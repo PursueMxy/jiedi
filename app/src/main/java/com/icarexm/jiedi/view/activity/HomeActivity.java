@@ -8,10 +8,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -47,6 +49,7 @@ import com.lzy.okgo.model.Response;
 import com.zhouyou.recyclerview.XRecyclerView;
 import com.zhouyou.recyclerview.adapter.BaseRecyclerViewAdapter;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -85,8 +88,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     public static AMapLocationClient mLocationClient = null;
     private AMapLocationClientOption mLocationOption;
     private static String city="";
-    private static double longitude=0;
-    private static double latitude=0;
+    private static String longitude="0";
+    private static String latitude="0";
     private static HomePresenter homePresenter;
 
     public static StocketServices stocketService;
@@ -108,6 +111,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private String order_id;
     private static String automaticOrder;
     private static boolean isAutomatic=false;
+    private View dialog_callphone;
+    private TextView tv_phone_number;
+
 
 
     @Override
@@ -227,6 +233,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         mRecyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
+
                 mRecyclerView.refreshComplete();//刷新动画完成
             }
 
@@ -319,6 +326,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         }
     }
 
+
     //自动接单dialog
     public  void ShowDialog(DeliverBean.DataBean.OrderBean order){
 //             order_id = order.getId()+"";
@@ -365,7 +373,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     Runnable orderRunnable=new Runnable() {
                     @Override
                     public void run() {
-                        if (longitude!=0&&latitude!=0&&!city.equals("")) {
+                        if (!longitude.equals("")&&!latitude.equals("")&&!city.equals("")) {
                             homePresenter.GetOrder(token, city, longitude + "", latitude + "");
                             orderHandler.postDelayed(orderRunnable,10000);
                         }else {
@@ -393,14 +401,69 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode==KeyEvent.KEYCODE_BACK){
-            closeService();
-            finish();
+//            closeService();
+//            finish();
+            // 创建退出对话框
+            AlertDialog isExit = new AlertDialog.Builder(this).create();
+            isExit.setTitle("系统提示");
+            isExit.setMessage("是否退出应用");
+            isExit.setButton(DialogInterface.BUTTON_POSITIVE, "取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            });
+            isExit.setButton(DialogInterface.BUTTON_NEUTRAL, "确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    closeService();
+                    orderHandler.removeCallbacks(orderRunnable);
+                    System.exit(0);
+                    finish();
+                }
+            });
+            isExit.show();
+
+
         }
         return super.onKeyDown(keyCode, event);
     }
 
+    /**监听对话框里面的button点击事件*/
+
+    DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener(){
+
+        public void onClick(DialogInterface dialog, int which)
+
+        {
+
+            switch (which)
+
+            {
+
+                case AlertDialog.BUTTON_POSITIVE:// "确认"按钮退出程序
+
+                    finish();
+
+                    break;
+
+                case AlertDialog.BUTTON_NEGATIVE:// "取消"第二个按钮取消对话框
+
+                    break;
+
+                default:
+
+                    break;
+
+            }
+
+        }
+
+    };
+
+
     //关闭长连接
-    private void closeService() {
+    public void closeService() {
         if (stocketService != null) {
             try {
                 unbindService(serviceConnection);
@@ -410,6 +473,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         }
     }
 
+     //退出登录
+    public void Logout(){
+        closeService();
+        finish();
+    }
 
     //声明定位回调监听器
     public AMapLocationListener mLocationListener = new AMapLocationListener() {
@@ -420,9 +488,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     //可在其中解析amapLocation获取相应内容。
                     aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
                     //获取纬度
-                    latitude = aMapLocation.getLatitude();
+                    latitude = new DecimalFormat("0.000000").format(aMapLocation.getLatitude());
                     //获取经度
-                    longitude = aMapLocation.getLongitude();
+                    longitude = new DecimalFormat("0.000000").format(aMapLocation.getLongitude());
                     aMapLocation.getAccuracy();//获取精度信息
                     aMapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
                     aMapLocation.getCountry();//国家信息
@@ -462,5 +530,17 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         super.onPause();
     }
 
+
+    @Override
+    protected void onDestroy() {
+        Log.e("执行销毁","执行");
+        orderHandler.removeCallbacks(orderRunnable);
+        try {
+            closeService();
+        }catch (Exception e){
+
+        }
+        super.onDestroy();
+    }
 
 }

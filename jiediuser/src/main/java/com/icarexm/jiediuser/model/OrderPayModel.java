@@ -4,9 +4,11 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.icarexm.jiediuser.bean.AliPayBean;
 import com.icarexm.jiediuser.bean.OrderDetailBean;
 import com.icarexm.jiediuser.bean.OrderPayBean;
 import com.icarexm.jiediuser.bean.SettlementBean;
+import com.icarexm.jiediuser.bean.WechatPayBean;
 import com.icarexm.jiediuser.contract.OrderPayContract;
 import com.icarexm.jiediuser.presenter.OrderPayPresenter;
 import com.icarexm.jiediuser.utils.RequstUrlUtils;
@@ -54,9 +56,17 @@ public class OrderPayModel implements OrderPayContract.Model {
                     @Override
                     public void onSuccess(Response<String> response) {
                         Gson gson = new GsonBuilder().create();
-                        SettlementBean settlementBean = gson.fromJson(response.body(), SettlementBean.class);
-                        if (settlementBean!=null){
-                            orderPayPresenter.SetSettlement(settlementBean.getMsg(),settlementBean.getCode());
+                        if (pay_type.equals("0")) {
+                            SettlementBean settlementBean = gson.fromJson(response.body(), SettlementBean.class);
+                            if (settlementBean != null) {
+                                orderPayPresenter.SetSettlement(settlementBean.getMsg(), settlementBean.getCode());
+                            }
+                        }else if (pay_type.equals("1")){
+                            WechatPayBean wechatPayBean = gson.fromJson(response.body(), WechatPayBean.class);
+                            orderPayPresenter.SetWechatPay(wechatPayBean);
+                        }else if (pay_type.equals("2")){
+                            AliPayBean aliPayBean = gson.fromJson(response.body(), AliPayBean.class);
+                            orderPayPresenter.SetAliPay(aliPayBean);
                         }
                     }
                 });

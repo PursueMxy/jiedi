@@ -20,6 +20,11 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!--权限配置-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.REORDER_TASKS" />
 
     <application
         android:name=".MyApplication"
@@ -48,13 +53,14 @@
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="4373020d9452a548fb2be61a1e13e3f9" />
+            android:value="1864fa6c06d491b9ab88b84856c802a4" />
 
         <activity android:name=".view.activity.OrderPerDayActivity" />
         <activity android:name=".view.activity.HomeActivity" />
         <activity android:name=".view.activity.LogonActivity" />
         <activity android:name=".view.activity.ForgetPasswordActivity" />
-        <activity android:name=".view.activity.LoginActivity">
+        <activity android:name=".view.activity.LoginActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

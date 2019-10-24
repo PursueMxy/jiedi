@@ -225,7 +225,6 @@ public class EdtMaterialsActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode) {
-
             case VERSO_CODE:
                 //获取到裁剪后的图片的Uri进行处理
                 Uri resultUri1 = PhotoSelector.getCropImageUri(data);

@@ -19,6 +19,7 @@ import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 
 import java.security.PublicKey;
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class HomeModel implements HomeContract.Model {
@@ -78,14 +79,15 @@ public class HomeModel implements HomeContract.Model {
                          if (orderEstimatedPriceBean.getCode()==200){
                              OrderEstimatedPriceBean.DataBean data = orderEstimatedPriceBean.getData();
                              double money = data.getMoney();
-                             homePresenter.SetPrice(money+"");
+                             DecimalFormat df = new DecimalFormat("#.00");
+                             homePresenter.SetPrice(df.format(money));
                          }
                      }
                  });
      }
 
     /*
-     * 获取订单金额
+     * 获取订单状态
      * */
     public void PostOrderPrice(HomePresenter homePresenter,String token,String order_id,String orderStatus){
         if (orderStatus!=null){

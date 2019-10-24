@@ -81,6 +81,8 @@ public class HomeModel implements HomeContract.Model {
                                         homePresenter.SetOrder(data);
                                     }
                                 }
+                            }else if (orderListBean.getCode()==401){
+                                homePresenter.SetLogout();
                             }
                         }
                     }
@@ -108,4 +110,6 @@ public class HomeModel implements HomeContract.Model {
                     }
                 });
     }
+
+    //
 }

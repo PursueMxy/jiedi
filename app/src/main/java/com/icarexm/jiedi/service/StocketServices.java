@@ -31,6 +31,7 @@ import com.icarexm.jiedi.presenter.MainPresenter;
 import com.icarexm.jiedi.utils.RequstUrlUtils;
 import com.icarexm.jiedi.utils.ToastUtils;
 import com.icarexm.jiedi.view.activity.HomeActivity;
+import com.icarexm.jiedi.view.activity.LoginActivity;
 import com.icarexm.jiedi.view.activity.LogonActivity;
 import com.icarexm.jiedi.view.activity.MainActivity;
 import com.lzy.okgo.OkGo;
@@ -38,6 +39,7 @@ import com.lzy.okgo.callback.StringCallback;
 
 import java.io.IOException;
 import java.security.PublicKey;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -62,8 +64,8 @@ public class StocketServices extends Service {
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     private AMapLocationClientOption mLocationOption;
-    private double longitude;
-    private double latitude;
+    private String longitude;
+    private String latitude;
     private String positionS;
     private float speed;
     private String city;
@@ -71,6 +73,8 @@ public class StocketServices extends Service {
     private List<pointsBean> pointsList=new ArrayList<>();
     private boolean IsCity=true;
     private String type;
+    private com.icarexm.jiedi.Bean.pointsBean pointsBean;
+    private boolean IsLogin=false;
 
 
     @Override
@@ -105,9 +109,9 @@ public class StocketServices extends Service {
                     //可在其中解析amapLocation获取相应内容。
                     aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
                     //获取纬度
-                    latitude = aMapLocation.getLatitude();
+                    latitude =new DecimalFormat("0.000000").format(aMapLocation.getLatitude());
                     //获取经度
-                    longitude = aMapLocation.getLongitude();
+                    longitude = new DecimalFormat("0.000000").format(aMapLocation.getLongitude());
                     aMapLocation.getAccuracy();//获取精度信息
                     aMapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
                     aMapLocation.getCountry();//国家信息
@@ -132,10 +136,14 @@ public class StocketServices extends Service {
                         IsCity=false;
                     }
                     String format = df.format(date);
+                    long time = aMapLocation.getTime()/1000;
                     positionS = aMapLocation.getProvince()+aMapLocation.getProvince()+aMapLocation.getDistrict()+aMapLocation.getStreetNum();
                     String locations = longitude + "," + latitude ;
-                    pointsBean pointsBean = new pointsBean(locations, format, aMapLocation.getSpeed() + "", aMapLocation.getDistrict() + "", aMapLocation.getAltitude() + "", aMapLocation.getAccuracy() + "");
+                    pointsBean = new pointsBean(locations, time+"", aMapLocation.getSpeed() + "", aMapLocation.getBearing()+ "", aMapLocation.getAltitude() + "", aMapLocation.getAccuracy() + "");
                     pointsList.add(pointsBean);
+//                    if (IsLogin) {
+//                        LocationPosition();
+//                    }
                 }else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                     Log.e("AmapError","location Error, ErrCode:"
@@ -208,7 +216,7 @@ public class StocketServices extends Service {
                           if (servicesMsgBean.getCode()==200){
                               String event = servicesMsgBean.getEvent();
                               if (event.equals("login")){
-
+                                  IsLogin=true;
                               }else if (event.equals("receipt")){
                                  MainActivity.GetOrderStatus();
                               }else if (event.equals("driver_arrive")){
@@ -257,10 +265,13 @@ public class StocketServices extends Service {
             public void onFailure(WebSocket webSocket, Throwable t, @Nullable Response response) {//长连接连接失败的回调
                 super.onFailure(webSocket, t, response);
                 Log.e("BackService5","发发发");
+                logout();
+                onDestroy();
             }
         });
         client.dispatcher().executorService().shutdown();
     }
+
 
     //实时发送心跳包
     Handler HeartBateHandler=new Handler();
@@ -322,15 +333,16 @@ public class StocketServices extends Service {
 
      // 到达目的地
      public void arrive(String orderId){
-        String Receipts = new Gson().toJson(new ReceiptBean(token, "1", user_id,"arrive", new ReceiptBean.data(orderId, longitude+"",latitude+"", positionS)));
+         position();
+         String Receipts = new Gson().toJson(new ReceiptBean(token, "1", user_id,"arrive", new ReceiptBean.data(orderId, longitude+"",latitude+"", positionS)));
          boolean isSuccess = mWebSocket.send("");
          Log.e("arrive",Receipts);
          if (!isSuccess) {//长连接已断开
-            mWebSocket.cancel();//取消掉以前的长连接
-            mWebSocket.send(Receipts);
-        } else {//长连接处于连接状态
-            mWebSocket.send(Receipts);
-        }
+             mWebSocket.cancel();//取消掉以前的长连接
+             mWebSocket.send(Receipts);
+         } else {//长连接处于连接状态
+             mWebSocket.send(Receipts);
+         }
     }
 
     // 用户发通知给用户
@@ -347,7 +359,9 @@ public class StocketServices extends Service {
 
     //更新自己位置 /api/socketobj/position
     public void position(){
-        String Receipts=new Gson().toJson(new PositionsBean(token, "1", user_id,"position",new PositionsBean.data(longitude+"",latitude+"",positionS,speed+"",city,new Gson().toJson(pointsList))));
+        String s = new Gson().toJson(pointsList);
+        Log.e("轨迹点",s.substring(1,s.length()-1));
+        String Receipts=new Gson().toJson(new PositionsBean(token, "1", user_id,"position","android",new PositionsBean.data(longitude+"",latitude+"",positionS,speed+"",city,new Gson().toJson(pointsList))));
         boolean isSuccess = mWebSocket.send("");
         pointsList.clear();
         if (!isSuccess) {//长连接已断开
@@ -358,12 +372,53 @@ public class StocketServices extends Service {
         }
     }
 
+    //根据定位实时更新自己的位置
+    public void LocationPosition(){
+        String s = new Gson().toJson(pointsBean);
+        Log.e("轨迹上传",s);
+        String Receipts=new Gson().toJson(new PositionsBean(token, "1", user_id,"position","android",new PositionsBean.data(longitude+"",latitude+"",positionS,speed+"",city,new Gson().toJson(pointsBean))));
+        pointsList.clear();
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
 
+   //退出登录
+    private void logout() {
+        OkGo.<String>post(RequstUrlUtils.URL.logout)
+                .params("token", token)
+                .params("type","0")
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(com.lzy.okgo.model.Response<String> response) {
+                        ServicesMsgBean resultBean = new GsonBuilder().create().fromJson(response.body(),ServicesMsgBean.class);
+                        if (resultBean.getCode()==202){
+                            SharedPreferences.Editor editor = sp.edit();
+                            editor.putString("openid","");
+                            editor.putString("token","");
+                            editor.putString("user_id","");
+                            editor.putString("nickname","");
+                            editor.putString("avatar","");
+                            editor.commit();//提交
+                            new HomeActivity().closeService();
+                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
+                    }
+                });
 
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();
+        HeartBateHandler.removeCallbacks(HeartBateRundbler);
         mLocationClient.stopLocation();
         mLocationClient.onDestroy();
     }
+
 }
