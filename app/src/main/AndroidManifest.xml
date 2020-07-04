@@ -56,7 +56,8 @@
             android:value="1864fa6c06d491b9ab88b84856c802a4" />
 
         <activity android:name=".view.activity.OrderPerDayActivity" />
-        <activity android:name=".view.activity.HomeActivity" />
+        <activity android:name=".view.activity.HomeActivity"
+            android:launchMode="singleTask"/>
         <activity android:name=".view.activity.LogonActivity" />
         <activity android:name=".view.activity.ForgetPasswordActivity" />
         <activity android:name=".view.activity.LoginActivity"
@@ -67,7 +68,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.activity.MainActivity" />
+        <activity android:name=".view.activity.MainActivity"
+            />
 
         <service android:name=".service.StocketServices" />
         <service android:name="com.amap.api.location.APSService" />

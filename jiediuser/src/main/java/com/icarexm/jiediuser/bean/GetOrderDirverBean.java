@@ -7,7 +7,7 @@ public class GetOrderDirverBean {
      * event : get_order_dirver
      * code : 200
      * msg : 获取成功
-     * data : {"driver_position":{"positionE":"118.119627","positionN":"24.474831","distance":7.6,"duration":19,"speed":0,"time":0,"money":"获取中.."}}
+     * data : {"driver_position":{"positionE":118.118604,"positionN":24.475769,"distance":22.3,"duration":29,"speed":9.9,"time":0,"money":"获取中.."}}
      */
 
     private String event;
@@ -49,7 +49,7 @@ public class GetOrderDirverBean {
 
     public static class DataBean {
         /**
-         * driver_position : {"positionE":"118.119627","positionN":"24.474831","distance":7.6,"duration":19,"speed":0,"time":0,"money":"获取中.."}
+         * driver_position : {"positionE":118.118604,"positionN":24.475769,"distance":22.3,"duration":29,"speed":9.9,"time":0,"money":"获取中.."}
          */
 
         private DriverPositionBean driver_position;
@@ -64,36 +64,36 @@ public class GetOrderDirverBean {
 
         public static class DriverPositionBean {
             /**
-             * positionE : 118.119627
-             * positionN : 24.474831
-             * distance : 7.6
-             * duration : 19
-             * speed : 0
+             * positionE : 118.118604
+             * positionN : 24.475769
+             * distance : 22.3
+             * duration : 29
+             * speed : 9.9
              * time : 0
              * money : 获取中..
              */
 
-            private String positionE;
-            private String positionN;
+            private double positionE;
+            private double positionN;
             private double distance;
             private int duration;
-            private int speed;
+            private double speed;
             private int time;
             private String money;
 
-            public String getPositionE() {
+            public double getPositionE() {
                 return positionE;
             }
 
-            public void setPositionE(String positionE) {
+            public void setPositionE(double positionE) {
                 this.positionE = positionE;
             }
 
-            public String getPositionN() {
+            public double getPositionN() {
                 return positionN;
             }
 
-            public void setPositionN(String positionN) {
+            public void setPositionN(double positionN) {
                 this.positionN = positionN;
             }
 
@@ -113,11 +113,11 @@ public class GetOrderDirverBean {
                 this.duration = duration;
             }
 
-            public int getSpeed() {
+            public double getSpeed() {
                 return speed;
             }
 
-            public void setSpeed(int speed) {
+            public void setSpeed(double speed) {
                 this.speed = speed;
             }
 

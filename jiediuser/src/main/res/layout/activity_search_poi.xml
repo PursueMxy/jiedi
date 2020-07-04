@@ -31,7 +31,6 @@
             android:layout_below="@id/lbs_route_header"
             android:background="@color/white"
             android:divider="@null">
-
         </ListView>
     </LinearLayout>
 </LinearLayout>

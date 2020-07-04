@@ -129,14 +129,12 @@ public class RechargeActivity extends AppCompatActivity {
                                 AliPayBean aliPayBean = gson.fromJson(response.body(), AliPayBean.class);
                                 if (aliPayBean.getCode()==200) {
                                     final Runnable payRunnable = new Runnable() {
-
                                         @Override
                                         public void run() {
                                             String orderInfo = aliPayBean.getData();
                                             PayTask alipay = new PayTask(RechargeActivity.this);
                                             Map<String, String> result = alipay.payV2(orderInfo, true);
                                             Log.i("msp", result.toString());
-
                                             Message msg = new Message();
                                             msg.what = SDK_PAY_FLAG;
                                             msg.obj = result;

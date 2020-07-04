@@ -4,9 +4,12 @@ public class RequstUrlUtils {
     public static class URL{
 
         //长连接 测试
-        public static final String WEBSOCKET_HOST_AND_PORT = "ws://39.98.177.238:8284";
+        public static final String WEBSOCKET_HOST_AND_PORT = "ws://47.107.83.170:8284";
+//
+//        public static  String Host="http://jdcx.icarefz.cn";
+//        public static final String WEBSOCKET_HOST_AND_PORT = "ws://47.107.83.170:8284";
 
-        public static  String Host="http://jdcx.icarefz.cn";
+        public static  String Host="http://jddc.icarefz.cn";
 
         //加载初始化
         public static String init=Host+"/api/common/init";

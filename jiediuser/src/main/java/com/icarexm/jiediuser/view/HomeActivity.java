@@ -15,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
@@ -52,37 +53,50 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.icarexm.jiediuser.R;
 import com.icarexm.jiediuser.bean.GetOrderDirverBean;
+import com.icarexm.jiediuser.bean.LoginDemoBean;
 import com.icarexm.jiediuser.bean.OrderDetailBean;
 import com.icarexm.jiediuser.bean.OrderDetailOneBean;
+import com.icarexm.jiediuser.bean.OrderDirverBean;
+import com.icarexm.jiediuser.bean.PlaceOrderBean;
+import com.icarexm.jiediuser.bean.PositionsBean;
+import com.icarexm.jiediuser.bean.RefuseOrderBean;
+import com.icarexm.jiediuser.bean.ServicesMsgBean;
+import com.icarexm.jiediuser.bean.pointsBean;
 import com.icarexm.jiediuser.contract.HomeContract;
 import com.icarexm.jiediuser.custview.BottomDialog;
 import com.icarexm.jiediuser.custview.CircleImageView;
 import com.icarexm.jiediuser.custview.mywheel.MyWheelView;
 import com.icarexm.jiediuser.custview.wheel.ScreenInfo;
 import com.icarexm.jiediuser.custview.wheel.WheelMain;
-import com.icarexm.jiediuser.model.AccountingRulesModel;
 import com.icarexm.jiediuser.presenter.HomePresenter;
-import com.icarexm.jiediuser.services.StocketServices;
+import com.icarexm.jiediuser.utils.RequstUrlUtils;
 import com.icarexm.jiediuser.utils.StringFormatUtil;
 import com.icarexm.jiediuser.utils.ToastUtils;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
 
 import static com.icarexm.jiediuser.utils.RequstUrlUtils.URL.price;
 
 public class HomeActivity extends AppCompatActivity implements HomeContract.View, DistanceSearch.OnDistanceSearchListener, AMap.InfoWindowAdapter {
 
     private static boolean IsCancelOrder=false;
-    private static boolean IsDervierLoaction=false;
     private static Double DervierPositionE;
     private static Double DervierPositionN;
     @BindView(R.id.home_map)
@@ -164,18 +178,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     private int CANCEL_ORDER_CODE=6698;
     private int INOUT_TIPS_CODE=6699;
-    public static StocketServices stocketService;
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            stocketService = ((StocketServices.LocalBinder) service).getService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-    };
+    private int HEART_BEAT_RATE=3000;
     private AMapLocationClient mLocationClient;
     private AMapLocationClientOption mLocationOption;
     private static Context mContext;
@@ -205,7 +208,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     //服务类型  城市 	航班号 预约出发时间,预约时填写
     private  String service_type;
-     private   String city;
     private  String flightno;
     private  String estimatedeparturetime;
     private String startingpoints;
@@ -236,6 +238,15 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private View dialog_callphone;
     private TextView tv_phone_number;
     private androidx.appcompat.app.AlertDialog alertDialog;
+    private WebSocket mWebSocket;
+    private String user_id;
+    private int delayMillis;
+    private List<pointsBean> pointsList=new ArrayList<>();
+    private boolean IsRecrivedOrders=false;
+    private float speed;
+    private String mobile;
+    private pointsBean pointsBean;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -247,8 +258,9 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         years = calendar.get(Calendar.YEAR);
         months = calendar.get(Calendar.MONTH);
         days = calendar.get(Calendar.DAY_OF_MONTH);
-        initService();
         sp = this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        user_id = sp.getString("user_id", "");
+        mobile = sp.getString("mobile", "");
         token = sp.getString("token", "");
         avatar = sp.getString("avatar", "");
         nickname = sp.getString("nickname", "");
@@ -368,7 +380,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     ,R.id.home_tv_set,R.id.home_tv_message_center,R.id.home_tv_recommend,R.id.home_btn_confirm_order,R.id.home_tv_TypeNow,
             R.id.home_tv_TypeMake,R.id.home_tv_estimated_time,R.id.home_tv_accounting_rules,
     R.id.home_top_img_message,R.id.home_cancel_tv_cancelOrder,R.id.home_tv_flight_time,R.id.home_img_safety,R.id.home_img_cancel_safety,
-    R.id.home_img_estimated_safety})
+    R.id.home_img_estimated_safety,R.id.home_cancelled_tv_cancel})
     public void  onViewClick(View view){
         switch (view.getId()){
             case R.id.home_img_safety:
@@ -379,6 +391,16 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 break;
             case R.id.home_img_estimated_safety:
                 callPhoneDialog();
+                break;
+
+                //订单已取消按钮
+            case R.id.home_cancelled_tv_cancel:
+                rl_order_cancelled.setVisibility(View.GONE);
+                rl_transfer.setVisibility(View.GONE);
+                ll_flight_transfer.setVisibility(View.GONE);
+                ORDER_TYPE=0;
+                ll_city_type.setVisibility(View.VISIBLE);
+                rl_order_setorder.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.home_tv_destination:
@@ -419,7 +441,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     estimatedeparturetime = tv_flight_time.getText().toString();
                     flightno = edt_flight_number.getText().toString();
                     if (!estimatedeparturetime.equals("")&&!flightno.equals("")){
-                        stocketService.place_order(startingpointE,startingpointN,startingpoint,destinationE,destinationN,destination,
+                      place_order(startingpointE,startingpointN,startingpoint,destinationE,destinationN,destination,
                                 estimated_mileage,estimated_time,budget,ORDER_TYPE+"",cityName,flightno,estimatedeparturetime);
                     }else {
                         ToastUtils.showToast(mContext,"航班号或者航班时间不能为空");
@@ -428,13 +450,13 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     if (CITY_TYPE==2){
 //                        estimatedeparturetime = tv_estimated_time.getText().toString();
                         if (!estimatedeparturetime.equals("")){
-                            stocketService.place_order(startingpointE,startingpointN,startingpoint,destinationE,destinationN,destination,
+                           place_order(startingpointE,startingpointN,startingpoint,destinationE,destinationN,destination,
                                     estimated_mileage,estimated_time,budget,ORDER_TYPE+"",cityName,flightno,estimatedeparturetime);
                         }else {
                             ToastUtils.showToast(mContext,"预定时间不能为空");
                         }
                     }else {
-                        stocketService.place_order(startingpointE,startingpointN,startingpoint,destinationE,destinationN,destination,
+                        place_order(startingpointE,startingpointN,startingpoint,destinationE,destinationN,destination,
                                 estimated_mileage,estimated_time,budget,ORDER_TYPE+"",cityName,flightno,estimatedeparturetime);
                     }
 
@@ -552,7 +574,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
            order_id = data.getStringExtra("order_id");
             reason = data.getStringExtra("reason");
             remark = data.getStringExtra("remark");
-            stocketService.refuse_order(order_id,reason,remark);
+            refuse_order(order_id,reason,remark);
         }
         }catch (Exception e){}
         super.onActivityResult(requestCode, resultCode, data);
@@ -595,8 +617,13 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     }
 
     private Marker markers;
+    private String positionS;
+    private boolean IsCity=true;
+    private String latitude;
+    private String longitude;
     //声明定位回调监听器
     public AMapLocationListener mLocationListener = new AMapLocationListener() {
+
         @Override
         public void onLocationChanged(AMapLocation aMapLocation) {
             if (aMapLocation != null) {
@@ -607,6 +634,10 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     start_latitude = aMapLocation.getLatitude();
                     //获取经度
                     start_longitude = aMapLocation.getLongitude();
+                    //获取纬度
+                    latitude = new DecimalFormat("0.000000").format(aMapLocation.getLatitude());
+                    //获取经度
+                    longitude = new DecimalFormat("0.000000").format(aMapLocation.getLongitude());
                     aMapLocation.getAccuracy();//获取精度信息
                     aMapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
                     aMapLocation.getCountry();//国家信息
@@ -622,6 +653,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     aMapLocation.getBuildingId();//获取当前室内定位的建筑物Id
                     aMapLocation.getFloor();//获取当前室内定位的楼层
                     aMapLocation.getGpsAccuracyStatus();//获取GPS的当前状态
+                    speed = aMapLocation.getSpeed();
                     //获取定位时间
                     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = new Date(aMapLocation.getTime());
@@ -643,22 +675,13 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     aMap.moveCamera(cameraUpdate);
                     startingpoints = aMapLocation.getCity()+aMapLocation.getDistrict()+aMapLocation.getStreet()+aMapLocation.getAoiName()+aMapLocation.getStreetNum();
                     tv_startingpoint.setText(aMapLocation.getCity()+aMapLocation.getDistrict()+aMapLocation.getStreet()+aMapLocation.getAoiName()+aMapLocation.getStreetNum());
-                    if (IsDervierLoaction){
-                        if (derviermarker!=null){
-                            derviermarker.remove();
-                            derviermarker=null;
-                        }
-                        MarkerOptions DervierOption = new MarkerOptions();
-                        DervierOption.snippet("距离你"+dervierDistance+"公里,"+dervierDuration+"分钟");
-                        DervierOption.position(new LatLng(DervierPositionN,DervierPositionE));
-                        DervierOption.draggable(false);//设置Marker可拖动
-                        DervierOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
-                                .decodeResource(getResources(),R.mipmap.icon_car_top)));
-                        // 将Marker设置为贴地显示，可以双指下拉地图查看效果
-                        DervierOption.setFlat(true);//设置marker平贴地图效果
-                        derviermarker = aMap.addMarker(DervierOption);
-                        getInfoWindow(derviermarker);
-                        derviermarker.showInfoWindow();
+                    positionS = aMapLocation.getProvince()+aMapLocation.getProvince()+aMapLocation.getDistrict()+aMapLocation.getStreetNum();
+                    String locations = longitude + "," + latitude;
+                    pointsBean = new pointsBean(locations, format, aMapLocation.getSpeed() + "", aMapLocation.getBearing()+ "", aMapLocation.getAltitude() + "", aMapLocation.getAccuracy() + "");
+                    pointsList.add(pointsBean);
+                    if (IsCity){
+                        initSocket();
+                        IsCity =false;
                     }
                 }else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
@@ -668,32 +691,14 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         }
     };
 
-    //开启服务
-    private void initService() {
-        Intent bluetoothIntent;
-        if (stocketService == null) {
-            bluetoothIntent = new Intent(HomeActivity.this, StocketServices.class);
-            bindService(bluetoothIntent, serviceConnection, BIND_AUTO_CREATE);
-        }
-    }
 
-    //关闭服务
-    private void closeService() {
-        if (stocketService != null) {
-            try {
-                unbindService(serviceConnection);
-                stocketService = null;
-            } catch (Exception e) {
-            }
-        }
-    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        closeService();
         //在activity执行onDestroy时执行mMapView.onDestroy()，销毁地图
         mMapView.onDestroy();
+        HeartBateHandler.removeCallbacks(HeartBateRundbler);
     }
 
     @Override
@@ -843,7 +848,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 rl_order_cancel.setVisibility(View.VISIBLE);
                 cancel_tv_carNumber.setText(data.getDriverInfo().getLicenseplate());
                 cancel_tv_carName.setText(data.getDriverInfo().getNickname() + "  " + data.getDriverInfo().getOrder_count() + "单");
-                stocketService.UpdateRecrivedOrders();
+                UpdateRecrivedOrders();
             }else if (status.equals("3")){
                 rl_order_setorder.setVisibility(View.GONE);
                 rl_wait_order.setVisibility(View.GONE);
@@ -851,7 +856,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 rl_order_cancel.setVisibility(View.VISIBLE);
                 cancel_tv_carNumber.setText(data.getDriverInfo().getLicenseplate());
                 cancel_tv_carName.setText(data.getDriverInfo().getNickname() + "  " + data.getDriverInfo().getOrder_count() + "单");
-                stocketService.UpdateRecrivedOrders();
+               UpdateRecrivedOrders();
             }else if (status.equals("4")){
                 rl_order_setorder.setVisibility(View.GONE);
                 rl_wait_order.setVisibility(View.GONE);
@@ -859,7 +864,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 rl_order_cancel.setVisibility(View.VISIBLE);
                 cancel_tv_carNumber.setText(data.getDriverInfo().getLicenseplate());
                 cancel_tv_carName.setText(data.getDriverInfo().getNickname() + "  " + data.getDriverInfo().getOrder_count() + "单");
-                stocketService.UpdateRecrivedOrders();
+               UpdateRecrivedOrders();
             }else if (status.equals("5")){
                 Intent intent = new Intent(mContext, OrderPayActivity.class);
                 intent.putExtra("order_id",order_id);
@@ -887,45 +892,48 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         }
     }
 
+
     //获取订单详情
-    public static void GetOrderStatus(String orderStatus){
+    public void GetOrderStatus(String orderStatus){
         OrderStatus=orderStatus;
         //获取订单状态
        homePresenter.GetIndex(token);
     }
 
     //取消订单成功
-    public static void  CancelOrder(){
-    ToastUtils.showToast(mContext,"订单取消成功");
-        OrderStatus="8";
+    public  void  CancelOrder(){
         order_id="";
         ORDER_TYPE=0;
         CITY_TYPE=1;
-        IsCancelOrder=true;
+        estimatedeparturetime="";
+        flightno="";
+        rl_transfer.setVisibility(View.GONE);
+        ll_flight_transfer.setVisibility(View.GONE);
+        rl_transfer.setVisibility(View.GONE);
+        ll_flight_transfer.setVisibility(View.GONE);
+        tv_estimated_time.setVisibility(View.GONE);
+        ll_city_type.setVisibility(View.GONE);
+        rl_order_cancel.setVisibility(View.GONE);
+        rl_order_cancelled.setVisibility(View.VISIBLE);
+        ORDER_TYPE=0;
+        if (CITY_TYPE==2){
+            tv_estimated_time.setVisibility(View.VISIBLE);
+        }else {
+            tv_estimated_time.setVisibility(View.GONE);
+        }
+        radioButton_inside_city.setBackgroundResource(R.drawable.myorder_choosed_color);
+        radioButton_inside_city.setTextColor(getResources().getColor(R.color.ff5181fb));
+        radioButton_interciry.setBackgroundResource(R.drawable.myorder_nochoosed_color);
+        radioButton_interciry.setTextColor(getResources().getColor(R.color.black));
+        radioButton_transfer.setBackgroundResource(R.drawable.myorder_nochoosed_color);
+        radioButton_transfer.setTextColor(getResources().getColor(R.color.black));
+        OrderStatus="0";
+        ToastUtils.showToast(mContext,"订单取消成功");
     }
 
-    //取消订单成功
-    public void UpdateCancelOrder(){
-        if (IsCancelOrder){
-            IsCancelOrder=false;
-            rl_transfer.setVisibility(View.GONE);
-            ll_flight_transfer.setVisibility(View.GONE);
-            tv_estimated_time.setVisibility(View.GONE);
-            ll_city_type.setVisibility(View.GONE);
-            radioButton_inside_city.setBackgroundResource(R.drawable.myorder_choosed_color);
-            radioButton_inside_city.setTextColor(getResources().getColor(R.color.ff5181fb));
-            radioButton_interciry.setBackgroundResource(R.drawable.myorder_nochoosed_color);
-            radioButton_interciry.setTextColor(getResources().getColor(R.color.black));
-            radioButton_transfer.setBackgroundResource(R.drawable.myorder_nochoosed_color);
-            radioButton_transfer.setTextColor(getResources().getColor(R.color.black));
-            OrderStatus="0";
-            rl_order_cancel.setVisibility(View.GONE);
-            rl_order_cancelled.setVisibility(View.VISIBLE);
-        }
-    }
 
     //显示司机位置
-    public static void UpdateDervierLoaction(String text){
+    public  void UpdateDervierLoaction(String text){
         Gson DervierLoactiongson = new GsonBuilder().create();
         GetOrderDirverBean getOrderDirverBean = DervierLoactiongson.fromJson(text, GetOrderDirverBean.class);
         if (getOrderDirverBean.getData()!=null){
@@ -938,7 +946,22 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 dervierDuration = driver_position.getDuration();
                 dervierMoney = driver_position.getMoney();
             }
-            IsDervierLoaction=true;
+                if (derviermarker!=null){
+                    derviermarker.remove();
+                    derviermarker=null;
+                }
+                MarkerOptions DervierOption = new MarkerOptions();
+                DervierOption.snippet("距离你"+dervierDistance+"公里,"+dervierDuration+"分钟");
+                DervierOption.position(new LatLng(DervierPositionN,DervierPositionE));
+                Log.e("位置信息",text);
+                DervierOption.draggable(false);//设置Marker可拖动
+                DervierOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+                        .decodeResource(getResources(),R.mipmap.icon_car_top)));
+                // 将Marker设置为贴地显示，可以双指下拉地图查看效果
+                DervierOption.setFlat(true);//设置marker平贴地图效果
+                derviermarker = aMap.addMarker(DervierOption);
+                getInfoWindow(derviermarker);
+                derviermarker.showInfoWindow();
         }
 
     }
@@ -1002,7 +1025,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             isExit.setButton(DialogInterface.BUTTON_NEUTRAL, "确定", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    closeService();
 //                    startActivity(new Intent(mContext,LoginActivity.class));
                     finish();
                     System.exit(0);
@@ -1049,5 +1071,174 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         alertDialog.show();
     }
 
+
+    //开启长连接
+    private void initSocket() {
+        OkHttpClient client = new OkHttpClient.Builder().readTimeout(0, TimeUnit.MILLISECONDS).build();
+        final Request request = new Request.Builder().url(RequstUrlUtils.URL.WEBSOCKET_HOST_AND_PORT).build();
+        client.newWebSocket(request, new WebSocketListener() {
+            @Override
+            public void onOpen(WebSocket webSocket, Response response) {//开启长连接成功的回调
+                super.onOpen(webSocket, response);
+                Log.e("BackService",cityName+"进来了"+user_id);
+                mWebSocket = webSocket;
+                String s = new Gson().toJson(new LoginDemoBean(token, "0", user_id,"login",new LoginDemoBean.data(cityName)));
+                mWebSocket.send(s);
+                HeartBateHandler.postDelayed(HeartBateRundbler, HEART_BEAT_RATE);
+            }
+
+            @Override
+            public void onMessage(WebSocket webSocket, final String text) {//接收消息的回调
+                super.onMessage(webSocket, text);
+                //收到服务器端传过来的消息text
+                Log.e("BackService1",text);
+                try {
+                    Gson gson = new GsonBuilder().create();
+                    ServicesMsgBean servicesMsgBean = gson.fromJson(text, ServicesMsgBean.class);
+                    if (servicesMsgBean!=null){
+                        if (servicesMsgBean.getCode()==200){
+                            String event = servicesMsgBean.getEvent();
+                            if (event.equals("login")){
+                               GetOrderStatus("0");
+                            }else if (event.equals("place_order")){
+                              GetOrderStatus("0");
+                            }else if (event.equals("deliver")){
+                                delayMillis =500;
+                              GetOrderStatus("1");
+                            }else if (event.equals("driver_arrive")){
+                               GetOrderStatus("2");
+                            }else if (event.equals("passenger_boarding")){
+                                GetOrderStatus("3");
+                            }else if (event.equals("arrive")){
+                                GetOrderStatus("4");
+                            }else if (event.equals("refuse_order")){
+                               CancelOrder();
+                            }else if (event.equals("get_order_dirver")){
+                                UpdateDervierLoaction(text);
+                            }
+                        }else {
+                            ToastUtils.showToast(getApplicationContext(),servicesMsgBean.getMsg());
+                        }
+                    }
+                }catch (Exception e){
+                }
+
+            }
+
+            @Override
+            public void onMessage(WebSocket webSocket, ByteString bytes) {
+                super.onMessage(webSocket, bytes);
+                Log.e("BackService2",bytes.toString());
+            }
+
+            @Override
+            public void onClosing(WebSocket webSocket, int code, String reason) {
+                super.onClosing(webSocket, code, reason);
+                Log.e("BackService3",reason);
+            }
+
+            @Override
+            public void onClosed(WebSocket webSocket, int code, String reason) {
+                super.onClosed(webSocket, code, reason);
+                Log.e("BackService4",reason);
+            }
+
+            @Override
+            public void onFailure(WebSocket webSocket, Throwable t, @Nullable Response response) {//长连接连接失败的回调
+                super.onFailure(webSocket, t, response);
+                Log.e("BackService5","发发发");
+            }
+        });
+        client.dispatcher().executorService().shutdown();
+    }
+
+    //实时发送心跳包
+    Handler HeartBateHandler=new Handler();
+    Runnable HeartBateRundbler=new Runnable() {
+        @Override
+        public void run() {
+            position();
+            HeartBateHandler.postDelayed(this, 10000);//每隔5s的时间，对长连接进行一次心跳检测
+            if (IsRecrivedOrders){
+                get_order_dirver();
+            }
+        }
+    };
+
+
+    //更新自己位置 /api/socketobj/position
+    public void position(){
+        String Receipts=new Gson().toJson(new PositionsBean(token, "0", user_id,"position","android",new PositionsBean.data(longitude +"", latitude +"", positionS,speed+"",cityName,new Gson().toJson(pointsList))));
+        pointsList.clear();
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
+
+
+    //根据定位实时更新自己的位置
+    public void LocationPosition(){
+        String Receipts=new Gson().toJson(new PositionsBean(token, "0", user_id,"position",new PositionsBean.data(longitude +"", latitude +"", positionS,speed+"",cityName,new Gson().toJson(pointsBean))));
+        pointsList.clear();
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
+
+
+    //用户下单
+    public void place_order(String startingpointE,String startingpointN,String startingpoint,String destinationE,String destinationN,
+                            String destination,String estimated_mileage,String estimated_time,String budget,String service_type,
+                            String city,String flightno,String estimatedeparturetime){
+        String place_order = new Gson().toJson(new PlaceOrderBean(token, "0", mobile, user_id, "place_order", new PlaceOrderBean.data(startingpointE, startingpointN, startingpoint, destinationE, destinationN, destination, estimated_mileage
+                , estimated_time, budget, service_type, city, flightno, estimatedeparturetime)));
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(place_order);
+        } else {//长连接处于连接状态
+            mWebSocket.send(place_order);
+        }
+    }
+
+
+
+    //拒绝订单/取消订单
+    public void refuse_order(String orderId,String reason,String remark){
+        String Receipts = new Gson().toJson(new RefuseOrderBean(token, "0", user_id,"refuse_order", new RefuseOrderBean.data(orderId, reason,remark)));
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
+
+    //获取司机的位置
+    public void get_order_dirver(){
+        String orderBean = new Gson().toJson(new OrderDirverBean(token, "0", user_id,"get_order_dirver"));
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(orderBean);
+        } else {//长连接处于连接状态
+            mWebSocket.send(orderBean);
+        }
+    }
+
+    //已经有订单需要更新司机位置
+    public void  UpdateRecrivedOrders(){
+        IsRecrivedOrders=true;
+        delayMillis =500;
+    }
 
 }

@@ -539,6 +539,7 @@
                 android:layout_height="@dimen/dp_2"/>
 
             <TextView
+                android:id="@+id/home_cancelled_tv_cancel"
                 android:layout_gravity="center"
                 android:drawableTop="@mipmap/icon_risk"
                 android:drawablePadding="@dimen/dp_7"

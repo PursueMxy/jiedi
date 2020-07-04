@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -36,20 +37,43 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.icarexm.jiedi.Bean.DriverArriveBean;
+import com.icarexm.jiedi.Bean.LoginDemoBean;
 import com.icarexm.jiedi.Bean.OrderType1Bean;
 import com.icarexm.jiedi.Bean.OrderTypeBean;
+import com.icarexm.jiedi.Bean.PositionsBean;
+import com.icarexm.jiedi.Bean.ReceiptBean;
+import com.icarexm.jiedi.Bean.RefuseOrderBean;
+import com.icarexm.jiedi.Bean.ServicesMsgBean;
+import com.icarexm.jiedi.Bean.UserToDriverBean;
+import com.icarexm.jiedi.Bean.pointsBean;
 import com.icarexm.jiedi.R;
 import com.icarexm.jiedi.contract.MainContract;
 import com.icarexm.jiedi.presenter.MainPresenter;
 import com.icarexm.jiedi.service.StocketServices;
+import com.icarexm.jiedi.utils.RequstUrlUtils;
 import com.icarexm.jiedi.utils.ToastUtils;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
 
 public class MainActivity extends AppCompatActivity implements MainContract.View {
 
@@ -90,18 +114,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     private AMapLocationClientOption mLocationOption;
     MyLocationStyle myLocationStyle;
     private int CANCELORDER_CODE=1001;
-    public static StocketServices stocketService;
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            stocketService = ((StocketServices.LocalBinder) service).getService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-    };
     private AMap aMap;
     private Context mContext;
     public static String order_id;
@@ -117,6 +129,11 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     private View dialog_callphone;
     private TextView tv_phone_number;
     private AlertDialog alertDialog;
+    private WebSocket mWebSocket;
+    private int HEART_BEAT_RATE=3000;
+    private String city;
+    private List<pointsBean> pointsList=new ArrayList<>();
+    private float speed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         token = sp.getString("token", "");
         user_id = sp.getString("user_id", "");
         mianPresenter = new MainPresenter(this);
-        initService();
         mContext = getApplicationContext();
         mMapView.onCreate(savedInstanceState);
         if (aMap == null) {
@@ -159,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 callPhoneDialog();
                 break;
             case R.id.main_img_back:
-                closeService();
                 startActivity(new Intent(mContext,HomeActivity.class));
                 SharedPreferences.Editor editor = sp.edit();
                 editor.putString("type","home");
@@ -181,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                     alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            stocketService.driver_arrive(order_id);
+                            driver_arrive(order_id);
                         }
                     });
                     alertDialog.show();
@@ -198,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                     alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            stocketService.passenger_boarding(order_id);
+                           passenger_boarding(order_id);
                         }
                     });
                     alertDialog.show();
@@ -215,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                     alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "确定", new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialogInterface, int i) {
-            stocketService.arrive(order_id);
+           arrive(order_id);
         }
     });
                     alertDialog.show();
@@ -232,7 +247,7 @@ protected void onActivityResult(int requestCode, int resultCode, @Nullable Inten
         if (type.equals("1")) {
         String reason = data.getStringExtra("reason");
         String remark = data.getStringExtra("remark");
-        stocketService.refuse_order(order_id, reason, remark);
+       refuse_order(order_id, reason, remark);
         }
         }
 
@@ -242,7 +257,6 @@ protected void onActivityResult(int requestCode, int resultCode, @Nullable Inten
 @Override
 public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode==KeyEvent.KEYCODE_BACK){
-        closeService();
         startActivity(new Intent(mContext,HomeActivity.class));
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("type","home");
@@ -286,6 +300,10 @@ public boolean onKeyDown(int keyCode, KeyEvent event) {
         mLocationClient.startLocation();
     }
 
+    private String latitude;
+    private String longitude;
+    private pointsBean pointsBean;
+    private boolean IsCity=true;
     //声明定位回调监听器
     public AMapLocationListener mLocationListener = new AMapLocationListener() {
         @Override
@@ -295,15 +313,16 @@ public boolean onKeyDown(int keyCode, KeyEvent event) {
                     //可在其中解析amapLocation获取相应内容。
                     aMapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
                     //获取纬度
-                     aMapLocation.getLatitude();
+                    latitude =new DecimalFormat("0.000000").format(aMapLocation.getLatitude());
                     //获取经度
-                    aMapLocation.getLongitude();
+                    longitude = new DecimalFormat("0.000000").format(aMapLocation.getLongitude());
                     aMapLocation.getAccuracy();//获取精度信息
                     aMapLocation.getAddress();//地址，如果option中设置isNeedAddress为false，则没有此结果，网络定位结果中会有地址信息，GPS定位不返回地址信息。
                     aMapLocation.getCountry();//国家信息
                     aMapLocation.getProvince();//省信息
                     //城市信息
-                     aMapLocation.getCity();
+                    city = aMapLocation.getCity();
+                    speed = aMapLocation.getSpeed();
                     aMapLocation.getDistrict();//城区信息
                     aMapLocation.getStreet();//街道信息
                     aMapLocation.getStreetNum();//街道门牌号信息
@@ -332,6 +351,15 @@ public boolean onKeyDown(int keyCode, KeyEvent event) {
                     markers = aMap.addMarker(markerOption);
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude()));
                     aMap.moveCamera(cameraUpdate);
+                    long time = aMapLocation.getTime()/1000;
+                    positionS = aMapLocation.getProvince()+aMapLocation.getProvince()+aMapLocation.getDistrict()+aMapLocation.getStreetNum();
+                    String locations = longitude + "," + latitude ;
+                    pointsBean = new pointsBean(locations, time+"", aMapLocation.getSpeed() + "", aMapLocation.getBearing()+ "", aMapLocation.getAltitude() + "", aMapLocation.getAccuracy() + "");
+                    pointsList.add(pointsBean);
+                    if (IsCity){
+                        initSocket();
+                        IsCity =false;
+                    }
                 }else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                     Log.e("AmapError","location Error, ErrCode:"
@@ -389,14 +417,7 @@ public boolean onKeyDown(int keyCode, KeyEvent event) {
         alertDialog.show();
     }
 
-    //开启服务
-    private void initService() {
-        Intent bluetoothIntent;
-        if (stocketService == null) {
-            bluetoothIntent = new Intent(MainActivity.this, StocketServices.class);
-            bindService(bluetoothIntent, serviceConnection, BIND_AUTO_CREATE);
-        }
-    }
+
 
     //根据订单状态修改UI
     public void UpdateUI(OrderTypeBean.DataBean data){
@@ -428,9 +449,7 @@ public boolean onKeyDown(int keyCode, KeyEvent event) {
                 tv_statusName.setText("送机");
             }
         }
-        if (status.equals("0")){
-            MainActivity.PlaceOrders();
-        }else if (status.equals("2")){
+        if (status.equals("2")){
             img_safety1.setVisibility(View.GONE);
             rl_safety1.setVisibility(View.GONE);
             img_safety.setVisibility(View.VISIBLE);
@@ -489,7 +508,6 @@ public boolean onKeyDown(int keyCode, KeyEvent event) {
             aMap.addMarker(markerOption1);
         }
         else if (status.equals("5")){
-            closeService();
             finish();
         }
         else if (status.equals("6")){
@@ -547,9 +565,7 @@ public boolean onKeyDown(int keyCode, KeyEvent event) {
                 tv_statusName.setText("送机");
             }
         }
-        if (status.equals("0")){
-            MainActivity.PlaceOrders();
-        } else if (status.equals("2")){
+        if (status.equals("2")){
             MarkerOptions markerOption = new MarkerOptions();
             markerOption.position(new LatLng(Double.valueOf(data.getStartingpointN()),Double.valueOf(data.getStartingpointE())));
             markerOption.snippet(data.getStartingpoint());
@@ -597,7 +613,6 @@ public boolean onKeyDown(int keyCode, KeyEvent event) {
             rl_safety.setVisibility(View.VISIBLE);
             tv_orderType.setText("到达终点");
         }else if (status.equals("5")){
-            closeService();
             finish();
         }else if (status.equals("6")){
             String score = data.getScore();
@@ -626,29 +641,14 @@ public boolean onKeyDown(int keyCode, KeyEvent event) {
 
     @Override
     protected void onNewIntent(Intent intent) {
+
         super.onNewIntent(intent);
         // 跳转首页或者其他操作
     }
 
-    //关闭长连接
-    private void closeService() {
-        if (stocketService != null) {
-            try {
-                unbindService(serviceConnection);
-                stocketService = null;
-            } catch (Exception e) {
-            }
-        }
-    }
-
-    //完成接单
-    public static void PlaceOrders(){
-        Log.e("获取订单状态","获取订单状态"+order_id);
-        stocketService.Receipt(order_id,positionE,positionN,positionS);
-    }
 
     //获取订单状态
-    public static void GetOrderStatus(){
+    public  void GetOrderStatus(){
         //获取订单状态
         mianPresenter.GetOrderInfo(token,order_id);
     }
@@ -656,9 +656,9 @@ public boolean onKeyDown(int keyCode, KeyEvent event) {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        closeService();
         //在activity执行onDestroy时执行mMapView.onDestroy()，销毁地图
         mMapView.onDestroy();
+        HeartBateHandler.removeCallbacks(HeartBateRundbler);
     }
 
     @Override
@@ -684,6 +684,214 @@ public boolean onKeyDown(int keyCode, KeyEvent event) {
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
+    //开启长连接
+    private void initSocket() {
+        OkHttpClient client = new OkHttpClient.Builder().readTimeout(0, TimeUnit.MILLISECONDS).build();
+        final Request request = new Request.Builder().url(RequstUrlUtils.URL.WEBSOCKET_HOST_AND_PORT).build();
+        client.newWebSocket(request, new WebSocketListener() {
+            @Override
+            public void onOpen(WebSocket webSocket, okhttp3.Response response) {//开启长连接成功的回调
+                super.onOpen(webSocket, response);
+                Log.e("BackService","dfsdg");
+                mWebSocket = webSocket;
+                String s = new Gson().toJson(new LoginDemoBean(token, "1", user_id,"login",new LoginDemoBean.data(city)));
+                mWebSocket.send(s);
+                HeartBateHandler.postDelayed(HeartBateRundbler, HEART_BEAT_RATE);
+            }
+
+            @Override
+            public void onMessage(WebSocket webSocket, final String text) {//接收消息的回调
+                super.onMessage(webSocket, text);
+                //收到服务器端传过来的消息text
+                Log.e("BackService1",text);
+                try {
+                    Gson gson = new GsonBuilder().create();
+                    ServicesMsgBean servicesMsgBean = gson.fromJson(text, ServicesMsgBean.class);
+                    if (servicesMsgBean!=null){
+                        if (servicesMsgBean.getCode()==200){
+                            String event = servicesMsgBean.getEvent();
+                            if (event.equals("login")){
+                            }else if (event.equals("receipt")){
+                               GetOrderStatus();
+                            }else if (event.equals("driver_arrive")){
+                               GetOrderStatus();
+                            }else if (event.equals("passenger_boarding")){
+                                GetOrderStatus();
+                            }else if (event.equals("arrive")){
+                               startActivity(new Intent(mContext,HomeActivity.class));
+                               finish();
+                            }else if (event.equals("refuse_order")){
+                               GetOrderStatus();
+                            }
+                        }else if (servicesMsgBean.getCode()==401){
+                            if (servicesMsgBean.getEvent().equals("login")){
+                                ToastUtils.showToast(getApplicationContext(),servicesMsgBean.getMsg());
+                                startActivity(new Intent(getApplicationContext(), LogonActivity.class));
+                                new HomeActivity().finish();
+                            }
+                        }
+                    }
+                }catch (Exception e){
+
+                }
+            }
+
+            @Override
+            public void onMessage(WebSocket webSocket, ByteString bytes) {
+                super.onMessage(webSocket, bytes);
+                Log.e("BackService2",bytes.toString());
+            }
+
+            @Override
+            public void onClosing(WebSocket webSocket, int code, String reason) {
+                super.onClosing(webSocket, code, reason);
+                Log.e("BackService3",reason);
+            }
+
+            @Override
+            public void onClosed(WebSocket webSocket, int code, String reason) {
+                super.onClosed(webSocket, code, reason);
+                Log.e("BackService4",reason);
+            }
+
+            @Override
+            public void onFailure(WebSocket webSocket, Throwable t, @Nullable Response response) {//长连接连接失败的回调
+                super.onFailure(webSocket, t, response);
+                Log.e("BackService5","发发发");
+                logout();
+            }
+        });
+        client.dispatcher().executorService().shutdown();
+    }
+
+    //实时发送心跳包
+    Handler HeartBateHandler=new Handler();
+    Runnable HeartBateRundbler=new Runnable() {
+        @Override
+        public void run() {
+            position();
+            HeartBateHandler.postDelayed(this,10000);//每隔一定的时间，对长连接进行一次心跳检测
+        }
+    };
+
+
+    //拒绝订单/取消订单
+    public void refuse_order(String orderId,String reason,String remark){
+        String Receipts = new Gson().toJson(new RefuseOrderBean(token, "1", user_id,"refuse_order", new RefuseOrderBean.data(orderId, reason,remark)));
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
+
+    // 司机到达
+    public void driver_arrive(String orderId){
+        String Receipts = new Gson().toJson(new DriverArriveBean(token, "1", user_id,"driver_arrive", new DriverArriveBean.data(orderId, longitude +"", latitude +"")));
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
+
+    //乘客上车
+    public void  passenger_boarding(String orderId){
+        String Receipts = new Gson().toJson(new DriverArriveBean(token, "1", user_id,"passenger_boarding", new DriverArriveBean.data(orderId, longitude +"", latitude +"")));
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
+
+    // 到达目的地
+    public void arrive(String orderId){
+        position();
+        String Receipts = new Gson().toJson(new ReceiptBean(token, "1", user_id,"arrive", new ReceiptBean.data(orderId, longitude +"", latitude +"", positionS)));
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
+
+    // 用户发通知给用户
+    public void user_to_driver(String orderId,String msg){
+        String Receipts = new Gson().toJson(new UserToDriverBean(token, "1", user_id,"user_to_driver",new UserToDriverBean.data("190","998555444")));
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
+
+    //更新自己位置 /api/socketobj/position
+    public void position(){
+        String s = new Gson().toJson(pointsList);
+        Log.e("轨迹点",s.substring(1,s.length()-1));
+        String Receipts=new Gson().toJson(new PositionsBean(token, "1", user_id,"position","android",new PositionsBean.data(longitude +"", latitude +"", positionS,speed+"",city,new Gson().toJson(pointsList))));
+        boolean isSuccess = mWebSocket.send("");
+        pointsList.clear();
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
+
+    //根据定位实时更新自己的位置
+    public void LocationPosition(){
+        String s = new Gson().toJson(pointsBean);
+        Log.e("轨迹上传",s);
+        String Receipts=new Gson().toJson(new PositionsBean(token, "1", user_id,"position","android",new PositionsBean.data(longitude +"", latitude +"", positionS,speed+"",city,new Gson().toJson(pointsBean))));
+        pointsList.clear();
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
+
+    //退出登录
+    private void logout() {
+        OkGo.<String>post(RequstUrlUtils.URL.logout)
+                .params("token", token)
+                .params("type","0")
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(com.lzy.okgo.model.Response<String> response) {
+                        ServicesMsgBean resultBean = new GsonBuilder().create().fromJson(response.body(),ServicesMsgBean.class);
+                        if (resultBean.getCode()==202){
+                            SharedPreferences.Editor editor = sp.edit();
+                            editor.putString("openid","");
+                            editor.putString("token","");
+                            editor.putString("user_id","");
+                            editor.putString("nickname","");
+                            editor.putString("avatar","");
+                            editor.commit();//提交
+                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
+                    }
+                });
 
     }
 

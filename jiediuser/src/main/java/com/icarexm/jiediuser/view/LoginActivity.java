@@ -15,7 +15,6 @@ import android.widget.EditText;
 import android.widget.TextClock;
 import android.widget.TextView;
 
-import com.autonavi.rtbt.IFrameForRTBT;
 import com.google.gson.GsonBuilder;
 import com.hjq.permissions.OnPermission;
 import com.hjq.permissions.XXPermissions;

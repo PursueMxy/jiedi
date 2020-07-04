@@ -1,6 +1,7 @@
 package com.icarexm.jiedi.view.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,12 +29,19 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.autonavi.rtbt.IFrameForRTBT;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.icarexm.jiedi.Bean.DeliverBean;
+import com.icarexm.jiedi.Bean.DriverArriveBean;
+import com.icarexm.jiedi.Bean.LoginDemoBean;
 import com.icarexm.jiedi.Bean.OrderListBean;
 import com.icarexm.jiedi.Bean.OrderListOneBean;
+import com.icarexm.jiedi.Bean.PositionsBean;
+import com.icarexm.jiedi.Bean.ReceiptBean;
+import com.icarexm.jiedi.Bean.RefuseOrderBean;
+import com.icarexm.jiedi.Bean.ServicesMsgBean;
+import com.icarexm.jiedi.Bean.UserToDriverBean;
+import com.icarexm.jiedi.Bean.pointsBean;
 import com.icarexm.jiedi.R;
 import com.icarexm.jiedi.adapter.HomeAdapter;
 import com.icarexm.jiedi.contract.HomeContract;
@@ -45,7 +53,6 @@ import com.icarexm.jiedi.utils.RequstUrlUtils;
 import com.icarexm.jiedi.utils.ToastUtils;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
-import com.lzy.okgo.model.Response;
 import com.zhouyou.recyclerview.XRecyclerView;
 import com.zhouyou.recyclerview.adapter.BaseRecyclerViewAdapter;
 
@@ -54,10 +61,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
 
 public class HomeActivity extends AppCompatActivity implements HomeContract.View {
 
@@ -92,18 +106,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private static String latitude="0";
     private static HomePresenter homePresenter;
 
-    public static StocketServices stocketService;
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            stocketService = ((StocketServices.LocalBinder) service).getService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-    };
     private TextView dialog_home_tv_time;
     private TextView dialog_home_tv_distance;
     private TextView home_dialog_tv_startingpoint;
@@ -113,7 +115,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     private static boolean isAutomatic=false;
     private View dialog_callphone;
     private TextView tv_phone_number;
+    private WebSocket mWebSocket;
 
+    private int HEART_BEAT_RATE=3000;
+    private List<pointsBean> pointsList=new ArrayList<>();
+    private float speed;
 
 
     @Override
@@ -125,29 +131,20 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         token = sp.getString("token", "");
         user_id = sp.getString("user_id", "");
         ButterKnife.bind(this);
-        initService();
+        SetLocations();
         InitUI();
         homePresenter = new HomePresenter(this);
         homePresenter.GetIndex(token);
-        SetLocations();
         orderHandler.postDelayed(orderRunnable,200);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         homePresenter.GetIndex(token);
-        initService();
+        orderHandler.postDelayed(orderRunnable,200);
         super.onNewIntent(intent);
     }
 
-    //开启服务
-    private void initService() {
-        Intent bluetoothIntent;
-        if (stocketService == null) {
-            bluetoothIntent = new Intent(HomeActivity.this, StocketServices.class);
-            bindService(bluetoothIntent, serviceConnection, BIND_AUTO_CREATE);
-        }
-    }
 
     private void SetLocations() {
         //初始化定位
@@ -194,21 +191,15 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         countDownProgressBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                stocketService.Receipt(order_id,longitude+"",latitude+"",city);
                 alertDialog.dismiss();
                 alertDialog=null;
                 homePresenter.GetAutoOrder(token,"0");
                 btn_gainorder.setText("接单");
                 btn_gainorder.setBackground(getResources().getDrawable(R.drawable.btn_login));
                 orderHandler.removeCallbacks(orderRunnable);
-                Intent intent = new Intent(mContext, MainActivity.class);
-                intent.putExtra("order_id",order_id);
-                intent.putExtra("positionE",longitude+"");
-                intent.putExtra("positionN",latitude+"");
-                intent.putExtra("position",city);
-                intent.putExtra("order_status","1");
-                startActivity(intent);
-                mLocationClient.stopLocation();
+                if (!longitude.equals("0")) {
+                    Receipt(order_id, longitude + "", latitude + "", city);
+                }
             }
         });
         //倒计时监听
@@ -222,7 +213,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             public void onEnd() {
                 alertDialog.dismiss();
                 alertDialog=null;
-                Log.e("home","结束");
             }
         });
         mRecyclerView.setNestedScrollingEnabled(false);
@@ -262,15 +252,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             @Override
             public void onItemClick(View view, Object item, int position) {
                 orderHandler.removeCallbacks(orderRunnable);
-                stocketService.Receipt(order_id,longitude+"",latitude+"",city);
-                Intent intent = new Intent(mContext, MainActivity.class);
-                intent.putExtra("order_id",list.get(position).getId()+"");
-                intent.putExtra("positionE",longitude+"");
-                intent.putExtra("positionN",latitude+"");
-                intent.putExtra("position",city);
-                intent.putExtra("order_status","2");
-                startActivity(intent);
-                mLocationClient.stopLocation();
+                order_id=list.get(position).getId()+"";
+                Receipt(list.get(position).getId()+"",longitude+"",latitude+"",city);
             }
         });
     }
@@ -295,10 +278,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                 String btncontent = btn_gainorder.getText().toString();
                 if (btncontent.equals("接单")){
                     homePresenter.GetAutoOrder(token,"1");
-//                    ShowDialog();
                 }else {
                     homePresenter.GetAutoOrder(token,"0");
-//                    alertDialog.dismiss();
                 }
                 break;
             case R.id.home_img_personal:
@@ -314,7 +295,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     //刷新订单列表页面
     public void UpdateOrderList(OrderListBean.DataBean data){
-        if (data!=null) {
+        if (data!=null||!data.equals("")) {
             tv_receipt_number.setText(data.getOrder_count()+"");
             tv_receipt_price.setText(data.getToday_money()+"元");
             tv_receipt_evaluate.setText(data.getUser_evaluate()+"");
@@ -329,26 +310,32 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     //自动接单dialog
     public  void ShowDialog(DeliverBean.DataBean.OrderBean order){
-//             order_id = order.getId()+"";
-//             home_dialog_tv_destination.setText(order.getDestination());
-//             home_dialog_tv_startingpoint.setText(order.getStartingpoint());
-//             dialog_home_tv_time.setText(order.getTime());
-//             dialog_home_tv_distance.setText(order.getDistance()+"");
-//              builder = new AlertDialog.Builder(this);
-//             alertDialog = builder.setView(dialog_home).create();
-//             alertDialog.show();
-//             countDownProgressBar.startCountDown();
-              }
+        order_id = order.getId()+"";
+             home_dialog_tv_destination.setText(order.getDestination());
+             home_dialog_tv_startingpoint.setText(order.getStartingpoint());
+             dialog_home_tv_time.setText(order.getTime());
+             dialog_home_tv_distance.setText(order.getDistance()+"");
+              builder = new AlertDialog.Builder(this);
+        builder = new AlertDialog.Builder(this);
+        if (alertDialog == null) {
+            alertDialog = builder.setView(dialog_home).create();
+            alertDialog.show();
+        } else {
+            alertDialog.show();
+        }
+        countDownProgressBar.startCountDown();
+             countDownProgressBar.startCountDown();
+    }
 
     //系统自动接单接到新订单了
-    public static void automatic(String orders){
+    public  void automatic(String orders){
         Gson gson = new GsonBuilder().create();
         DeliverBean deliverBean = gson.fromJson(orders, DeliverBean.class);
         DeliverBean.DataBean data = deliverBean.getData();
         DeliverBean.DataBean.OrderBean order = data.getOrder();
-//        homePresenter.SetOrderUpload(order);
         automaticOrder = orders;
         isAutomatic = true;
+        ShowDialog(order);
     }
 
     //获取到系统派单
@@ -358,14 +345,18 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
         home_dialog_tv_startingpoint.setText( orderBean.getStartingpoint());
         dialog_home_tv_time.setText( orderBean.getTime());
         dialog_home_tv_distance.setText("");
-        builder = new AlertDialog.Builder(this);
-        if (alertDialog == null) {
-            alertDialog = builder.setView(dialog_home).create();
-            alertDialog.show();
-        } else {
-            alertDialog.show();
+        try {
+            builder = new AlertDialog.Builder(this);
+            if (alertDialog == null) {
+                alertDialog = builder.setView(dialog_home).create();
+                alertDialog.show();
+            } else {
+                alertDialog.show();
+            }
+            countDownProgressBar.startCountDown();
+        }catch (Exception e){
+
         }
-        countDownProgressBar.startCountDown();
     }
 
      //刷新订单列表handler
@@ -378,10 +369,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                             orderHandler.postDelayed(orderRunnable,10000);
                         }else {
                             orderHandler.postDelayed(orderRunnable,200);
-                        }
-                        if (isAutomatic){
-                            homePresenter.GetIndex(token);
-                            isAutomatic=false;
                         }
         }
     };
@@ -416,7 +403,6 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
             isExit.setButton(DialogInterface.BUTTON_NEUTRAL, "确定", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    closeService();
                     orderHandler.removeCallbacks(orderRunnable);
                     System.exit(0);
                     finish();
@@ -462,23 +448,14 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     };
 
 
-    //关闭长连接
-    public void closeService() {
-        if (stocketService != null) {
-            try {
-                unbindService(serviceConnection);
-                stocketService = null;
-            } catch (Exception e) {
-            }
-        }
-    }
 
      //退出登录
     public void Logout(){
-        closeService();
         finish();
     }
-
+    private String positionS;
+    private pointsBean pointsBean;
+    private boolean IsCity=true;
     //声明定位回调监听器
     public AMapLocationListener mLocationListener = new AMapLocationListener() {
         @Override
@@ -497,6 +474,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     aMapLocation.getProvince();//省信息
                     //城市信息
                     city = aMapLocation.getCity();
+                    speed = aMapLocation.getSpeed();
                     aMapLocation.getDistrict();//城区信息
                     aMapLocation.getStreet();//街道信息
                     aMapLocation.getStreetNum();//街道门牌号信息
@@ -510,6 +488,15 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
                     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = new Date(aMapLocation.getTime());
                     String format = df.format(date);
+                    long time = aMapLocation.getTime()/1000;
+                    positionS = aMapLocation.getProvince()+aMapLocation.getProvince()+aMapLocation.getDistrict()+aMapLocation.getStreetNum();
+                    String locations = longitude + "," + latitude ;
+                    pointsBean = new pointsBean(locations, time+"", aMapLocation.getSpeed() + "", aMapLocation.getBearing()+ "", aMapLocation.getAltitude() + "", aMapLocation.getAccuracy() + "");
+                    pointsList.add(pointsBean);
+                    if (IsCity){
+                        initSocket();
+                        IsCity =false;
+                    }
                 }else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                     Log.e("AmapError","location Error, ErrCode:"
@@ -533,14 +520,169 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     @Override
     protected void onDestroy() {
-        Log.e("执行销毁","执行");
         orderHandler.removeCallbacks(orderRunnable);
-        try {
-            closeService();
-        }catch (Exception e){
-
-        }
+        HeartBateHandler.removeCallbacks(HeartBateRundbler);
         super.onDestroy();
     }
+
+    //开启长连接
+    private void initSocket() {
+        OkHttpClient client = new OkHttpClient.Builder().readTimeout(0, TimeUnit.MILLISECONDS).build();
+        final Request request = new Request.Builder().url(RequstUrlUtils.URL.WEBSOCKET_HOST_AND_PORT).build();
+        client.newWebSocket(request, new WebSocketListener() {
+            @Override
+            public void onOpen(WebSocket webSocket, okhttp3.Response response) {//开启长连接成功的回调
+                super.onOpen(webSocket, response);
+                Log.e("BackService","进来了"+city);
+                mWebSocket = webSocket;
+                String s = new Gson().toJson(new LoginDemoBean(token, "1", user_id,"login",new LoginDemoBean.data(city)));
+                mWebSocket.send(s);
+                HeartBateHandler.postDelayed(HeartBateRundbler, HEART_BEAT_RATE);
+            }
+
+            @Override
+            public void onMessage(WebSocket webSocket, final String text) {//接收消息的回调
+                super.onMessage(webSocket, text);
+                //收到服务器端传过来的消息text
+                Log.e("BackService1",text);
+                try {
+                    Gson gson = new GsonBuilder().create();
+                    ServicesMsgBean servicesMsgBean = gson.fromJson(text, ServicesMsgBean.class);
+                    if (servicesMsgBean!=null){
+                        if (servicesMsgBean.getCode()==200){
+                            String event = servicesMsgBean.getEvent();
+                            if (event.equals("login")){
+                            }else if (event.equals("deliver")){
+                               automatic(text);
+                            }else if (event.equals("receipt")){
+                                Intent intent = new Intent(mContext, MainActivity.class);
+                                intent.putExtra("order_id",order_id);
+                                intent.putExtra("positionE",longitude+"");
+                                intent.putExtra("positionN",latitude+"");
+                                intent.putExtra("position",city);
+                                intent.putExtra("order_status","2");
+                                startActivity(intent);
+                                mLocationClient.stopLocation();
+                            }
+                        }else if (servicesMsgBean.getCode()==401){
+                            if (servicesMsgBean.getEvent().equals("login")){
+                                ToastUtils.showToast(getApplicationContext(),servicesMsgBean.getMsg());
+                                startActivity(new Intent(getApplicationContext(), LogonActivity.class));
+                                new HomeActivity().finish();
+                            }
+                        }
+                    }
+                }catch (Exception e){
+
+                }
+            }
+
+            @Override
+            public void onMessage(WebSocket webSocket, ByteString bytes) {
+                super.onMessage(webSocket, bytes);
+                Log.e("BackService2",bytes.toString());
+            }
+
+            @Override
+            public void onClosing(WebSocket webSocket, int code, String reason) {
+                super.onClosing(webSocket, code, reason);
+                Log.e("BackService3",reason);
+            }
+
+            @Override
+            public void onClosed(WebSocket webSocket, int code, String reason) {
+                super.onClosed(webSocket, code, reason);
+                Log.e("BackService4",reason);
+            }
+
+            @Override
+            public void onFailure(WebSocket webSocket, Throwable t, @Nullable Response response) {//长连接连接失败的回调
+                super.onFailure(webSocket, t, response);
+                Log.e("BackService5","发发发");
+                logout();
+            }
+        });
+        client.dispatcher().executorService().shutdown();
+    }
+
+    //实时发送心跳包
+    Handler HeartBateHandler=new Handler();
+    Runnable HeartBateRundbler=new Runnable() {
+        @Override
+        public void run() {
+            position();
+            HeartBateHandler.postDelayed(this,10000);//每隔一定的时间，对长连接进行一次心跳检测
+        }
+    };
+
+    //司机接单/抢单
+    public void  Receipt(String orderId,String positionE,String positionN,String position) {
+        Log.e("订单信息",orderId+"和"+positionE+"和"+positionN+"和"+position);
+        String Receipts = new Gson().toJson(new ReceiptBean(token, "1", user_id,"receipt", new ReceiptBean.data(orderId, positionE, positionN, position)));
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
+
+    //更新自己位置 /api/socketobj/position
+    public void position(){
+        String s = new Gson().toJson(pointsList);
+        Log.e("轨迹点",s.substring(1,s.length()-1));
+        String Receipts=new Gson().toJson(new PositionsBean(token, "1", user_id,"position","android",new PositionsBean.data(longitude+"",latitude+"", positionS,speed+"",city,new Gson().toJson(pointsList))));
+        boolean isSuccess = mWebSocket.send("");
+        pointsList.clear();
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
+    //根据定位实时更新自己的位置
+    public void LocationPosition(){
+        String s = new Gson().toJson(pointsBean);
+        Log.e("轨迹上传",s);
+        String Receipts=new Gson().toJson(new PositionsBean(token, "1", user_id,"position","android",new PositionsBean.data(longitude+"",latitude+"", positionS,speed+"",city,new Gson().toJson(pointsBean))));
+        pointsList.clear();
+        boolean isSuccess = mWebSocket.send("");
+        if (!isSuccess) {//长连接已断开
+            mWebSocket.cancel();//取消掉以前的长连接
+            mWebSocket.send(Receipts);
+        } else {//长连接处于连接状态
+            mWebSocket.send(Receipts);
+        }
+    }
+
+    //退出登录
+    private void logout() {
+        OkGo.<String>post(RequstUrlUtils.URL.logout)
+                .params("token", token)
+                .params("type","0")
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(com.lzy.okgo.model.Response<String> response) {
+                        ServicesMsgBean resultBean = new GsonBuilder().create().fromJson(response.body(),ServicesMsgBean.class);
+                        if (resultBean.getCode()==202){
+                            SharedPreferences.Editor editor = sp.edit();
+                            editor.putString("openid","");
+                            editor.putString("token","");
+                            editor.putString("user_id","");
+                            editor.putString("nickname","");
+                            editor.putString("avatar","");
+                            editor.commit();//提交
+                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
+                    }
+                });
+
+    }
+
+
 
 }
